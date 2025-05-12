@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Christophoros Cioccolato</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 50px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      color: #0f2a66;
+    }
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #0f2a66;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #mensaje {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Haz tu pedido</h1>
+  <form id="pedidoForm">
+    <input type="text" name="nombre" placeholder="Tu nombre" required><br>
+    <input type="email" name="email" placeholder="Tu correo" required><br>
+    <textarea name="pedido" placeholder="Escribe tu pedido..." required></textarea><br>
+    <button type="submit">Enviar pedido</button>
+  </form>
+
+  <p id="mensaje"></p>
+
+  <script>
+  document.getElementById("pedidoForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const data = {
+      nombre: this.nombre.value,
+      email: this.email.value,
+      pedido: this.pedido.value
+    };
+
+    fetch("https://script.google.com/macros/s/PASTE_AQUI_TU_URL_DEL_SCRIPT/exec", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(res => res.json())
+    .then(response => {
+      document.getElementById("mensaje").innerText = "Pedido recibido. ¡Gracias!";
+      this.reset();
+    })
+    .catch(error => {
+      document.getElementById("mensaje").innerText = "Error al enviar pedido.";
+    });
+  });
+  </script>
+</body>
+</html>
