@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Christophoros - Travesía de Sabor y Arte</title>
-    {/* */}
-    {/* */}
-    {/* */}
-    <link rel="icon" type="image/png" href="images/favicon.png">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -101,6 +96,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            min-height: 256px; /* Ajustado para igualar la nueva altura de las imágenes de bombones */
         }
         #mobile-menu {
             transition: transform 0.3s ease-in-out;
@@ -108,7 +104,7 @@
         #sabores-grid > div {
              transition: max-height 0.7s ease-in-out, opacity 0.5s ease-in-out, margin 0.7s ease-in-out, padding 0.7s ease-in-out, border-width 0.7s ease-in-out;
              overflow: hidden;
-             max-height: 600px; /* Ajustar si el contenido de las tarjetas es más alto */
+             max-height: 700px; /* Aumentado para acomodar tarjetas más altas */
              opacity: 1;
         }
         .flavor-hidden {
@@ -177,56 +173,57 @@
                 <h2 class="text-4xl md:text-5xl font-serif font-bold text-center text-brand-navy-text mb-16">Explora Nuestros Sabores</h2>
                 <div id="sabores-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card">
-                        <img src="images/constelacion-nocturna.jpg" alt="Bombón Constelación Nocturna" class="w-full h-48 object-cover">
+                        {/* Altura de imagen aumentada de h-48 a h-64 */}
+                        <img src="images/constelacion-nocturna.jpg" alt="Bombón Constelación Nocturna" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Constelación Nocturna</h3>
                             <p class="text-sm text-brand-navy-text/80 flex-grow">Ganache de chocolate negro 70% con un toque de licor de cassis.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card">
-                        <img src="images/tesoro-navegante.jpg" alt="Bombón Tesoro del Navegante" class="w-full h-48 object-cover">
-                         <div class="p-5 flex flex-col flex-grow">
+                        <img src="images/tesoro-navegante.jpg" alt="Bombón Tesoro del Navegante" class="w-full h-64 object-cover">
+                        <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Tesoro del Navegante</h3>
                             <p class="text-sm text-brand-navy-text/80 flex-grow">Corazón de caramelo salado con flor de sal, cubierto de chocolate con leche.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card">
-                        <img src="images/eco-tierra.jpg" alt="Bombón Eco de la Tierra" class="w-full h-48 object-cover">
+                        <img src="images/eco-tierra.jpg" alt="Bombón Eco de la Tierra" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Eco de la Tierra</h3>
                             <p class="text-sm text-brand-navy-text/80 flex-grow">Intensa trufa de chocolate de origen con infusión de café de grano.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card">
-                        <img src="images/amanecer-andino.jpg" alt="Bombón Amanecer Andino" class="w-full h-48 object-cover">
+                        <img src="images/amanecer-andino.jpg" alt="Bombón Amanecer Andino" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Amanecer Andino</h3>
                             <p class="text-sm text-brand-navy-text/80 flex-grow">Ganache de chocolate blanco con maracuyá y un toque de merkén.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden">
-                        <img src="images/bosque-esmeralda.jpg" alt="Bombón Bosque Esmeralda" class="w-full h-48 object-cover">
+                        <img src="images/bosque-esmeralda.jpg" alt="Bombón Bosque Esmeralda" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Bosque Esmeralda</h3>
                             <p class="text-sm text-brand-navy-text/80 flex-grow">Crema de menta fresca sobre una base de chocolate 65% cacao.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden">
-                        <img src="images/fuego-patagonico.jpg" alt="Bombón Fuego Patagónico" class="w-full h-48 object-cover">
+                        <img src="images/fuego-patagonico.jpg" alt="Bombón Fuego Patagónico" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Fuego Patagónico</h3>
                             <p class="text-sm text-brand-navy-text/80 flex-grow">Ganache de naranja y jengibre con cobertura de chocolate semiamargo.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden">
-                        <img src="images/susurro-lavanda.jpg" alt="Bombón Susurro de Lavanda" class="w-full h-48 object-cover">
+                        <img src="images/susurro-lavanda.jpg" alt="Bombón Susurro de Lavanda" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Susurro de Lavanda</h3>
                             <p class="text-sm text-brand-navy-text/80 flex-grow">Delicado ganache de chocolate blanco infusionado con flores de lavanda.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden">
-                        <img src="images/corazon-rubi.jpg" alt="Bombón Corazón de Rubí" class="w-full h-48 object-cover">
+                        <img src="images/corazon-rubi.jpg" alt="Bombón Corazón de Rubí" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Corazón de Rubí</h3>
                             <p class="text-sm text-brand-navy-text/80 flex-grow">Compota de frutos rojos del bosque sobre praliné de avellanas.</p>
@@ -258,7 +255,8 @@
                 <h2 class="text-4xl md:text-5xl font-serif font-bold text-center text-brand-navy-text mb-16">Elige tu Formato de Viaje</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
                     <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center">
-                        <img src="images/caja-4-bombones.jpg" alt="Caja de 4 bombones Christophoros" class="w-full h-48 object-cover">
+                        {/* Altura de imagen aumentada de h-48 a h-64 */}
+                        <img src="images/caja-4-bombones.jpg" alt="Caja de 4 bombones Christophoros" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 4 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-5 flex-grow">Una selección perfecta para degustar o regalar un detalle especial.</p>
@@ -266,7 +264,7 @@
                         </div>
                     </div>
                     <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center">
-                        <img src="images/caja-9-bombones.jpg" alt="Caja de 9 bombones Christophoros" class="w-full h-48 object-cover">
+                        <img src="images/caja-9-bombones.jpg" alt="Caja de 9 bombones Christophoros" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 9 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-5 flex-grow">Ideal para compartir y explorar una mayor variedad de sabores.</p>
@@ -274,7 +272,7 @@
                         </div>
                     </div>
                     <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center">
-                        <img src="images/caja-16-bombones.jpg" alt="Caja de 16 bombones Christophoros" class="w-full h-48 object-cover">
+                        <img src="images/caja-16-bombones.jpg" alt="Caja de 16 bombones Christophoros" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 16 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-5 flex-grow">Una experiencia completa para los verdaderos amantes del chocolate.</p>
@@ -282,7 +280,7 @@
                         </div>
                     </div>
                     <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center">
-                        <img src="images/caja-24-bombones.jpg" alt="Caja de 24 bombones Christophoros" class="w-full h-48 object-cover">
+                        <img src="images/caja-24-bombones.jpg" alt="Caja de 24 bombones Christophoros" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 24 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-5 flex-grow">El formato definitivo para celebraciones y regalos inolvidables.</p>
@@ -297,7 +295,7 @@
              <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12 md:gap-16">
                 <div class="md:w-1/2">
                     <img src="images/imagen-sobre-nosotros.jpg" alt="Proceso artesanal Christophoros o inspiración de viajes" class="rounded-lg shadow-xl w-full">
-                    </div>
+                </div>
                 <div class="md:w-1/2 text-center md:text-left">
                     <h2 class="text-4xl md:text-5xl font-serif font-bold mb-6 text-white">Nuestra Travesía: Portadores de Experiencias</h2>
                     <p class="text-lg mb-5 leading-relaxed text-brand-off-white opacity-90">Christophoros nace como un homenaje a los grandes viajes de descubrimiento. Inspirados en la figura de Cristóbal Colón, uno de los primeros europeos en conocer el cacao, nos vemos como exploradores modernos del sabor.</p>
