@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christophoros - Travesía de Sabor y Arte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Paleta de colores corporativa con Azul Marino
+                        'brand-navy-primary': '#0D1B2A', // Azul marino principal
+                        'brand-navy-text': '#1B263B',   // Azul marino para textos
+                        'brand-blue': '#0f2a66',        // Azul profundo para acciones
+                        'brand-off-white': '#FDFBF9',   // Fondo claro
+                        'brand-gold-accent': '#BFA181', // Dorado suave
+                    },
+                    fontFamily: {
+                        'serif': ['Playfair Display', 'serif'],
+                        'sans': ['Lato', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos adicionales */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            color: #1B263B;
+            /* brand-navy-text */
+            background-color: #FDFBF9;
+            /* brand-off-white */
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Playfair Display', serif;
+            color: #1B263B;
+            /* brand-navy-text */
+        }
+
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .btn-action {
+            background-color: #0f2a66;
+            /* brand-blue */
+            color: white;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-action:hover {
+            background-color: #0D1B2A;
+            /* brand-navy-primary */
+            transform: scale(1.03);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #0f2a66;
+            /* brand-blue */
+            border: 2px solid #0f2a66;
+            /* brand-blue */
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background-color: #0f2a66;
+            /* brand-blue */
+            color: white;
+            transform: scale(1.03);
+        }
+
+        header {
+            background-color: rgba(253, 251, 249, 0.95);
+            backdrop-filter: blur(8px);
+        }
+
+        footer {
+            background-color: #0D1B2A;
+            /* brand-navy-primary */
+            color: #FDFBF9;
+            /* brand-off-white */
+        }
+
+        footer a {
+            color: #BFA181;
+            /* brand-gold-accent */
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #FDFBF9;
+            /* brand-off-white */
+        }
+
+        footer h4,
+        footer h5 {
+            color: #FDFBF9;
+            /* brand-off-white */
+        }
+
+        footer .footer-text-secondary {
+            color: #D1B490;
+        }
+
+        .coming-soon-card {
+            background-color: #e9e9e9;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #sabores-grid>div {
+            transition: max-height 0.7s ease-in-out, opacity 0.5s ease-in-out, margin 0.7s ease-in-out, padding 0.7s ease-in-out, border-width 0.7s ease-in-out;
+            overflow: hidden;
+            max-height: 600px;
+            /* Ajustar si el contenido de las tarjetas es más alto */
+            opacity: 1;
+        }
+
+        .flavor-hidden {
+            max-height: 0 !important;
+            opacity: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            border-width: 0 !important;
+        }
+    </style>
+</head>
+
+<body class="font-sans">
+    <header class="shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center"><a href="#inicio" class="text-3xl font-serif font-bold text-brand-navy-text">Christophoros</a>
+            <div class="hidden md:flex space-x-8 items-center"><a href="#inicio" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Inicio</a> <a href="#sabores" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Sabores</a> <a href="#formatos" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Formatos</a> <a href="#nosotros" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Nuestra Traves&iacute;a</a> <a href="#contacto" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Contacto</a> <a href="#" class="relative">&nbsp;<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-navy-text hover:text-brand-blue transition duration-300" fill="none">&nbsp;<path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>&nbsp;</svg> <span class="absolute -top-2 -right-2 bg-brand-blue text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>&nbsp;</a></div>
+            <div class="md:hidden"><button id="mobile-menu-button" class="text-brand-navy-text focus:outline-none" aria-expanded="false">&nbsp;<svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none">&nbsp;<path d="M4 6h16M4 12h16m-7 6h7"></path>&nbsp;</svg> <svg id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none">&nbsp;<path d="M6 18L18 6M6 6l12 12"></path>&nbsp;</svg>&nbsp;</button></div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden absolute top-full left-0 w-full bg-brand-off-white shadow-lg py-4 transform -translate-y-full -z-10"><a href="#inicio" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Inicio</a> <a href="#sabores" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Sabores</a> <a href="#formatos" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Formatos</a> <a href="#nosotros" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Nuestra Traves&iacute;a</a> <a href="#contacto" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Contacto</a></div>
+    </header>
+    <main>
+        <section id="inicio" class="h-screen flex items-center justify-center bg-cover bg-center parallax-bg relative" style="background-image: url('images/imagen-hero-principal.jpg');">{/* */}<div class="absolute inset-0 bg-black opacity-60"><br></div>
+            <div class="relative z-10 p-10 rounded-lg text-center max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-4 leading-tight">Christophoros</h1>
+                <p class="text-2xl font-serif text-brand-off-white italic mb-8">Traves&iacute;a ** sabor y arte</p>
+                <p class="text-lg text-brand-off-white mb-10">Descubre una colecci&oacute;n de bombones gourmet pintados a mano, ***** **** pieza es una invitaci&oacute;n a explorar sabores &uacute;nicos y una est&eacute;**** refinada.</p><a href="#sabores" class="btn-action text-lg font-semibold py-3 px-10 rounded-full shadow-lg">******** los Sabores</a>
+            </div>
+        </section>
+        <section id="sabores" class="py-16 md:py-24 bg-brand-off-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-center text-brand-navy-text mb-16">Explora Nuestros Sabores</h2>
+                <div id="sabores-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">{/* */}<div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card"><img src="images/constelacion-nocturna.jpg" alt="Bombón Constelación Nocturna" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Constelaci&oacute;n Nocturna</h3>
+                            <p class="text-sm text-brand-navy-text/80 flex-grow">Ganache de chocolate negro 70% con un ***** de licor de cassis.</p>
+                        </div>
+                    </div>{/* */}<div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card"><img src="images/tesoro-navegante.jpg" alt="Bombón Tesoro del Navegante" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Tesoro del Navegante</h3>
+                            <p class="text-sm text-brand-navy-text/80 flex-grow">Coraz&oacute;n de ******** salado con flor de sal, cubierto de chocolate con leche.</p>
+                        </div>
+                    </div>{/* */}<div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card"><img src="images/eco-tierra.jpg" alt="Bombón Eco de la Tierra" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Eco de ** Tierra</h3>
+                            <p class="text-sm text-brand-navy-text/80 flex-grow">Intensa trufa ** ********* ** ****** *** infusi&oacute;n ** caf&eacute; de grano.</p>
+                        </div>
+                    </div>{/* */}<div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card"><img src="images/amanecer-andino.jpg" alt="Bombón Amanecer Andino" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Amanecer Andino</h3>
+                            <p class="text-sm text-brand-navy-text/80 flex-grow">Ganache de chocolate blanco con maracuy&aacute; y un toque de merk&eacute;n.</p>
+                        </div>
+                    </div>{/* */}<div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden"><img src="images/bosque-esmeralda.jpg" alt="Bombón Bosque Esmeralda" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">****** Esmeralda</h3>
+                            <p class="text-sm text-brand-navy-text/80 flex-grow">Crema de menta fresca sobre *** **** ** chocolate 65% cacao.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden"><img src="images/fuego-patagonico.jpg" alt="Bombón Fuego Patagónico" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Fuego Patag&oacute;nico</h3>
+                            <p class="text-sm text-brand-navy-text/80 flex-grow">Ganache de ******* y jengibre con cobertura de chocolate semiamargo.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden"><img src="images/susurro-lavanda.jpg" alt="Bombón Susurro de Lavanda" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Susurro ** Lavanda</h3>
+                            <p class="text-sm text-brand-navy-text/80 flex-grow">******** ganache de ********* ****** infusionado con ****** ** lavanda.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden"><img src="images/corazon-rubi.jpg" alt="Bombón Corazón de Rubí" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Coraz&oacute;n de Rub&iacute;</h3>
+                            <p class="text-sm text-brand-navy-text/80 flex-grow">Compota de frutos rojos del bosque sobre pralin&eacute; ** avellanas.</p>
+                        </div>
+                    </div>{/* */}<div class="rounded-lg shadow-lg overflow-hidden flex flex-col coming-soon-card flavor-hidden">
+                        <div class="p-5">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text/70 mb-2">Pr&oacute;ximamente</h3>
+                            <p class="text-sm text-brand-navy-text/60">Nuevas traves&iacute;as de sabor est&aacute;n *** llegar...</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg shadow-lg overflow-hidden flex flex-col coming-soon-card flavor-hidden">
+                        <div class="p-5">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text/70 mb-2">Pr&oacute;ximamente</h3>
+                            <p class="text-sm text-brand-navy-text/60">Prep&aacute;rate para descubrir m&aacute;s creaciones.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-12"><button id="toggle-sabores-btn" class="btn-secondary text-md font-semibold py-2 px-6 rounded-full shadow">&nbsp;Mostrar m&aacute;s sabores&nbsp;</button></div>
+            </div>
+        </section>
+        <section id="formatos" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-center text-brand-navy-text mb-16">***** tu ******* de Viaje</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">{/* */}<div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center"><img src="images/caja-4-bombones.jpg" alt="Caja de 4 bombones Christophoros" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 4 Bombones</h3>
+                            <p class="text-sm text-brand-navy-text/80 mb-5 flex-grow">*** selecci&oacute;n perfecta para ******** o regalar un ******* especial.</p><a href="#contacto" class="btn-action mt-auto py-2 px-5 rounded-md text-sm font-semibold inline-block">Consultar Opciones</a>
+                        </div>
+                    </div>{/* */}<div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center"><img src="images/caja-9-bombones.jpg" alt="Caja de 9 bombones Christophoros" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 9 Bombones</h3>
+                            <p class="text-sm text-brand-navy-text/80 mb-5 flex-grow">Ideal para compartir y explorar *** mayor variedad ** sabores.</p><a href="#contacto" class="btn-action mt-auto py-2 px-5 rounded-md text-sm font-semibold inline-block">Consultar Opciones</a>
+                        </div>
+                    </div>{/* */}<div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center"><img src="images/caja-16-bombones.jpg" alt="Caja de 16 bombones Christophoros" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 16 Bombones</h3>
+                            <p class="text-sm text-brand-navy-text/80 mb-5 flex-grow">Una experiencia completa **** los verdaderos ******* del chocolate.</p><a href="#contacto" class="btn-action mt-auto py-2 px-5 rounded-md text-sm font-semibold inline-block">Consultar Opciones</a>
+                        </div>
+                    </div>{/* */}<div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center"><img src="images/caja-24-bombones.jpg" alt="Caja de 24 bombones Christophoros" class="w-full h-48 object-cover">{/* */}<div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja ** 24 Bombones</h3>
+                            <p class="text-sm text-brand-navy-text/80 mb-5 flex-grow">El formato definitivo para ************* y regalos inolvidables.</p><a href="#contacto" class="btn-action mt-auto py-2 px-5 rounded-md text-sm font-semibold inline-block">Consultar Opciones</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="nosotros" class="py-16 md:py-24 bg-brand-navy-primary text-brand-off-white">
+            <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12 md:gap-16">
+                <div class="md:w-1/2"><img src="images/imagen-sobre-nosotros.jpg" alt="Proceso artesanal Christophoros o inspiración de viajes" class="rounded-lg shadow-xl w-full">&nbsp;{/* */}</div>
+                <div class="md:w-1/2 text-center md:text-left">
+                    <h2 class="text-4xl md:text-5xl font-serif font-bold mb-6 text-white">Nuestra Traves&iacute;a: Portadores ** Experiencias</h2>
+                    <p class="text-lg mb-5 leading-relaxed text-brand-off-white opacity-90">Christophoros nace como un ******** a los grandes ****** de descubrimiento. ********** en ** figura de Crist&oacute;bal Col&oacute;n, uno de los primeros europeos en ******* el cacao, nos ***** **** exploradores modernos del sabor.</p>
+                    <p class="text-lg mb-5 leading-relaxed text-brand-off-white opacity-90">Cada bomb&oacute;n es una pieza ** arte ef&iacute;mero, pintado a mano, que te invita a una traves&iacute;a sensorial &uacute;nica, fusionando historia, arte y los m&aacute;s exquisitos sabores.</p>
+                    <p class="text-lg mb-8 leading-relaxed text-brand-off-white opacity-90">No **** ******** bombones, ********* un viaje. Una exploraci&oacute;n est&eacute;tica y ********* para paladares exigentes que valoran ** ******** y el ******* detr&aacute;s ** cada creaci&oacute;n.</p><a href="#contacto" class="btn-secondary inline-block text-md font-semibold py-2 px-8 rounded-full shadow transition duration-300 ease-in-out">Conoce M&aacute;s Detalles</a>
+                </div>
+            </div>
+        </section>
+        <section id="contacto" class="py-16 md:py-24 bg-brand-off-white">
+            <div class="container mx-auto px-6 max-w-3xl text-center">
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-brand-navy-text mb-8">****** una Conversaci&oacute;n</h2>
+                <p class="text-lg text-brand-navy-text mb-10">&iquest;Consultas sobre sabores, formatos, pedidos especiales o *********** ******* saber m&aacute;s ***** nuestra traves&iacute;a? Cont&aacute;ctanos.</p>
+                <form action="mailto:christophoroschile@gmail.com" method="GET" enctype="text/plain" class="space-y-6">
+                    <div><label for="name" class="sr-only">Nombre</label> <input type="text" name="name" id="name" placeholder="Tu Nombre" class="w-full px-4 py-3 border border-brand-navy-text/20 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition duration-200 bg-white shadow-sm" required=""></div>
+                    <div><label for="email" class="sr-only">Email</label> <input type="email" name="email" id="email" placeholder="Tu Correo Electrónico" class="w-full px-4 py-3 border border-brand-navy-text/20 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition duration-200 bg-white shadow-sm" required=""></div>
+                    <div><label for="subject" class="sr-only">Asunto</label> <input type="text" name="subject" id="subject" placeholder="Asunto" class="w-full px-4 py-3 border border-brand-navy-text/20 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition duration-200 bg-white shadow-sm" required=""></div>
+                    <div><label for="message" class="sr-only">Mensaje</label> <textarea name="body" id="message" rows="5" placeholder="Tu Mensaje" class="w-full px-4 py-3 border border-brand-navy-text/20 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition duration-200 bg-white shadow-sm" required=""></textarea></div>
+                    <div><button type="submit" class="btn-action w-full md:w-auto text-lg font-semibold py-3 px-12 rounded-full shadow-lg">Enviar Mensaje</button></div>
+                </form>
+            </div>
+        </section>
+    </main>
+    <footer class="py-12">
+        <div class="container mx-auto px-6 text-center md:text-left">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div>
+                    <h4 class="text-2xl font-serif font-bold mb-2">Christophoros</h4>
+                    <p class="text-sm italic footer-text-secondary mb-4">Traves&iacute;a de sabor y arte</p>
+                    <p class="text-sm footer-text-secondary">******** gourmet pintados a mano. *** exploraci&oacute;n sensorial &uacute;nica.</p>
+                </div>
+                <div>
+                    <h5 class="font-bold mb-4 uppercase tracking-wider footer-text-secondary">Explora</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#sabores">******** Sabores</a></li>
+                        <li><a href="#formatos">Formatos de Venta</a></li>
+                        <li><a href="#nosotros">******* Traves&iacute;a</a></li>
+                        <li><a href="#">Preguntas Frecuentes</a></li>
+                        <li><a href="#">Pol&iacute;tica de Env&iacute;os</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold mb-4 uppercase tracking-wider footer-text-secondary">Contacto y Redes</h5>
+                    <div class="flex justify-center md:justify-start space-x-5 mb-5"><a href="#" aria-label="Instagram" class="text-brand-gold-accent hover:text-brand-off-white"><svg class="h-6 w-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919.058-1.265.069-1.645.069-4.849zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.359 2.618 6.78 6.98 6.98 1.28.059 1.688.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path>
+                            </svg></a> <a href="#" aria-label="Facebook" class="text-brand-gold-accent hover:text-brand-off-white"><svg class="h-6 w-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"></path>
+                            </svg></a> <a href="#" aria-label="Pinterest" class="text-brand-gold-accent hover:text-brand-off-white"><svg class="h-6 w-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.198-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.377-.752-.377-1.845c0-1.713 1.002-2.981 2.227-2.981.991 0 1.466.746 1.466 1.657 0 1.01-.645 2.512-.977 3.891-.273 1.197.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 .996.377 1.944.821 2.47.092.108.1-.084.07-.191-.071-.288-.224-.904-.295-1.197-.099-.414-.069-.559.041-.949.198-1.378.991-2.649 2.132-3.468 1.141-.819 2.575-1.299 4.032-1.299 2.276 0 4.242 1.15 5.025 2.905.784 1.754.97 3.938.283 5.918-.553 1.593-1.539 3.205-3.252 3.205-1.01 0-1.964-.83-2.296-1.825-.071-.215-.071-.431-.029-.618.198-.875.583-1.728.583-2.496 0-.666-.224-.949-.645-1.378-.583-.583-1.466-.803-2.227-.803-1.01 0-1.874.715-1.874 1.845 0 .813.377 1.357.377 1.357l-1.539 6.551c-.47 2.014-1.539 4.188-2.92 5.433.92.336 1.913.529 2.961.529 6.623 0 11.988-5.367 11.988-11.987C23.97 5.39 18.604 0 12.017 0z"></path>
+                            </svg></a></div><a href="mailto:christophoroschile@gmail.com" class="text-sm footer-text-secondary hover:text-brand-off-white transition duration-300">christophoroschile@gmail.com</a>
+                    <p class="text-sm footer-text-secondary mt-1">Temuco, Araucan&iacute;a, Chile</p>
+                </div>
+            </div>
+            <div class="border-t border-brand-off-white/20 mt-10 pt-8 text-center text-xs footer-text-secondary">&copy; 2024 Christophoros. Todos los ******** reservados. Dise&ntilde;o ********* ** el arte y la exploraci&oacute;n.</div>
+        </div>
+    </footer>
+    <script>
+        // --- Menú Móvil ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIconOpen = document.getElementById('menu-icon-open');
+        const menuIconClose = document.getElementById('menu-icon-close');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+            mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+            mobileMenu.classList.toggle('-translate-y-full');
+            mobileMenu.classList.toggle('z-10');
+            mobileMenu.classList.toggle('-z-10');
+            menuIconOpen.classList.toggle('hidden');
+            menuIconClose.classList.toggle('hidden');
+        });
+        
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
+                mobileMenu.classList.add('-translate-y-full');
+                mobileMenu.classList.add('-z-10');
+                mobileMenu.classList.remove('z-10');
+                menuIconOpen.classList.remove('hidden');
+                menuIconClose.classList.add('hidden');
+            });
+        });
+        
+        // --- Sabores Retráctiles ---
+        const toggleSaboresBtn = document.getElementById('toggle-sabores-btn');
+        const saboresGrid = document.getElementById('sabores-grid');
+        const hiddenFlavors = Array.from(saboresGrid.querySelectorAll('.flavor-card, .coming-soon-card')).slice(4);
+        
+        // Asegurar estado inicial oculto (JS aplica la clase)
+        hiddenFlavors.forEach(flavor => {
+            if (!flavor.classList.contains('flavor-hidden')) {
+                 flavor.classList.add('flavor-hidden');
+            }
+        });
+        
+        let flavorsVisible = false; // Estado inicial: sabores extra ocultos
+        
+        toggleSaboresBtn.addEventListener('click', () => {
+            flavorsVisible = !flavorsVisible; // Cambia el estado
+            hiddenFlavors.forEach(flavor => {
+                flavor.classList.toggle('flavor-hidden');
+            });
+            toggleSaboresBtn.textContent = flavorsVisible ? 'Mostrar menos sabores' : 'Mostrar más sabores';
+        });
+    </script>
+
+<div style="color: red">Prueba de Word a HTML - por favor <a href="https://wordtohtml.net/site/payment">Go PRO</a> para obtener el HTML completo.</div>
+</body>
+
+</html>
