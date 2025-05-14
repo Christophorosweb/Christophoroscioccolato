@@ -88,6 +88,24 @@
         #mobile-menu-product-page {
             transition: transform 0.3s ease-in-out;
         }
+        #confirmation-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #0D1B2A;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out;
+        }
+        #confirmation-message.show {
+            opacity: 1;
+            bottom: 40px;
+        }
     </style>
 </head>
 <body class="font-sans">
@@ -104,11 +122,11 @@
                 <a href="index.html#formatos" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Formatos</a>
                 <a href="index.html#nosotros" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Nuestra Travesía</a>
                 <a href="index.html#contacto" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Contacto</a>
-                <a href="#" class="relative">
+                <a href="carrito.html" class="relative" id="cart-icon-link">
                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-navy-text hover:text-brand-blue transition duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <span class="absolute -top-2 -right-2 bg-brand-blue text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-brand-blue text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
                 </a>
             </div>
             <div class="md:hidden">
@@ -136,17 +154,17 @@
             <div class="text-sm text-brand-navy-text/70 mb-8">
                 <a href="index.html" class="hover:text-brand-blue">Inicio</a> &gt; 
                 <a href="index.html#formatos" class="hover:text-brand-blue">Formatos</a> &gt; 
-                <span>Caja de 4 Bombones</span>
+                <span id="product-name-breadcrumb">Caja de 4 Bombones</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
-                <div class="product-image-gallery"> 
-                    <img src="images/caja-4-bombones.jpg" alt="Caja de 4 bombones Christophoros" class="w-full rounded-lg shadow-lg object-contain max-h-[500px]"> 
+                <div class="product-image-gallery bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8"> 
+                    <img id="product-image" src="images/caja-4-bombones.jpg" alt="Caja de 4 bombones Christophoros" class="w-full h-auto max-h-[450px] rounded-md object-contain"> 
                 </div>
 
                 <div class="product-info">
-                    <h1 class="text-4xl lg:text-5xl font-serif font-bold text-brand-navy-text mb-4">Caja de 4 Bombones</h1>
-                    <p class="text-2xl font-semibold text-brand-blue mb-6">$ 5.990</p>
+                    <h1 id="product-title" class="text-4xl lg:text-5xl font-serif font-bold text-brand-navy-text mb-4">Caja de 4 Bombones</h1>
+                    <p id="product-price" class="text-2xl font-semibold text-brand-blue mb-6" data-price="5990">$ 5.990</p>
                     
                     <p class="text-brand-navy-text/90 mb-6 leading-relaxed">
                         Una selección perfecta para degustar la exquisitez de Christophoros o para regalar un detalle especial y memorable. Cada bombón es una obra de arte pintada a mano, elaborada con los mejores ingredientes.
@@ -178,13 +196,15 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn-action w-full text-lg font-semibold py-3 px-8 rounded-full shadow-lg">
+                    <button type="button" id="add-to-cart-btn" class="btn-action w-full text-lg font-semibold py-3 px-8 rounded-full shadow-lg">
                         Añadir al Carrito
                     </button>
                 </div>
             </div>
         </div>
     </main>
+
+    <div id="confirmation-message"></div>
 
     <footer class="py-12 mt-16 md:mt-24">
         <div class="container mx-auto px-6 text-center">
@@ -206,6 +226,67 @@
             let currentValue = parseInt(input.value);
             input.value = currentValue + 1;
         }
+        
+        const addToCartButton = document.getElementById('add-to-cart-btn');
+        const cartCountElement = document.getElementById('cart-count');
+        const confirmationMessageElement = document.getElementById('confirmation-message');
+
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
+            let totalItems = 0;
+            cart.forEach(item => {
+                totalItems += item.quantity;
+            });
+            if (cartCountElement) { 
+                cartCountElement.textContent = totalItems;
+            }
+        }
+
+        function showConfirmationMessage(message) {
+            if (confirmationMessageElement) { 
+                confirmationMessageElement.textContent = message;
+                confirmationMessageElement.classList.add('show');
+                setTimeout(() => {
+                    confirmationMessageElement.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        if (addToCartButton) {
+            addToCartButton.addEventListener('click', () => {
+                const productId = 'caja4b'; 
+                const productName = document.getElementById('product-title').textContent;
+                const productPriceText = document.getElementById('product-price').dataset.price; 
+                const productPrice = parseFloat(productPriceText);
+                const productImageElement = document.getElementById('product-image');
+                const productImage = productImageElement ? productImageElement.src : 'images/default-product.png'; 
+                const quantityInput = document.getElementById('quantity4'); 
+                const quantity = parseInt(quantityInput.value);
+
+                if (quantity > 0) {
+                    let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
+                    
+                    const existingProductIndex = cart.findIndex(item => item.id === productId);
+
+                    if (existingProductIndex > -1) {
+                        cart[existingProductIndex].quantity += quantity;
+                    } else {
+                        cart.push({ 
+                            id: productId, 
+                            name: productName, 
+                            price: productPrice, 
+                            quantity: quantity,
+                            image: productImage 
+                        });
+                    }
+                    
+                    localStorage.setItem('christophorosCart', JSON.stringify(cart));
+                    updateCartCount();
+                    showConfirmationMessage(`${productName} (x${quantity}) añadido al carrito.`);
+                    quantityInput.value = 1; 
+                }
+            });
+        }
 
         const mobileMenuButtonProduct = document.getElementById('mobile-menu-button-product');
         const mobileMenuProductPage = document.getElementById('mobile-menu-product-page');
@@ -223,17 +304,21 @@
                 menuIconCloseProduct.classList.toggle('hidden');
             });
 
-            mobileMenuProductPage.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenuButtonProduct.setAttribute('aria-expanded', 'false');
-                    mobileMenuProductPage.classList.add('-translate-y-full');
-                    mobileMenuProductPage.classList.add('-z-10');
-                    mobileMenuProductPage.classList.remove('z-10');
-                    menuIconOpenProduct.classList.remove('hidden');
-                    menuIconCloseProduct.classList.add('hidden');
+            if (mobileMenuProductPage) { 
+                mobileMenuProductPage.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenuButtonProduct.setAttribute('aria-expanded', 'false');
+                        mobileMenuProductPage.classList.add('-translate-y-full');
+                        mobileMenuProductPage.classList.add('-z-10');
+                        mobileMenuProductPage.classList.remove('z-10');
+                        menuIconOpenProduct.classList.remove('hidden');
+                        menuIconCloseProduct.classList.add('hidden');
+                    });
                 });
-            });
+            }
         }
+        
+        document.addEventListener('DOMContentLoaded', updateCartCount);
     </script>
 
 </body>
