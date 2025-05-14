@@ -3,23 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christophoros - Travesía de Sabor y Arte</title>
+    <title>Christophoros Cioccolato | Bombones de lujo artesanales</title>
+    <meta name="description" content="Descubre Christophoros: bombones de autor, pintados a mano, elaborados con chocolate premium y arte. Compra online en Temuco y todo Chile.">
+    <meta name="keywords" content="bombones de chocolate, chocolatería de lujo, bombones Temuco, Christophoros, bombones pintados a mano, chocolate artesanal, regalos gourmet">
+    <meta name="author" content="Christophoros">
+    <meta name="robots" content="index, follow">
+    
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="images/favicon.png">
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        // Paleta de colores corporativa con Azul Marino
-                        'brand-navy-primary': '#0D1B2A', // Azul marino principal
-                        'brand-navy-text': '#1B263B',   // Azul marino para textos
-                        'brand-blue': '#0f2a66',        // Azul profundo para acciones
-                        'brand-off-white': '#FDFBF9',   // Fondo claro
-                        'brand-gold-accent': '#BFA181', // Dorado suave
+                        'brand-navy-primary': '#0D1B2A',
+                        'brand-navy-text': '#1B263B',
+                        'brand-blue': '#0f2a66',
+                        'brand-off-white': '#FDFBF9',
+                        'brand-gold-accent': '#BFA181',
                     },
                     fontFamily: {
                         'serif': ['Playfair Display', 'serif'],
@@ -30,16 +36,15 @@
         }
     </script>
     <style>
-        /* Estilos adicionales */
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Lato', sans-serif;
-            color: #1B263B; /* brand-navy-text */
-            background-color: #FDFBF9; /* brand-off-white */
+            color: #1B263B;
+            background-color: #FDFBF9;
         }
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Playfair Display', serif;
-            color: #1B263B; /* brand-navy-text */
+            color: #1B263B;
         }
         .parallax-bg {
             background-attachment: fixed;
@@ -48,44 +53,52 @@
             background-size: cover;
         }
         .btn-action {
-             background-color: #0f2a66; /* brand-blue */
+             background-color: #0f2a66;
              color: white;
              transition: background-color 0.3s ease, transform 0.2s ease;
              cursor: pointer;
         }
         .btn-action:hover {
-             background-color: #0D1B2A; /* brand-navy-primary */
+             background-color: #0D1B2A;
              transform: scale(1.03);
         }
         .btn-secondary {
             background-color: transparent;
-            color: #0f2a66; /* brand-blue */
-            border: 2px solid #0f2a66; /* brand-blue */
+            color: #0f2a66;
+            border: 2px solid #0f2a66;
             transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
              cursor: pointer;
         }
         .btn-secondary:hover {
-            background-color: #0f2a66; /* brand-blue */
+            background-color: #0f2a66;
             color: white;
             transform: scale(1.03);
+        }
+        #nosotros .btn-secondary {
+            color: #FDFBF9; 
+            border-color: #FDFBF9; 
+        }
+        #nosotros .btn-secondary:hover {
+            background-color: #FDFBF9; 
+            color: #0D1B2A; 
         }
         header {
             background-color: rgba(253, 251, 249, 0.95);
             backdrop-filter: blur(8px);
         }
         footer {
-            background-color: #0D1B2A; /* brand-navy-primary */
-            color: #FDFBF9; /* brand-off-white */
+            background-color: #0D1B2A;
+            color: #FDFBF9;
         }
         footer a {
-            color: #BFA181; /* brand-gold-accent */
+            color: #BFA181;
             transition: color 0.3s ease;
         }
         footer a:hover {
-            color: #FDFBF9; /* brand-off-white */
+            color: #FDFBF9;
         }
         footer h4, footer h5 {
-             color: #FDFBF9; /* brand-off-white */
+             color: #FDFBF9;
         }
          footer .footer-text-secondary {
              color: #D1B490;
@@ -117,9 +130,13 @@
             padding-bottom: 0 !important;
             border-width: 0 !important;
         }
-        /* Padding superior para las tarjetas de productos y formatos para dar espacio a la imagen */
         .product-card-padding {
-            padding-top: 1rem; /* pt-4 de Tailwind */
+            padding-top: 1rem;
+        }
+        .sabores-grid-collapsed {
+            max-height: 480px; 
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
         }
     </style>
 </head>
@@ -166,68 +183,68 @@
         <section id="inicio" class="h-screen flex items-center justify-center bg-cover bg-center parallax-bg relative" style="background-image: url('images/imagen-hero-principal.jpg');">
             <div class="absolute inset-0 bg-black opacity-60"></div>
             <div class="relative z-10 p-10 rounded-lg text-center max-w-4xl mx-auto">
-                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-4 leading-tight">Christophoros</h1>
+                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-4 leading-tight">Christophoros: Bombones de Lujo Artesanales</h1>
                 <p class="text-2xl font-serif text-brand-off-white italic mb-8">Travesía de sabor y arte</p>
-                <p class="text-lg text-brand-off-white mb-10">Descubre una colección de bombones gourmet pintados a mano, donde cada pieza es una invitación a explorar sabores únicos y una estética refinada.</p>
+                <p class="text-lg text-brand-off-white mb-10">Descubre una colección de bombones gourmet pintados a mano, donde cada pieza es una invitación a explorar sabores únicos y una estética refinada. Chocolatería artesanal premium en Temuco.</p>
                 <a href="#sabores" class="btn-action text-lg font-semibold py-3 px-10 rounded-full shadow-lg">Descubre los Sabores</a>
             </div>
         </section>
 
         <section id="sabores" class="py-16 md:py-24 bg-brand-off-white">
             <div class="container mx-auto px-6">
-                <h2 class="text-4xl md:text-5xl font-serif font-bold text-center text-brand-navy-text mb-16">Explora Nuestros Sabores</h2>
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-center text-brand-navy-text mb-16">Explora Nuestros Sabores Exclusivos</h2>
                 <div id="sabores-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card product-card-padding">
-                        <img src="images/constelacion-nocturna.jpg" alt="Bombón Constelación Nocturna" class="w-full h-64 object-contain">
+                        <img src="images/constelacion-nocturna.jpg" alt="Bombón de chocolate negro Constelación Nocturna con cassis" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28"> 
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Constelación Nocturna</h3>
                             <p class="text-sm text-brand-navy-text/80">Ganache de chocolate negro 70% con un toque de licor de cassis.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card product-card-padding">
-                        <img src="images/tesoro-navegante.jpg" alt="Bombón Tesoro del Navegante" class="w-full h-64 object-contain">
+                        <img src="images/tesoro-navegante.jpg" alt="Bombón de chocolate con leche Tesoro del Navegante con caramelo salado" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Tesoro del Navegante</h3>
                             <p class="text-sm text-brand-navy-text/80">Corazón de caramelo salado, cubierto de chocolate con leche.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card product-card-padding">
-                        <img src="images/eco-tierra.jpg" alt="Bombón Eco de la Tierra" class="w-full h-64 object-contain">
+                        <img src="images/eco-tierra.jpg" alt="Trufa de chocolate Eco de la Tierra con café" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Eco de la Tierra</h3>
                             <p class="text-sm text-brand-navy-text/80">Intensa trufa de chocolate con infusión de café de grano.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card product-card-padding">
-                        <img src="images/amanecer-andino.jpg" alt="Bombón Amanecer Andino" class="w-full h-64 object-contain">
+                        <img src="images/amanecer-andino.jpg" alt="Bombón de chocolate blanco Amanecer Andino con maracuyá" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Amanecer Andino</h3>
                             <p class="text-sm text-brand-navy-text/80">Ganache de chocolate blanco con maracuyá.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden product-card-padding">
-                        <img src="images/bosque-esmeralda.jpg" alt="Bombón Bosque Esmeralda" class="w-full h-64 object-contain">
+                        <img src="images/bosque-esmeralda.jpg" alt="Bombón de chocolate y menta Bosque Esmeralda" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Bosque Esmeralda</h3>
                             <p class="text-sm text-brand-navy-text/80">Crema de menta fresca sobre una base de chocolate 65% cacao.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden product-card-padding">
-                        <img src="images/fuego-patagonico.jpg" alt="Bombón Fuego Patagónico" class="w-full h-64 object-contain">
+                        <img src="images/fuego-patagonico.jpg" alt="Bombón de chocolate Fuego Patagónico con naranja y jengibre" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Fuego Patagónico</h3>
                             <p class="text-sm text-brand-navy-text/80">Ganache de naranja y jengibre con cobertura de chocolate semiamargo.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden product-card-padding">
-                        <img src="images/susurro-lavanda.jpg" alt="Bombón Susurro de Lavanda" class="w-full h-64 object-contain">
+                        <img src="images/susurro-lavanda.jpg" alt="Bombón de chocolate blanco Susurro de Lavanda" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Susurro de Lavanda</h3>
                             <p class="text-sm text-brand-navy-text/80">Delicado ganache de chocolate blanco infusionado con flores de lavanda.</p>
                         </div>
                     </div>
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col flavor-card flavor-hidden product-card-padding">
-                        <img src="images/corazon-rubi.jpg" alt="Bombón Corazón de Rubí" class="w-full h-64 object-contain">
+                        <img src="images/corazon-rubi.jpg" alt="Bombón Corazón de Rubí con frutos rojos y praliné de maní" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-2">Corazón de Rubí</h3>
                             <p class="text-sm text-brand-navy-text/80">Compota de frutos rojos del bosque sobre praliné de maní.</p>
@@ -246,7 +263,7 @@
                         </div>
                     </div>
                 </div>
-                 <div class="text-center mt-12">
+                 <div class="text-center mt-8">
                     <button id="toggle-sabores-btn" class="btn-secondary text-md font-semibold py-2 px-6 rounded-full shadow">
                         Mostrar más sabores
                     </button>
@@ -259,7 +276,7 @@
                 <h2 class="text-4xl md:text-5xl font-serif font-bold text-center text-brand-navy-text mb-16">Elige tu Formato de Viaje</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
                     <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center product-card-padding">
-                        <img src="images/caja-4-bombones.jpg" alt="Caja de 4 bombones Christophoros" class="w-full h-64 object-contain">
+                        <img src="images/caja-4-bombones.jpg" alt="Caja de 4 bombones Christophoros para regalo" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 4 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-5">Una selección perfecta para degustar o regalar un detalle especial.</p>
@@ -267,7 +284,7 @@
                         </div>
                     </div>
                     <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center product-card-padding">
-                        <img src="images/caja-9-bombones.jpg" alt="Caja de 9 bombones Christophoros" class="w-full h-64 object-contain">
+                        <img src="images/caja-9-bombones.jpg" alt="Caja de 9 bombones Christophoros para compartir" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 9 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-5">Ideal para compartir y explorar una mayor variedad de sabores.</p>
@@ -275,7 +292,7 @@
                         </div>
                     </div>
                     <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center product-card-padding">
-                        <img src="images/caja-16-bombones.jpg" alt="Caja de 16 bombones Christophoros" class="w-full h-64 object-contain">
+                        <img src="images/caja-16-bombones.jpg" alt="Caja de 16 bombones Christophoros, experiencia completa" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 16 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-5">Una experiencia completa para los verdaderos amantes del chocolate.</p>
@@ -283,7 +300,7 @@
                         </div>
                     </div>
                     <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center product-card-padding">
-                        <img src="images/caja-24-bombones.jpg" alt="Caja de 24 bombones Christophoros" class="w-full h-64 object-contain">
+                        <img src="images/caja-24-bombones.jpg" alt="Caja de 24 bombones Christophoros para celebraciones" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 24 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-5">El formato definitivo para celebraciones y regalos inolvidables.</p>
@@ -297,11 +314,11 @@
         <section id="nosotros" class="py-16 md:py-24 bg-brand-navy-primary text-brand-off-white">
              <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12 md:gap-16">
                 <div class="md:w-1/2">
-                    <img src="images/imagen-sobre-nosotros.jpg" alt="Proceso artesanal Christophoros o inspiración de viajes" class="rounded-lg shadow-xl w-full">
+                    <img src="images/imagen-sobre-nosotros.jpg" alt="Proceso artesanal de Christophoros Cioccolato" class="rounded-lg shadow-xl w-full">
                 </div>
                 <div class="md:w-1/2 text-center md:text-left">
                     <h2 class="text-4xl md:text-5xl font-serif font-bold mb-6 text-white">Nuestra Travesía: Portadores de Experiencias</h2>
-                    <p class="text-lg mb-5 leading-relaxed text-brand-off-white opacity-90">Christophoros nace como un homenaje a los grandes viajes de descubrimiento. Inspirados en la figura de Cristóbal Colón, uno de los primeros europeos en conocer el cacao, nos vemos como exploradores modernos del sabor.</p>
+                    <p class="text-lg mb-5 leading-relaxed text-brand-off-white opacity-90">Christophoros nace como un homenaje a los grandes viajes de descubrimiento. Inspirados en la figura de Cristóbal Colón, uno de los primeros europeos en conocer el cacao, nos vemos como exploradores modernos del sabor. Somos una chocolatería artesanal premium que fusiona arte y chocolate.</p>
                     <p class="text-lg mb-5 leading-relaxed text-brand-off-white opacity-90">Cada bombón es una pieza de arte efímero, pintado a mano, que te invita a una travesía sensorial única, fusionando historia, arte y los más exquisitos sabores.</p>
                     <p class="text-lg mb-8 leading-relaxed text-brand-off-white opacity-90">No solo vendemos bombones, ofrecemos un viaje. Una exploración estética y gustativa para paladares exigentes que valoran la historia y el detalle detrás de cada creación.</p>
                     <a href="#contacto" class="btn-secondary inline-block text-md font-semibold py-2 px-8 rounded-full shadow transition duration-300 ease-in-out">Conoce Más Detalles</a>
@@ -312,7 +329,7 @@
         <section id="contacto" class="py-16 md:py-24 bg-brand-off-white">
             <div class="container mx-auto px-6 max-w-3xl text-center">
                 <h2 class="text-4xl md:text-5xl font-serif font-bold text-brand-navy-text mb-8">Inicia una Conversación</h2>
-                <p class="text-lg text-brand-navy-text mb-10">¿Consultas sobre sabores, formatos, pedidos especiales o simplemente quieres saber más sobre nuestra travesía? Contáctanos.</p>
+                <p class="text-lg text-brand-navy-text mb-10">¿Consultas sobre nuestros bombones de lujo, formatos, pedidos especiales o simplemente quieres saber más sobre nuestra travesía? Contáctanos.</p>
                 <form action="mailto:christophoroschile@gmail.com" method="GET" enctype="text/plain" class="space-y-6">
                     <div>
                         <label for="name" class="sr-only">Nombre</label>
@@ -362,8 +379,7 @@
                      <div class="flex justify-center md:justify-start space-x-5 mb-5">
                          <a href="#" aria-label="Instagram" class="text-brand-gold-accent hover:text-brand-off-white"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919.058-1.265.069-1.645.069-4.849zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.359 2.618 6.78 6.98 6.98 1.28.059 1.688.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
                          <a href="#" aria-label="Facebook" class="text-brand-gold-accent hover:text-brand-off-white"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg></a>
-                         <a href="#" aria-label="Pinterest" class="text-brand-gold-accent hover:text-brand-off-white"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.198-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.377-.752-.377-1.845c0-1.713 1.002-2.981 2.227-2.981.991 0 1.466.746 1.466 1.657 0 1.01-.645 2.512-.977 3.891-.273 1.197.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 .996.377 1.944.821 2.47.092.108.1-.084.07-.191-.071-.288-.224-.904-.295-1.197-.099-.414-.069-.559.041-.949.198-1.378.991-2.649 2.132-3.468 1.141-.819 2.575-1.299 4.032-1.299 2.276 0 4.242 1.15 5.025 2.905.784 1.754.97 3.938.283 5.918-.553 1.593-1.539 3.205-3.252 3.205-1.01 0-1.964-.83-2.296-1.825-.071-.215-.071-.431-.029-.618.198-.875.583-1.728.583-2.496 0-.666-.224-.949-.645-1.378-.583-.583-1.466-.803-2.227-.803-1.01 0-1.874.715-1.874 1.845 0 .813.377 1.357.377 1.357l-1.539 6.551c-.47 2.014-1.539 4.188-2.92 5.433.92.336 1.913.529 2.961.529 6.623 0 11.988-5.367 11.988-11.987C23.97 5.39 18.604 0 12.017 0z"/></svg></a>
-                     </div>
+                         </div>
                      <a href="mailto:christophoroschile@gmail.com" class="text-sm footer-text-secondary hover:text-brand-off-white transition duration-300">christophoroschile@gmail.com</a>
                      <p class="text-sm footer-text-secondary mt-1">Temuco, Araucanía, Chile</p>
                 </div>
@@ -404,22 +420,25 @@
 
         // --- Sabores Retráctiles ---
         const toggleSaboresBtn = document.getElementById('toggle-sabores-btn');
-        const saboresGrid = document.getElementById('sabores-grid');
+        const saboresGrid = document.getElementById('sabores-grid'); 
         const hiddenFlavors = Array.from(saboresGrid.querySelectorAll('.flavor-card, .coming-soon-card')).slice(4);
 
-        // Asegurar estado inicial oculto (JS aplica la clase)
+        saboresGrid.classList.add('sabores-grid-collapsed');
+
         hiddenFlavors.forEach(flavor => {
             if (!flavor.classList.contains('flavor-hidden')) {
                  flavor.classList.add('flavor-hidden');
             }
         });
 
-        let flavorsVisible = false; // Estado inicial: sabores extra ocultos
+        let flavorsVisible = false; 
 
         toggleSaboresBtn.addEventListener('click', () => {
-            flavorsVisible = !flavorsVisible; // Cambia el estado
+            flavorsVisible = !flavorsVisible; 
+            saboresGrid.classList.toggle('sabores-grid-collapsed'); 
+
             hiddenFlavors.forEach(flavor => {
-                flavor.classList.toggle('flavor-hidden');
+                flavor.classList.toggle('flavor-hidden'); 
             });
             toggleSaboresBtn.textContent = flavorsVisible ? 'Mostrar menos sabores' : 'Mostrar más sabores';
         });
