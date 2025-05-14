@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja de 16 Bombones Artesanales | Christophoros Cioccolato</title>
+    <meta name="description" content="Regala o disfruta una experiencia completa con la caja de 16 bombones Christophoros. Incluye dos unidades de cada uno de nuestros 8 sabores exclusivos.">
+    <meta name="keywords" content="caja 16 bombones, bombones de lujo, Christophoros, chocolatería Temuco, chocolate artesanal">
+    <meta name="author" content="Christophoros">
+    <meta name="robots" content="index, follow">
+    
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-navy-primary': '#0D1B2A',
+                        'brand-navy-text': '#1B263B',
+                        'brand-blue': '#0f2a66',
+                        'brand-off-white': '#FDFBF9',
+                        'brand-gold-accent': '#BFA181',
+                    },
+                    fontFamily: {
+                        'serif': ['Playfair Display', 'serif'],
+                        'sans': ['Lato', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Lato', sans-serif;
+            color: #1B263B;
+            background-color: #FDFBF9;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            color: #1B263B;
+        }
+        .btn-action {
+             background-color: #0f2a66;
+             color: white;
+             transition: background-color 0.3s ease, transform 0.2s ease;
+             cursor: pointer;
+        }
+        .btn-action:hover {
+             background-color: #0D1B2A;
+             transform: scale(1.03);
+        }
+        header { 
+            background-color: rgba(253, 251, 249, 0.95);
+            backdrop-filter: blur(8px);
+        }
+        footer { 
+            background-color: #0D1B2A;
+            color: #FDFBF9;
+        }
+        footer a {
+            color: #BFA181;
+        }
+        footer a:hover {
+            color: #FDFBF9;
+        }
+        footer h4, footer h5 {
+             color: #FDFBF9;
+        }
+         footer .footer-text-secondary {
+             color: #D1B490;
+         }
+        .quantity-selector input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+        .quantity-selector input[type="number"]::-webkit-inner-spin-button,
+        .quantity-selector input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        #mobile-menu-product-page {
+            transition: transform 0.3s ease-in-out;
+        }
+        #confirmation-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #0D1B2A;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out;
+        }
+        #confirmation-message.show {
+            opacity: 1;
+            bottom: 40px;
+        }
+    </style>
+</head>
+<body class="font-sans">
+
+    <header class="shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html#inicio" class="flex items-center text-3xl font-serif font-bold text-brand-navy-text">
+                <img src="images/favicon.png" alt="Logo Christophoros" class="h-8 w-8 mr-3 rounded-full">
+                <span>Christophoros</span>
+            </a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="index.html#inicio" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Inicio</a>
+                <a href="index.html#sabores" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Sabores</a>
+                <a href="index.html#formatos" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Formatos</a>
+                <a href="index.html#nosotros" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Nuestra Travesía</a>
+                <a href="index.html#contacto" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Contacto</a>
+                <a href="carrito.html" class="relative" id="cart-icon-link">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-navy-text hover:text-brand-blue transition duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-brand-blue text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button-product" class="text-brand-navy-text focus:outline-none" aria-expanded="false">
+                    <svg id="menu-icon-open-product" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                     <svg id="menu-icon-close-product" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu-product-page" class="md:hidden absolute top-full left-0 w-full bg-brand-off-white shadow-lg py-4 transform -translate-y-full -z-10">
+             <a href="index.html#inicio" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Inicio</a>
+             <a href="index.html#sabores" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Sabores</a>
+             <a href="index.html#formatos" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Formatos</a>
+             <a href="index.html#nosotros" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Nuestra Travesía</a>
+             <a href="index.html#contacto" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Contacto</a>
+        </div>
+    </header>
+
+    <main class="py-12 md:py-20">
+        <div class="container mx-auto px-6">
+            <div class="text-sm text-brand-navy-text/70 mb-8">
+                <a href="index.html" class="hover:text-brand-blue">Inicio</a> &gt; 
+                <a href="index.html#formatos" class="hover:text-brand-blue">Formatos</a> &gt; 
+                <span id="product-name-breadcrumb">Caja de 16 Bombones</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
+                <div class="product-image-gallery bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8"> 
+                    <img id="product-image" src="images/caja-16-bombones.jpg" alt="Caja de 16 bombones Christophoros" class="w-full h-auto max-h-[450px] rounded-md object-contain"> 
+                </div>
+
+                <div class="product-info">
+                    <h1 id="product-title" class="text-4xl lg:text-5xl font-serif font-bold text-brand-navy-text mb-4">Caja de 16 Bombones</h1>
+                    <p id="product-price" class="text-2xl font-semibold text-brand-blue mb-6" data-price="22990">$ 22.990</p>
+                    
+                    <p class="text-brand-navy-text/90 mb-6 leading-relaxed">
+                        Una experiencia completa para los verdaderos amantes del chocolate. Disfruta de una generosa selección de nuestros bombones artesanales, cada uno una joya pintada a mano.
+                    </p>
+
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold text-brand-navy-text mb-3">Sabores Incluidos:</h3>
+                        <p class="text-sm text-brand-navy-text/80 mb-3">
+                            Esta caja incluye <strong>dos unidades de cada uno de nuestros 8 sabores exclusivos</strong>, permitiéndote degustar y compartir la colección completa:
+                        </p>
+                        <ul class="list-disc list-inside text-sm text-brand-navy-text/80 space-y-1">
+                            <li>Constelación Nocturna: Ganache de chocolate negro 70% y licor de cassis.</li>
+                            <li>Tesoro del Navegante: Caramelo salado y chocolate con leche.</li>
+                            <li>Eco de la Tierra: Trufa de chocolate y café de grano.</li>
+                            <li>Amanecer Andino: Chocolate blanco y maracuyá.</li>
+                            <li>Bosque Esmeralda: Menta fresca y chocolate 65%.</li>
+                            <li>Fuego Patagónico: Naranja, jengibre y chocolate semiamargo.</li>
+                            <li>Susurro de Lavanda: Chocolate blanco y lavanda.</li>
+                            <li>Corazón de Rubí: Frutos rojos y praliné de maní.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-8 quantity-selector">
+                        <label for="quantity16" class="block text-lg font-semibold text-brand-navy-text mb-2">Cantidad:</label>
+                        <div class="flex items-center max-w-[150px]">
+                            <button type="button" onclick="decreaseQuantity('quantity16')" class="px-3 py-1.5 border border-brand-navy-text/30 rounded-l-md hover:bg-brand-navy-text/10 transition">-</button>
+                            <input type="number" id="quantity16" name="quantity" value="1" min="1" class="w-16 text-center border-t border-b border-brand-navy-text/30 focus:outline-none focus:ring-1 focus:ring-brand-blue focus:border-brand-blue">
+                            <button type="button" onclick="increaseQuantity('quantity16')" class="px-3 py-1.5 border border-brand-navy-text/30 rounded-r-md hover:bg-brand-navy-text/10 transition">+</button>
+                        </div>
+                    </div>
+
+                    <button type="button" id="add-to-cart-btn" class="btn-action w-full text-lg font-semibold py-3 px-8 rounded-full shadow-lg">
+                        Añadir al Carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="confirmation-message"></div>
+
+    <footer class="py-12 mt-16 md:mt-24">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm footer-text-secondary">&copy; 2024 Christophoros Cioccolato. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        function decreaseQuantity(inputId) {
+            const input = document.getElementById(inputId);
+            let currentValue = parseInt(input.value);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+
+        function increaseQuantity(inputId) {
+            const input = document.getElementById(inputId);
+            let currentValue = parseInt(input.value);
+            input.value = currentValue + 1;
+        }
+        
+        const addToCartButton = document.getElementById('add-to-cart-btn');
+        const cartCountElement = document.getElementById('cart-count');
+        const confirmationMessageElement = document.getElementById('confirmation-message');
+
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
+            let totalItems = 0;
+            cart.forEach(item => {
+                totalItems += item.quantity;
+            });
+            if (cartCountElement) { 
+                cartCountElement.textContent = totalItems;
+            }
+        }
+
+        function showConfirmationMessage(message) {
+            if (confirmationMessageElement) { 
+                confirmationMessageElement.textContent = message;
+                confirmationMessageElement.classList.add('show');
+                setTimeout(() => {
+                    confirmationMessageElement.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        if (addToCartButton) {
+            addToCartButton.addEventListener('click', () => {
+                const productId = 'caja16b'; // ID específico para este producto
+                const productName = document.getElementById('product-title').textContent;
+                const productPriceText = document.getElementById('product-price').dataset.price; 
+                const productPrice = parseFloat(productPriceText);
+                const productImageElement = document.getElementById('product-image');
+                const productImage = productImageElement ? productImageElement.src : 'images/default-product.png'; 
+                const quantityInput = document.getElementById('quantity16'); // ID específico para esta página
+                const quantity = parseInt(quantityInput.value);
+
+                if (quantity > 0) {
+                    let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
+                    
+                    const existingProductIndex = cart.findIndex(item => item.id === productId);
+
+                    if (existingProductIndex > -1) {
+                        cart[existingProductIndex].quantity += quantity;
+                    } else {
+                        cart.push({ 
+                            id: productId, 
+                            name: productName, 
+                            price: productPrice, 
+                            quantity: quantity,
+                            image: productImage 
+                        });
+                    }
+                    
+                    localStorage.setItem('christophorosCart', JSON.stringify(cart));
+                    updateCartCount();
+                    showConfirmationMessage(`${productName} (x${quantity}) añadido al carrito.`);
+                    quantityInput.value = 1; 
+                }
+            });
+        }
+
+        const mobileMenuButtonProduct = document.getElementById('mobile-menu-button-product');
+        const mobileMenuProductPage = document.getElementById('mobile-menu-product-page');
+        const menuIconOpenProduct = document.getElementById('menu-icon-open-product');
+        const menuIconCloseProduct = document.getElementById('menu-icon-close-product');
+
+        if (mobileMenuButtonProduct) { 
+            mobileMenuButtonProduct.addEventListener('click', () => {
+                const isExpanded = mobileMenuButtonProduct.getAttribute('aria-expanded') === 'true';
+                mobileMenuButtonProduct.setAttribute('aria-expanded', !isExpanded);
+                mobileMenuProductPage.classList.toggle('-translate-y-full'); 
+                mobileMenuProductPage.classList.toggle('z-10'); 
+                mobileMenuProductPage.classList.toggle('-z-10'); 
+                menuIconOpenProduct.classList.toggle('hidden');
+                menuIconCloseProduct.classList.toggle('hidden');
+            });
+
+            if (mobileMenuProductPage) { 
+                mobileMenuProductPage.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenuButtonProduct.setAttribute('aria-expanded', 'false');
+                        mobileMenuProductPage.classList.add('-translate-y-full');
+                        mobileMenuProductPage.classList.add('-z-10');
+                        mobileMenuProductPage.classList.remove('z-10');
+                        menuIconOpenProduct.classList.remove('hidden');
+                        menuIconCloseProduct.classList.add('hidden');
+                    });
+                });
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+    </script>
+
+</body>
+</html>
