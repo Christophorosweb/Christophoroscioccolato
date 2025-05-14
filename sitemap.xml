@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <url>
-    <loc>https://www.christophoroscioccolato.cl/</loc>
-    <lastmod>2025-05-14</lastmod>
+    <loc>https://www.christophoroscioccolato.cl/index.html</loc>
+    <lastmod>2025-05-14</lastmod> <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.christophoroscioccolato.cl/caja4b.html</loc>
+    <lastmod>2025-05-14</lastmod> <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.christophoroscioccolato.cl/productos</loc>
-    <lastmod>2025-05-14</lastmod>
+    <loc>https://www.christophoroscioccolato.cl/caja9b.html</loc>
+    <lastmod>2025-05-14</lastmod> <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
-</urlset>
+  <url>
+    <loc>https://www.christophoroscioccolato.cl/caja16b.html</loc>
+    <lastmod>2025-05-14</lastmod> <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.christophoroscioccolato.cl/caja25b.html</loc>
+    <lastmod>2025-05-14</lastmod> <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.christophoroscioccolato.cl/carrito.html</loc>
+    <lastmod>2025-05-14</lastmod> <changefreq>weekly</changefreq> 
+    <priority>0.5</priority>
+  </url>
+
+  </urlset>
