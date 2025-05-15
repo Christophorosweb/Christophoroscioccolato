@@ -142,23 +142,22 @@
             overflow: hidden;
             transition: max-height 0.5s ease-out;
         }
-        /* Estilo para mensajes del formulario */
         .form-message {
             margin-top: 1rem;
             padding: 0.75rem 1rem;
-            border-radius: 0.375rem; /* rounded-md */
-            font-size: 0.875rem; /* text-sm */
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
             text-align: center;
         }
         .form-message.success {
-            background-color: #c6f6d5; /* Tailwind green-200 */
-            color: #2f855a; /* Tailwind green-700 */
-            border: 1px solid #9ae6b4; /* Tailwind green-400 */
+            background-color: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
         }
         .form-message.error {
-            background-color: #fed7d7; /* Tailwind red-200 */
-            color: #c53030; /* Tailwind red-700 */
-            border: 1px solid #fbb6ce; /* Tailwind red-400 */
+            background-color: #fed7d7;
+            color: #c53030;
+            border: 1px solid #fbb6ce;
         }
     </style>
 </head>
@@ -422,11 +421,7 @@
 
     <script>
         // --- Inicialización de Supabase ---
-        // Verifica que config.js se haya cargado y las variables estén disponibles
-        if (typeof supabaseUrl !== 'undefined' && typeof supabaseAnonKey !== 'undefined') {
-            const supabase = supabaseJs.createClient(supabaseUrl, supabaseAnonKey);
-
-            // --- Lógica del Formulario de Contacto ---
+        if (typeof supabase !== 'undefined' && supabase) {
             const contactForm = document.getElementById('contact-form');
             const formResponseMessage = document.getElementById('form-response-message');
 
@@ -484,7 +479,14 @@
                 });
             }
         } else {
-            console.error('Supabase URL o Anon Key no definidas. Asegúrate de que config.js esté cargado y correcto.');
+            // Este console.error y el mensaje en la página solo se mostrarán si 'supabase' no está definido.
+            // Si config.js funciona y define 'supabase' globalmente, esta parte del 'else' no se ejecutará.
+            console.error('Cliente Supabase no definido. Asegúrate de que config.js esté cargado y correcto, y que inicialice la variable global "supabase".');
+             const formResponseMessage = document.getElementById('form-response-message');
+            if(formResponseMessage) { // Solo intenta modificar si el elemento existe
+                formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
+                formResponseMessage.className = 'form-message error';
+            }
         }
 
         // --- Menú Móvil ---
