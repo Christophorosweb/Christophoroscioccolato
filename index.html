@@ -16,13 +16,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="loadConfigJs()"></script>
     
-    <script src="config.js" defer></script>
-
     <script>
         // Esta configuración de Tailwind se aplica después de que Tailwind CSS se carga.
-        // No necesita defer ya que es una configuración que Tailwind recogerá cuando se inicialice.
         tailwind.config = {
             theme: {
                 extend: {
@@ -39,6 +36,27 @@
                     }
                 }
             }
+        }
+
+        // 2. FUNCIÓN PARA CARGAR CONFIG.JS DINÁMICAMENTE
+        function loadConfigJs() {
+            console.log('index.html: Supabase CDN script loaded (onload event). Now loading config.js.');
+            const configScript = document.createElement('script');
+            configScript.src = 'config.js';
+            // Opcional: puedes añadir 'defer' aquí también, aunque la carga dinámica
+            // después de onload de Supabase ya crea una fuerte secuenciación.
+            // configScript.defer = true; 
+            configScript.onload = function() {
+                console.log('index.html: config.js loaded (dynamically). Now DOMContentLoaded can proceed with supabase initialized.');
+                // Si la lógica principal depende de que config.js se ejecute ANTES de DOMContentLoaded,
+                // podrías mover la inicialización del formulario aquí o disparar un evento personalizado.
+                // Por ahora, mantenemos la lógica principal en DOMContentLoaded, asumiendo que
+                // la variable global 'supabase' de config.js estará lista.
+            };
+            configScript.onerror = function() {
+                console.error('index.html: Failed to load config.js dynamically.');
+            };
+            document.head.appendChild(configScript);
         }
     </script>
     <style>
@@ -422,12 +440,12 @@
     </footer>
 
     <script>
-        // El script principal de la página ahora se ejecutará después de que los scripts
-        // con 'defer' (Supabase y config.js) se hayan ejecutado.
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('index.html: DOMContentLoaded event fired. Attempting to set up contact form.');
+            console.log('index.html: DOMContentLoaded event fired. Attempting to set up page logic.');
 
             // --- Inicialización de Supabase y Lógica del Formulario ---
+            // Esta parte ahora espera que 'supabase' haya sido inicializado por config.js,
+            // el cual fue cargado por el onload del script de Supabase CDN.
             if (typeof supabase !== 'undefined' && supabase) {
                 console.log('index.html: "supabase" client IS defined. Setting up form.');
                 const contactForm = document.getElementById('contact-form');
@@ -534,7 +552,6 @@
             
             if (saboresGrid) { 
                 const hiddenFlavors = Array.from(saboresGrid.querySelectorAll('.flavor-card, .coming-soon-card')).slice(4);
-                // Inicialmente colapsado si hay más de 4 sabores
                 if (hiddenFlavors.length > 0) {
                     saboresGrid.classList.add('sabores-grid-collapsed');
                     hiddenFlavors.forEach(flavor => {
@@ -543,14 +560,12 @@
                         }
                     });
                 } else if (toggleSaboresBtn) {
-                    // Si no hay sabores para ocultar, oculta el botón "Mostrar más"
                     toggleSaboresBtn.style.display = 'none';
                 }
 
-
                 let flavorsVisible = false; 
 
-                if (toggleSaboresBtn && hiddenFlavors.length > 0) { // Solo añade el listener si hay botón y sabores ocultos
+                if (toggleSaboresBtn && hiddenFlavors.length > 0) { 
                     toggleSaboresBtn.addEventListener('click', () => {
                         flavorsVisible = !flavorsVisible; 
                         saboresGrid.classList.toggle('sabores-grid-collapsed'); 
@@ -575,9 +590,8 @@
                     cartCountElement.textContent = totalItems;
                 }
             }
-            updateCartCount(); // Llamar al cargar la página
+            updateCartCount(); 
         });
-
     </script>
 
 </body>
