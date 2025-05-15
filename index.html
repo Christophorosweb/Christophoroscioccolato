@@ -16,26 +16,51 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="console.error('CRITICAL ERROR: Supabase CDN script itself failed to load. Check network connection and CDN URL.')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('CRITICAL ERROR: Supabase UMD CDN script failed to load. Check network connection and CDN URL.')"></script>
 
     <script>
-        // Esta configuración de Tailwind se aplica después de que Tailwind CSS se carga.
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-navy-primary': '#0D1B2A',
-                        'brand-navy-text': '#1B263B',
-                        'brand-blue': '#0f2a66',
-                        'brand-off-white': '#FDFBF9',
-                        'brand-gold-accent': '#BFA181',
-                    },
-                    fontFamily: {
-                        'serif': ['Playfair Display', 'serif'],
-                        'sans': ['Lato', 'sans-serif'],
+        console.log('index.html (head script 2): Attempting to initialize Supabase client from UMD global.');
+        const SUPABASE_URL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+        
+        // 'supabase' (minúsculas) aquí es el objeto global que exporta el script UMD.
+        if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
+            try {
+                // Asignamos nuestra instancia de cliente a window.supabaseClient
+                window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('index.html (head script 2): window.supabaseClient initialized successfully from UMD.', window.supabaseClient);
+            } catch (e) {
+                console.error('index.html (head script 2): Error initializing window.supabaseClient from UMD global:', e);
+                window.supabaseClient = null;
+            }
+        } else {
+            console.error('index.html (head script 2): CRITICAL - Global "supabase" (lowercase) object from UMD not found or not a valid Supabase entry point. Ensure the UMD script loaded and executed correctly before this script.');
+            window.supabaseClient = null;
+        }
+    </script>
+
+    <script>
+        // Configuración de Tailwind
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'brand-navy-primary': '#0D1B2A',
+                            'brand-navy-text': '#1B263B',
+                            'brand-blue': '#0f2a66',
+                            'brand-off-white': '#FDFBF9',
+                            'brand-gold-accent': '#BFA181',
+                        },
+                        fontFamily: {
+                            'serif': ['Playfair Display', 'serif'],
+                            'sans': ['Lato', 'sans-serif'],
+                        }
                     }
                 }
-            }
+            };
+        } else {
+            console.warn("index.html (head script 3): Tailwind CSS object not found when trying to set config.")
         }
     </script>
     
@@ -420,15 +445,16 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('index.html: DOMContentLoaded event fired. Initializing Supabase and page logic.');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('index.html (DOMContentLoaded): DOM fully loaded and parsed. Initializing page logic.');
 
             // FUNCIÓN PRINCIPAL PARA LA LÓGICA DE LA PÁGINA
             function inicializarLogicaDeLaPagina() {
                 console.log('index.html (inicializarLogicaDeLaPagina): Initializing page logic.');
 
-                if (typeof window.supabase !== 'undefined' && window.supabase && typeof window.supabase.from === 'function') {
-                    console.log('index.html (inicializarLogicaDeLaPagina): "window.supabase" client IS defined and valid. Setting up form.');
+                // Ahora usamos window.supabaseClient, que fue inicializado en el <head>
+                if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient && typeof window.supabaseClient.from === 'function') {
+                    console.log('index.html (inicializarLogicaDeLaPagina): "window.supabaseClient" IS defined and valid. Setting up form.');
                     const contactForm = document.getElementById('contact-form');
                     const formResponseMessage = document.getElementById('form-response-message');
 
@@ -450,7 +476,7 @@
                                 MENSAJE: formData.get('message')
                             };
                             try {
-                                const { data, error } = await window.supabase
+                                const { data, error } = await window.supabaseClient // Usar window.supabaseClient
                                     .from('Contacto_Christophoros') 
                                     .insert([contactData]);
                                 if (error) {
@@ -483,7 +509,7 @@
                         console.warn('index.html (inicializarLogicaDeLaPagina): Contact form (contact-form) not found.');
                     }
                 } else {
-                    console.error('index.html (inicializarLogicaDeLaPagina): Critical Error - "window.supabase" client is UNDEFINED or INVALID when initializing page logic. Supabase object:', window.supabase);
+                    console.error('index.html (inicializarLogicaDeLaPagina): Critical Error - "window.supabaseClient" is UNDEFINED or INVALID when initializing page logic. Supabase client object:', window.supabaseClient);
                     const formResponseMessage = document.getElementById('form-response-message');
                     if(formResponseMessage) { 
                         formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
@@ -560,41 +586,13 @@
                 console.log('index.html (inicializarLogicaDeLaPagina): Page logic initialization finished.');
             } // Fin de inicializarLogicaDeLaPagina
 
-            // INICIALIZACIÓN DE SUPABASE Y LUEGO LA LÓGICA DE LA PÁGINA
-            console.log('index.html (DOMContentLoaded): Attempting to initialize Supabase.');
-            if (typeof supabaseJs !== 'undefined') {
-                console.log('index.html (DOMContentLoaded): supabaseJs IS defined. Proceeding with Supabase client initialization.');
-                const supabaseUrl = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
-                
-                window.supabase = null; 
-
-                try {
-                    console.log('index.html (DOMContentLoaded): Attempting to create Supabase client.');
-                    window.supabase = supabaseJs.createClient(supabaseUrl, supabaseAnonKey);
-
-                    if (window.supabase && typeof window.supabase.from === 'function') {
-                        console.log('index.html (DOMContentLoaded): Supabase client CREATED successfully and VALID.', window.supabase);
-                    } else {
-                        console.error('index.html (DOMContentLoaded): Supabase client was created, but it appears INVALID. Object:', window.supabase);
-                        window.supabase = null;
-                    }
-                } catch (e) {
-                    console.error('index.html (DOMContentLoaded): Error occurred during supabaseJs.createClient() execution:', e);
-                    window.supabase = null;
-                }
-            } else {
-                console.error('index.html (DOMContentLoaded): CRITICAL - supabaseJs is not defined when trying to initialize Supabase client. Supabase CDN script in <head> might have failed to load or execute.');
-                window.supabase = null; 
-            }
-
-            // Llama a inicializarLogicaDeLaPagina después de intentar inicializar Supabase.
-            // La función inicializarLogicaDeLaPagina verificará internamente si window.supabase es válido.
+            // Llama a la función principal de la lógica de la página.
+            // Para este punto, el script UMD de Supabase y el script de inicialización del cliente
+            // en el <head> ya se deberían haber ejecutado.
             inicializarLogicaDeLaPagina();
             
             console.log('index.html (DOMContentLoaded): Event listener finished.');
         });
     </script>
-
 </body>
 </html>
