@@ -418,38 +418,13 @@
     </footer>
 
     <script>
-        // FUNCIÓN PARA CARGAR CONFIG.JS DINÁMICAMENTE
-        function loadConfigJs() {
-            console.log('index.html (end-of-body): Supabase CDN script loaded (onload event). Attempting to load config.js.');
-            const configScript = document.createElement('script');
-            configScript.src = 'config.js'; 
-            configScript.onload = function() {
-                console.log('index.html (end-of-body): config.js loaded (dynamically).');
-                // Ahora que config.js ha cargado (y se asume que ha inicializado window.supabase),
-                // llamamos a la función que configura el resto de la lógica de la página.
-                if (typeof inicializarLogicaDeLaPagina === "function") {
-                    inicializarLogicaDeLaPagina();
-                } else {
-                    console.error("index.html (end-of-body): inicializarLogicaDeLaPagina is not defined. Cannot proceed.");
-                }
-            };
-            configScript.onerror = function(event) {
-                let attemptedSrc = configScript.src;
-                 try {
-                    const ancla = document.createElement('a');
-                    ancla.href = configScript.src; 
-                    attemptedSrc = ancla.href;
-                } catch(e) {}
-                console.error(`index.html (end-of-body): Failed to load config.js dynamically. Path attempted: ${attemptedSrc}.`, event);
-            };
-            document.body.appendChild(configScript);
-        }
+        console.log('index.html: Primary script block started.');
 
         // FUNCIÓN PRINCIPAL PARA LA LÓGICA DE LA PÁGINA
+        // Definida primero para que esté disponible cuando se llame
         function inicializarLogicaDeLaPagina() {
             console.log('index.html (inicializarLogicaDeLaPagina): Initializing page logic.');
 
-            // *** CAMBIO IMPORTANTE AQUÍ: Usar window.supabase ***
             if (typeof window.supabase !== 'undefined' && window.supabase && typeof window.supabase.from === 'function') {
                 console.log('index.html (inicializarLogicaDeLaPagina): "window.supabase" client IS defined and valid. Setting up form.');
                 const contactForm = document.getElementById('contact-form');
@@ -473,13 +448,13 @@
                             MENSAJE: formData.get('message')
                         };
                         try {
-                            // *** Usar window.supabase aquí también ***
+                            // *** CORRECCIÓN: Usar el nombre de tabla correcto ***
                             const { data, error } = await window.supabase
-                                .from('Contacto Christophoros') 
+                                .from('Contacto_Christophoros') // Nombre de tabla corregido
                                 .insert([contactData]);
                             if (error) {
                                 console.error('Error de Supabase al insertar:', error);
-                                throw error; // Esto será capturado por el bloque catch de abajo
+                                throw error;
                             }
                             if(formResponseMessage) {
                                 formResponseMessage.textContent = '¡Mensaje enviado con éxito! Gracias por contactarnos.';
@@ -507,7 +482,7 @@
                     console.warn('index.html (inicializarLogicaDeLaPagina): Contact form (contact-form) not found.');
                 }
             } else {
-                console.error('index.html (inicializarLogicaDeLaPagina): Critical Error - "window.supabase" client is UNDEFINED or INVALID when initializing page logic. Check config.js loading and initialization. Supabase object:', window.supabase);
+                console.error('index.html (inicializarLogicaDeLaPagina): Critical Error - "window.supabase" client is UNDEFINED or INVALID when initializing page logic. Supabase object:', window.supabase);
                 const formResponseMessage = document.getElementById('form-response-message');
                 if(formResponseMessage) { 
                     formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
@@ -581,10 +556,45 @@
                 if (cartCountElement) { cartCountElement.textContent = totalItems; }
             }
             updateCartCount(); 
+            console.log('index.html (inicializarLogicaDeLaPagina): Page logic initialization finished.');
         } // Fin de inicializarLogicaDeLaPagina
+
+        // Función que se llamará cuando el CDN de Supabase haya cargado
+        function onSupabaseLoaded() {
+            console.log('index.html (onSupabaseLoaded): Supabase CDN script has loaded. Initializing client.');
+            if (typeof supabaseJs !== 'undefined') {
+                const supabaseUrl = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+                
+                window.supabase = null; 
+
+                try {
+                    console.log('index.html (onSupabaseLoaded): Attempting to create Supabase client.');
+                    window.supabase = supabaseJs.createClient(supabaseUrl, supabaseAnonKey);
+
+                    if (window.supabase && typeof window.supabase.from === 'function') {
+                        console.log('index.html (onSupabaseLoaded): Supabase client CREATED successfully and VALID.', window.supabase);
+                        inicializarLogicaDeLaPagina(); // Llama a la lógica principal de la página
+                    } else {
+                        console.error('index.html (onSupabaseLoaded): Supabase client was created, but it appears INVALID. Object:', window.supabase);
+                        window.supabase = null;
+                        inicializarLogicaDeLaPagina(); // Llama para mostrar error de configuración
+                    }
+                } catch (e) {
+                    console.error('index.html (onSupabaseLoaded): Error occurred during supabaseJs.createClient() execution:', e);
+                    window.supabase = null;
+                    inicializarLogicaDeLaPagina(); // Llama para mostrar error de configuración
+                }
+            } else {
+                console.error('index.html (onSupabaseLoaded): CRITICAL - supabaseJs is not defined even after CDN script onload. This should not happen.');
+                inicializarLogicaDeLaPagina(); // Llama para mostrar error de configuración
+            }
+        }
+        console.log('index.html: Primary script block finished defining functions.');
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="loadConfigJs()"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="onSupabaseLoaded()" onerror="console.error('Failed to load Supabase CDN script.')"></script>
 
 </body>
 </html>
+```
