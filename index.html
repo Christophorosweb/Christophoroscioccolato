@@ -16,6 +16,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="console.error('CRITICAL ERROR: Supabase CDN script itself failed to load. Check network connection and CDN URL.')"></script>
+
     <script>
         // Esta configuración de Tailwind se aplica después de que Tailwind CSS se carga.
         tailwind.config = {
@@ -418,10 +420,9 @@
     </footer>
 
     <script>
-        console.log('index.html: Primary script block started.');
+        console.log('index.html: Main script block at the end of body started.');
 
         // FUNCIÓN PRINCIPAL PARA LA LÓGICA DE LA PÁGINA
-        // Definida primero para que esté disponible cuando se llame
         function inicializarLogicaDeLaPagina() {
             console.log('index.html (inicializarLogicaDeLaPagina): Initializing page logic.');
 
@@ -448,9 +449,8 @@
                             MENSAJE: formData.get('message')
                         };
                         try {
-                            // *** CORRECCIÓN: Usar el nombre de tabla correcto ***
                             const { data, error } = await window.supabase
-                                .from('Contacto_Christophoros') // Nombre de tabla corregido
+                                .from('Contacto_Christophoros') 
                                 .insert([contactData]);
                             if (error) {
                                 console.error('Error de Supabase al insertar:', error);
@@ -559,42 +559,84 @@
             console.log('index.html (inicializarLogicaDeLaPagina): Page logic initialization finished.');
         } // Fin de inicializarLogicaDeLaPagina
 
-        // Función que se llamará cuando el CDN de Supabase haya cargado
-        function onSupabaseLoaded() {
-            console.log('index.html (onSupabaseLoaded): Supabase CDN script has loaded. Initializing client.');
-            if (typeof supabaseJs !== 'undefined') {
-                const supabaseUrl = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
-                
-                window.supabase = null; 
+        // INICIALIZACIÓN DE SUPABASE Y LUEGO LA LÓGICA DE LA PÁGINA
+        // Este bloque se ejecutará después de que el script del CDN de Supabase (en el head) se haya cargado y procesado.
+        console.log('index.html: Attempting to initialize Supabase and page logic.');
+        if (typeof supabaseJs !== 'undefined') {
+            console.log('index.html: supabaseJs IS defined. Proceeding with Supabase client initialization.');
+            const supabaseUrl = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+            const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+            
+            window.supabase = null; 
 
-                try {
-                    console.log('index.html (onSupabaseLoaded): Attempting to create Supabase client.');
-                    window.supabase = supabaseJs.createClient(supabaseUrl, supabaseAnonKey);
+            try {
+                console.log('index.html: Attempting to create Supabase client.');
+                window.supabase = supabaseJs.createClient(supabaseUrl, supabaseAnonKey);
 
-                    if (window.supabase && typeof window.supabase.from === 'function') {
-                        console.log('index.html (onSupabaseLoaded): Supabase client CREATED successfully and VALID.', window.supabase);
-                        inicializarLogicaDeLaPagina(); // Llama a la lógica principal de la página
-                    } else {
-                        console.error('index.html (onSupabaseLoaded): Supabase client was created, but it appears INVALID. Object:', window.supabase);
-                        window.supabase = null;
-                        inicializarLogicaDeLaPagina(); // Llama para mostrar error de configuración
-                    }
-                } catch (e) {
-                    console.error('index.html (onSupabaseLoaded): Error occurred during supabaseJs.createClient() execution:', e);
+                if (window.supabase && typeof window.supabase.from === 'function') {
+                    console.log('index.html: Supabase client CREATED successfully and VALID.', window.supabase);
+                } else {
+                    console.error('index.html: Supabase client was created, but it appears INVALID. Object:', window.supabase);
                     window.supabase = null;
-                    inicializarLogicaDeLaPagina(); // Llama para mostrar error de configuración
                 }
-            } else {
-                console.error('index.html (onSupabaseLoaded): CRITICAL - supabaseJs is not defined even after CDN script onload. This should not happen.');
-                inicializarLogicaDeLaPagina(); // Llama para mostrar error de configuración
+            } catch (e) {
+                console.error('index.html: Error occurred during supabaseJs.createClient() execution:', e);
+                window.supabase = null;
             }
+        } else {
+            console.error('index.html: CRITICAL - supabaseJs is not defined when trying to initialize Supabase client. Supabase CDN script might have failed to load.');
+            window.supabase = null; // Asegurarse de que sea null si supabaseJs no está definido
         }
-        console.log('index.html: Primary script block finished defining functions.');
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="onSupabaseLoaded()" onerror="console.error('Failed to load Supabase CDN script.')"></script>
+        // Llama a inicializarLogicaDeLaPagina independientemente de si Supabase se inicializó,
+        // para que la UI no dependiente de Supabase pueda funcionar y los errores se muestren.
+        // Se recomienda que inicializarLogicaDeLaPagina maneje internamente el caso de window.supabase nulo.
+        if (typeof inicializarLogicaDeLaPagina === "function") {
+            inicializarLogicaDeLaPagina();
+        } else {
+            // Este caso no debería ocurrir si el script está estructurado correctamente.
+            console.error("index.html: CRITICAL - inicializarLogicaDeLaPagina is not defined. Cannot initialize page UI.");
+        }
+        
+        console.log('index.html: Main script block at the end of body finished.');
+    </script>
 
 </body>
 </html>
 ```
+
+**Cambios Clave en este `index.html`:**
+
+1.  **CDN de Supabase en `<head>`**: `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>` se ha movido al `<head>`. Esto hace que el navegador lo descargue y ejecute antes de procesar el `<body>`.
+2.  **Script Principal al Final del `<body>`**: Todo tu JavaScript personalizado (incluyendo la definición de `inicializarLogicaDeLaPagina`, la inicialización de `window.supabase` y la llamada a `inicializarLogicaDeLaPagina`) está ahora en un solo bloque `<script>` justo antes de `</body>`.
+    * Esto asegura que todo el DOM HTML esté disponible cuando tu script se ejecute.
+    * Cuando este script se ejecuta, `supabaseJs` (del CDN en el `<head>`) ya debería estar definido globalmente.
+
+**Pasos a seguir (muy importantes):**
+
+1.  **Reemplaza TODO el contenido de tu archivo `index.html`** con el código de arriba.
+2.  **ELIMINA el archivo `config.js`** de tu proyecto si aún existe, ya que no lo estamos usando.
+3.  **BORRA LA CACHÉ DE TU NAVEGADOR COMPLETAMENTE Y REALIZA UNA ACTUALIZACIÓN FORZADA (HARD REFRESH)**.
+    * En Chrome, puedes abrir las herramientas de desarrollador (F12), ir a la pestaña "Network", marcar "Disable cache", y luego recargar la página (Ctrl+R o Cmd+R). Luego puedes desmarcar "Disable cache".
+    * Alternativamente, usa una ventana de incógnito/privada.
+4.  **Abre la Consola de Desarrollador** (`F12`) *antes* de cargar la página.
+5.  **Carga la página y observa los mensajes de la consola.**
+6.  **Intenta enviar el formulario.**
+
+**Qué esperar en la consola (en orden aproximado):**
+
+1.  `index.html: Main script block at the end of body started.`
+2.  `index.html: Attempting to initialize Supabase and page logic.`
+3.  `index.html: supabaseJs IS defined. Proceeding with Supabase client initialization.` (¡Este es un buen signo!)
+4.  `index.html: Attempting to create Supabase client.`
+5.  `index.html: Supabase client CREATED successfully and VALID.` (¡Este es el signo crucial!)
+6.  `index.html (inicializarLogicaDeLaPagina): Initializing page logic.`
+7.  `index.html (inicializarLogicaDeLaPagina): "window.supabase" client IS defined and valid. Setting up form.`
+8.  `index.html (inicializarLogicaDeLaPagina): Page logic initialization finished.`
+9.  `index.html: Main script block at the end of body finished.`
+
+Si ves el error `CRITICAL - supabaseJs is not defined...` al principio, significa que el script del CDN de Supabase en el `<head>` no se cargó o no se ejecutó correctamente. Verifica la URL del CDN y tu conexión a internet.
+
+Si el `SyntaxError` sobre `inicializarLogicaDeLaPagina` persiste, sería muy extraño con esta nueva estructura, ya que la función se define claramente antes de ser llamada dentro del mismo bloque de script.
+
+Por favor, prueba esto con mucha atención a la limpieza de la caché. ¡Espero que esta vez funcio
