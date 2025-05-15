@@ -16,11 +16,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     
-    <script src="config.js"></script>
+    <script src="config.js" defer></script>
 
     <script>
+        // Esta configuración de Tailwind se aplica después de que Tailwind CSS se carga.
+        // No necesita defer ya que es una configuración que Tailwind recogerá cuando se inicialice.
         tailwind.config = {
             theme: {
                 extend: {
@@ -330,7 +332,7 @@
                         <img src="images/caja-25-bombones.jpg" alt="Caja de 25 bombones Christophoros para celebraciones" class="w-full h-64 object-contain">
                         <div class="p-5 flex flex-col min-h-28">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 25 Bombones</h3>
-                            <p class="text-sm text-brand-navy-text/80 mb-4">El formato definitivo para celebraciones y regalos inolvidables.</p>
+                            <p class="text-sm text-brand-navy-text/80 mb_4">El formato definitivo para celebraciones y regalos inolvidables.</p>
                             <p class="text-lg font-semibold text-brand-blue mb-4">$ 33.990</p>
                             <a href="caja25b.html" class="btn-action mt-auto py-2 px-5 rounded-md text-sm font-semibold inline-block">Comprar</a>
                         </div>
@@ -420,147 +422,161 @@
     </footer>
 
     <script>
-        // --- Inicialización de Supabase ---
-        // Se espera que 'supabase' sea inicializado globalmente por config.js
-        if (typeof supabase !== 'undefined' && supabase) {
-            const contactForm = document.getElementById('contact-form');
-            const formResponseMessage = document.getElementById('form-response-message');
+        // El script principal de la página ahora se ejecutará después de que los scripts
+        // con 'defer' (Supabase y config.js) se hayan ejecutado.
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('index.html: DOMContentLoaded event fired. Attempting to set up contact form.');
 
-            if (contactForm) {
-                contactForm.addEventListener('submit', async (event) => {
-                    event.preventDefault(); 
+            // --- Inicialización de Supabase y Lógica del Formulario ---
+            if (typeof supabase !== 'undefined' && supabase) {
+                console.log('index.html: "supabase" client IS defined. Setting up form.');
+                const contactForm = document.getElementById('contact-form');
+                const formResponseMessage = document.getElementById('form-response-message');
 
-                    const submitButton = contactForm.querySelector('button[type="submit"]');
-                    submitButton.disabled = true;
-                    submitButton.textContent = 'Enviando...';
-                    if(formResponseMessage) {
-                        formResponseMessage.textContent = '';
-                        formResponseMessage.className = 'form-message';
-                    }
+                if (contactForm) {
+                    contactForm.addEventListener('submit', async (event) => {
+                        event.preventDefault(); 
 
-                    const formData = new FormData(contactForm);
-                    const contactData = {
-                        NOMBRE: formData.get('name'),
-                        CORREO: formData.get('email'),
-                        ASUNTO: formData.get('subject'),
-                        MENSAJE: formData.get('message')
-                    };
-
-                    try {
-                        const { data, error } = await supabase
-                            .from('Contacto Christophoros') 
-                            .insert([contactData]);
-
-                        if (error) {
-                            console.error('Error de Supabase:', error);
-                            throw error;
-                        }
-                        
+                        const submitButton = contactForm.querySelector('button[type="submit"]');
+                        submitButton.disabled = true;
+                        submitButton.textContent = 'Enviando...';
                         if(formResponseMessage) {
-                            formResponseMessage.textContent = '¡Mensaje enviado con éxito! Gracias por contactarnos.';
-                            formResponseMessage.classList.add('success');
+                            formResponseMessage.textContent = '';
+                            formResponseMessage.className = 'form-message';
                         }
-                        contactForm.reset(); 
-                    } catch (error) {
-                        console.error('Error al enviar mensaje:', error.message);
-                        if(formResponseMessage) {
-                            formResponseMessage.textContent = 'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo o contáctanos directamente por correo.';
-                            formResponseMessage.classList.add('error');
+
+                        const formData = new FormData(contactForm);
+                        const contactData = {
+                            NOMBRE: formData.get('name'),
+                            CORREO: formData.get('email'),
+                            ASUNTO: formData.get('subject'),
+                            MENSAJE: formData.get('message')
+                        };
+
+                        try {
+                            const { data, error } = await supabase
+                                .from('Contacto Christophoros') 
+                                .insert([contactData]);
+
+                            if (error) {
+                                console.error('Error de Supabase al insertar:', error);
+                                throw error;
+                            }
+                            
+                            if(formResponseMessage) {
+                                formResponseMessage.textContent = '¡Mensaje enviado con éxito! Gracias por contactarnos.';
+                                formResponseMessage.classList.add('success');
+                            }
+                            contactForm.reset(); 
+                        } catch (error) {
+                            console.error('Error al enviar mensaje:', error.message ? error.message : error);
+                            if(formResponseMessage) {
+                                formResponseMessage.textContent = 'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo o contáctanos directamente por correo.';
+                                formResponseMessage.classList.add('error');
+                            }
+                        } finally {
+                            submitButton.disabled = false;
+                            submitButton.textContent = 'Enviar Mensaje';
+                            if(formResponseMessage) {
+                                setTimeout(() => { 
+                                    formResponseMessage.textContent = '';
+                                    formResponseMessage.className = 'form-message';
+                                }, 7000);
+                            }
                         }
-                    } finally {
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Enviar Mensaje';
-                        if(formResponseMessage) {
-                            setTimeout(() => { 
-                                formResponseMessage.textContent = '';
-                                formResponseMessage.className = 'form-message';
-                            }, 7000);
-                        }
-                    }
-                });
-            }
-        } else {
-            console.error('Error Crítico: Cliente Supabase no definido. Verifica config.js y el orden de carga de scripts.');
-            const formResponseMessage = document.getElementById('form-response-message');
-            if(formResponseMessage) { 
-                formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
-                formResponseMessage.className = 'form-message error';
-            }
-        }
-
-        // --- Menú Móvil ---
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuIconOpen = document.getElementById('menu-icon-open');
-        const menuIconClose = document.getElementById('menu-icon-close');
-
-        if (mobileMenuButton) {
-            mobileMenuButton.addEventListener('click', () => {
-                const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
-                mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-                mobileMenu.classList.toggle('-translate-y-full');
-                mobileMenu.classList.toggle('z-10');
-                mobileMenu.classList.toggle('-z-10');
-                if(menuIconOpen) menuIconOpen.classList.toggle('hidden');
-                if(menuIconClose) menuIconClose.classList.toggle('hidden');
-            });
-
-            if (mobileMenu) {
-                mobileMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        mobileMenuButton.setAttribute('aria-expanded', 'false');
-                        mobileMenu.classList.add('-translate-y-full');
-                        mobileMenu.classList.add('-z-10');
-                        mobileMenu.classList.remove('z-10');
-                        if(menuIconOpen) menuIconOpen.classList.remove('hidden');
-                        if(menuIconClose) menuIconClose.classList.add('hidden');
                     });
-                });
-            }
-        }
-        
-        // --- Sabores Retráctiles ---
-        const toggleSaboresBtn = document.getElementById('toggle-sabores-btn');
-        const saboresGrid = document.getElementById('sabores-grid'); 
-        
-        if (saboresGrid) { 
-            const hiddenFlavors = Array.from(saboresGrid.querySelectorAll('.flavor-card, .coming-soon-card')).slice(4);
-            saboresGrid.classList.add('sabores-grid-collapsed');
-
-            hiddenFlavors.forEach(flavor => {
-                if (!flavor.classList.contains('flavor-hidden')) {
-                    flavor.classList.add('flavor-hidden');
+                } else {
+                    console.warn('index.html: Contact form not found.');
                 }
-            });
+            } else {
+                console.error('index.html: Critical Error - "supabase" client is UNDEFINED when DOMContentLoaded. Check config.js and script loading order.');
+                const formResponseMessage = document.getElementById('form-response-message');
+                if(formResponseMessage) { 
+                    formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
+                    formResponseMessage.className = 'form-message error';
+                }
+            }
 
-            let flavorsVisible = false; 
+            // --- Menú Móvil ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIconOpen = document.getElementById('menu-icon-open');
+            const menuIconClose = document.getElementById('menu-icon-close');
 
-            if (toggleSaboresBtn) {
-                toggleSaboresBtn.addEventListener('click', () => {
-                    flavorsVisible = !flavorsVisible; 
-                    saboresGrid.classList.toggle('sabores-grid-collapsed'); 
-
-                    hiddenFlavors.forEach(flavor => {
-                        flavor.classList.toggle('flavor-hidden'); 
-                    });
-                    toggleSaboresBtn.textContent = flavorsVisible ? 'Mostrar menos sabores' : 'Mostrar más sabores';
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', () => {
+                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                    mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                    mobileMenu.classList.toggle('-translate-y-full');
+                    mobileMenu.classList.toggle('z-10');
+                    mobileMenu.classList.toggle('-z-10');
+                    if(menuIconOpen) menuIconOpen.classList.toggle('hidden');
+                    if(menuIconClose) menuIconClose.classList.toggle('hidden');
                 });
-            }
-        }
 
-        // --- Lógica del Carrito (para actualizar contador en header en todas las páginas) ---
-        const cartCountElement = document.getElementById('cart-count');
-        function updateCartCount() {
-            let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
-            let totalItems = 0;
-            cart.forEach(item => {
-                totalItems += item.quantity;
-            });
-            if (cartCountElement) {
-                cartCountElement.textContent = totalItems;
+                if (mobileMenu) {
+                    mobileMenu.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('click', () => {
+                            mobileMenuButton.setAttribute('aria-expanded', 'false');
+                            mobileMenu.classList.add('-translate-y-full');
+                            mobileMenu.classList.add('-z-10');
+                            mobileMenu.classList.remove('z-10');
+                            if(menuIconOpen) menuIconOpen.classList.remove('hidden');
+                            if(menuIconClose) menuIconClose.classList.add('hidden');
+                        });
+                    });
+                }
             }
-        }
-        document.addEventListener('DOMContentLoaded', updateCartCount);
+            
+            // --- Sabores Retráctiles ---
+            const toggleSaboresBtn = document.getElementById('toggle-sabores-btn');
+            const saboresGrid = document.getElementById('sabores-grid'); 
+            
+            if (saboresGrid) { 
+                const hiddenFlavors = Array.from(saboresGrid.querySelectorAll('.flavor-card, .coming-soon-card')).slice(4);
+                // Inicialmente colapsado si hay más de 4 sabores
+                if (hiddenFlavors.length > 0) {
+                    saboresGrid.classList.add('sabores-grid-collapsed');
+                    hiddenFlavors.forEach(flavor => {
+                        if (!flavor.classList.contains('flavor-hidden')) {
+                            flavor.classList.add('flavor-hidden');
+                        }
+                    });
+                } else if (toggleSaboresBtn) {
+                    // Si no hay sabores para ocultar, oculta el botón "Mostrar más"
+                    toggleSaboresBtn.style.display = 'none';
+                }
+
+
+                let flavorsVisible = false; 
+
+                if (toggleSaboresBtn && hiddenFlavors.length > 0) { // Solo añade el listener si hay botón y sabores ocultos
+                    toggleSaboresBtn.addEventListener('click', () => {
+                        flavorsVisible = !flavorsVisible; 
+                        saboresGrid.classList.toggle('sabores-grid-collapsed'); 
+
+                        hiddenFlavors.forEach(flavor => {
+                            flavor.classList.toggle('flavor-hidden'); 
+                        });
+                        toggleSaboresBtn.textContent = flavorsVisible ? 'Mostrar menos sabores' : 'Mostrar más sabores';
+                    });
+                }
+            }
+
+            // --- Lógica del Carrito (para actualizar contador en header en todas las páginas) ---
+            const cartCountElement = document.getElementById('cart-count');
+            function updateCartCount() {
+                let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
+                let totalItems = 0;
+                cart.forEach(item => {
+                    totalItems += item.quantity;
+                });
+                if (cartCountElement) {
+                    cartCountElement.textContent = totalItems;
+                }
+            }
+            updateCartCount(); // Llamar al cargar la página
+        });
 
     </script>
 
