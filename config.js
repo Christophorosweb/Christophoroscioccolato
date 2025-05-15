@@ -2,7 +2,7 @@
 
 // URL y clave pública del proyecto
 const supabaseUrl = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-const supabaseAnonKey = 'AQUI_VA_TU_CLAVE_ANON_PUBLICA_REAL'; // ¡¡¡REEMPLAZA ESTO CON TU CLAVE ANON PÚBLICA!!!
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo'; 
 
 // Cliente de Supabase inicializado y disponible globalmente.
 // Nos aseguramos de que la librería Supabase JS (supabaseJs) ya esté cargada 
