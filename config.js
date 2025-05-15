@@ -2,22 +2,32 @@
 
 // URL y clave pública del proyecto de Supabase
 const supabaseUrl = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+// ¡¡¡REEMPLAZA ESTO CON TU CLAVE ANÓNIMA PÚBLICA REAL DE SUPABASE!!!
+const supabaseAnonKey = 'AQUI_VA_TU_CLAVE_ANON_PUBLICA_REAL'; 
 
-// Cliente de Supabase inicializado y disponible globalmente.
-// Nos aseguramos de que la librería Supabase JS (la variable global 'supabaseJs' 
-// creada por el CDN) ya esté cargada desde index.html ANTES de que este script config.js se ejecute.
 let supabase; // Declara la variable que será global
 
-// Verificar que la librería Supabase (supabaseJs) esté cargada y las claves estén definidas
-if (typeof supabaseJs !== 'undefined' && supabaseUrl && supabaseAnonKey) {
+// Solo intenta inicializar si la librería Supabase (supabaseJs) está cargada
+// y las claves están presentes y NO son el placeholder.
+if (typeof supabaseJs !== 'undefined' && supabaseUrl && supabaseAnonKey && supabaseAnonKey !== 'AQUI_VA_TU_CLAVE_ANON_PUBLICA_REAL') {
     try {
         supabase = supabaseJs.createClient(supabaseUrl, supabaseAnonKey);
-        // Puedes descomentar la siguiente línea para verificar en la consola si el cliente se inicializó:
-        // console.log('Cliente Supabase inicializado con éxito desde config.js');
+        // console.log('Cliente Supabase inicializado con éxito desde config.js'); // Descomenta para depurar
     } catch (e) {
-        console.error('Error al inicializar el cliente Supabase en config.js:', e);
+        console.error('Error al inicializar el cliente Supabase en config.js:', e.message);
+        supabase = null; // Asegura que supabase sea null si falla la inicialización
     }
 } else {
-    console.error('Error en config.js: La librería Supabase (supabaseJs) no está definida, o faltan supabaseUrl/supabaseAnonKey. Asegúrate de que el CDN de Supabase se cargue ANTES que config.js y que las variables en config.js sean correctas.');
+    let errorMsg = 'Error en config.js: ';
+    if (typeof supabaseJs === 'undefined') {
+        errorMsg += 'La librería Supabase (supabaseJs) no está definida. Asegúrate de que el CDN de Supabase se cargue ANTES que config.js. ';
+    }
+    if (!supabaseUrl || !supabaseAnonKey) {
+        errorMsg += 'Faltan supabaseUrl o supabaseAnonKey. ';
+    }
+    if (supabaseAnonKey === 'AQUI_VA_TU_CLAVE_ANON_PUBLICA_REAL') {
+        errorMsg += 'La clave anónima de Supabase (supabaseAnonKey) no ha sido reemplazada por la real en config.js. ';
+    }
+    console.error(errorMsg);
+    supabase = null; // Asegura que supabase sea null si hay problemas de configuración
 }
