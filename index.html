@@ -420,223 +420,181 @@
     </footer>
 
     <script>
-        console.log('index.html: Main script block at the end of body started.');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('index.html: DOMContentLoaded event fired. Initializing Supabase and page logic.');
 
-        // FUNCIÓN PRINCIPAL PARA LA LÓGICA DE LA PÁGINA
-        function inicializarLogicaDeLaPagina() {
-            console.log('index.html (inicializarLogicaDeLaPagina): Initializing page logic.');
+            // FUNCIÓN PRINCIPAL PARA LA LÓGICA DE LA PÁGINA
+            function inicializarLogicaDeLaPagina() {
+                console.log('index.html (inicializarLogicaDeLaPagina): Initializing page logic.');
 
-            if (typeof window.supabase !== 'undefined' && window.supabase && typeof window.supabase.from === 'function') {
-                console.log('index.html (inicializarLogicaDeLaPagina): "window.supabase" client IS defined and valid. Setting up form.');
-                const contactForm = document.getElementById('contact-form');
-                const formResponseMessage = document.getElementById('form-response-message');
+                if (typeof window.supabase !== 'undefined' && window.supabase && typeof window.supabase.from === 'function') {
+                    console.log('index.html (inicializarLogicaDeLaPagina): "window.supabase" client IS defined and valid. Setting up form.');
+                    const contactForm = document.getElementById('contact-form');
+                    const formResponseMessage = document.getElementById('form-response-message');
 
-                if (contactForm) {
-                    contactForm.addEventListener('submit', async (event) => {
-                        event.preventDefault(); 
-                        const submitButton = contactForm.querySelector('button[type="submit"]');
-                        submitButton.disabled = true;
-                        submitButton.textContent = 'Enviando...';
-                        if(formResponseMessage) {
-                            formResponseMessage.textContent = '';
-                            formResponseMessage.className = 'form-message';
-                        }
-                        const formData = new FormData(contactForm);
-                        const contactData = {
-                            NOMBRE: formData.get('name'),
-                            CORREO: formData.get('email'),
-                            ASUNTO: formData.get('subject'),
-                            MENSAJE: formData.get('message')
-                        };
-                        try {
-                            const { data, error } = await window.supabase
-                                .from('Contacto_Christophoros') 
-                                .insert([contactData]);
-                            if (error) {
-                                console.error('Error de Supabase al insertar:', error);
-                                throw error;
-                            }
+                    if (contactForm) {
+                        contactForm.addEventListener('submit', async (event) => {
+                            event.preventDefault(); 
+                            const submitButton = contactForm.querySelector('button[type="submit"]');
+                            submitButton.disabled = true;
+                            submitButton.textContent = 'Enviando...';
                             if(formResponseMessage) {
-                                formResponseMessage.textContent = '¡Mensaje enviado con éxito! Gracias por contactarnos.';
-                                formResponseMessage.classList.add('success');
+                                formResponseMessage.textContent = '';
+                                formResponseMessage.className = 'form-message';
                             }
-                            contactForm.reset(); 
-                        } catch (error) {
-                            console.error('Error al enviar mensaje (dentro del catch del submit):', error.message ? error.message : error);
-                            if(formResponseMessage) {
-                                formResponseMessage.textContent = 'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo o contáctanos directamente por correo.';
-                                formResponseMessage.classList.add('error');
+                            const formData = new FormData(contactForm);
+                            const contactData = {
+                                NOMBRE: formData.get('name'),
+                                CORREO: formData.get('email'),
+                                ASUNTO: formData.get('subject'),
+                                MENSAJE: formData.get('message')
+                            };
+                            try {
+                                const { data, error } = await window.supabase
+                                    .from('Contacto_Christophoros') 
+                                    .insert([contactData]);
+                                if (error) {
+                                    console.error('Error de Supabase al insertar:', error);
+                                    throw error;
+                                }
+                                if(formResponseMessage) {
+                                    formResponseMessage.textContent = '¡Mensaje enviado con éxito! Gracias por contactarnos.';
+                                    formResponseMessage.classList.add('success');
+                                }
+                                contactForm.reset(); 
+                            } catch (error) {
+                                console.error('Error al enviar mensaje (dentro del catch del submit):', error.message ? error.message : error);
+                                if(formResponseMessage) {
+                                    formResponseMessage.textContent = 'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo o contáctanos directamente por correo.';
+                                    formResponseMessage.classList.add('error');
+                                }
+                            } finally {
+                                submitButton.disabled = false;
+                                submitButton.textContent = 'Enviar Mensaje';
+                                if(formResponseMessage) {
+                                    setTimeout(() => { 
+                                        formResponseMessage.textContent = '';
+                                        formResponseMessage.className = 'form-message';
+                                    }, 7000);
+                                }
                             }
-                        } finally {
-                            submitButton.disabled = false;
-                            submitButton.textContent = 'Enviar Mensaje';
-                            if(formResponseMessage) {
-                                setTimeout(() => { 
-                                    formResponseMessage.textContent = '';
-                                    formResponseMessage.className = 'form-message';
-                                }, 7000);
-                            }
-                        }
-                    });
-                } else {
-                    console.warn('index.html (inicializarLogicaDeLaPagina): Contact form (contact-form) not found.');
-                }
-            } else {
-                console.error('index.html (inicializarLogicaDeLaPagina): Critical Error - "window.supabase" client is UNDEFINED or INVALID when initializing page logic. Supabase object:', window.supabase);
-                const formResponseMessage = document.getElementById('form-response-message');
-                if(formResponseMessage) { 
-                    formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
-                    formResponseMessage.className = 'form-message error';
-                }
-            }
-
-            // --- Menú Móvil ---
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const menuIconOpen = document.getElementById('menu-icon-open');
-            const menuIconClose = document.getElementById('menu-icon-close');
-            if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', () => {
-                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
-                    mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-                    mobileMenu.classList.toggle('-translate-y-full');
-                    mobileMenu.classList.toggle('z-10');
-                    mobileMenu.classList.toggle('-z-10');
-                    if(menuIconOpen) menuIconOpen.classList.toggle('hidden');
-                    if(menuIconClose) menuIconClose.classList.toggle('hidden');
-                });
-                if (mobileMenu) {
-                    mobileMenu.querySelectorAll('a').forEach(link => {
-                        link.addEventListener('click', () => {
-                            mobileMenuButton.setAttribute('aria-expanded', 'false');
-                            mobileMenu.classList.add('-translate-y-full');
-                            mobileMenu.classList.add('-z-10');
-                            mobileMenu.classList.remove('z-10');
-                            if(menuIconOpen) menuIconOpen.classList.remove('hidden');
-                            if(menuIconClose) menuIconClose.classList.add('hidden');
                         });
-                    });
+                    } else {
+                        console.warn('index.html (inicializarLogicaDeLaPagina): Contact form (contact-form) not found.');
+                    }
+                } else {
+                    console.error('index.html (inicializarLogicaDeLaPagina): Critical Error - "window.supabase" client is UNDEFINED or INVALID when initializing page logic. Supabase object:', window.supabase);
+                    const formResponseMessage = document.getElementById('form-response-message');
+                    if(formResponseMessage) { 
+                        formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
+                        formResponseMessage.className = 'form-message error';
+                    }
                 }
-            }
-            
-            // --- Sabores Retráctiles ---
-            const toggleSaboresBtn = document.getElementById('toggle-sabores-btn');
-            const saboresGrid = document.getElementById('sabores-grid'); 
-            if (saboresGrid) { 
-                const hiddenFlavors = Array.from(saboresGrid.querySelectorAll('.flavor-card, .coming-soon-card')).slice(4);
-                if (hiddenFlavors.length > 0) {
-                    saboresGrid.classList.add('sabores-grid-collapsed');
-                    hiddenFlavors.forEach(flavor => {
-                        if (!flavor.classList.contains('flavor-hidden')) {
-                            flavor.classList.add('flavor-hidden');
-                        }
+
+                // --- Menú Móvil ---
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                const menuIconOpen = document.getElementById('menu-icon-open');
+                const menuIconClose = document.getElementById('menu-icon-close');
+                if (mobileMenuButton) {
+                    mobileMenuButton.addEventListener('click', () => {
+                        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                        mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                        mobileMenu.classList.toggle('-translate-y-full');
+                        mobileMenu.classList.toggle('z-10');
+                        mobileMenu.classList.toggle('-z-10');
+                        if(menuIconOpen) menuIconOpen.classList.toggle('hidden');
+                        if(menuIconClose) menuIconClose.classList.toggle('hidden');
                     });
-                } else if (toggleSaboresBtn) {
-                    toggleSaboresBtn.style.display = 'none';
+                    if (mobileMenu) {
+                        mobileMenu.querySelectorAll('a').forEach(link => {
+                            link.addEventListener('click', () => {
+                                mobileMenuButton.setAttribute('aria-expanded', 'false');
+                                mobileMenu.classList.add('-translate-y-full');
+                                mobileMenu.classList.add('-z-10');
+                                mobileMenu.classList.remove('z-10');
+                                if(menuIconOpen) menuIconOpen.classList.remove('hidden');
+                                if(menuIconClose) menuIconClose.classList.add('hidden');
+                            });
+                        });
+                    }
                 }
-                let flavorsVisible = false; 
-                if (toggleSaboresBtn && hiddenFlavors.length > 0) { 
-                    toggleSaboresBtn.addEventListener('click', () => {
-                        flavorsVisible = !flavorsVisible; 
-                        saboresGrid.classList.toggle('sabores-grid-collapsed'); 
+                
+                // --- Sabores Retráctiles ---
+                const toggleSaboresBtn = document.getElementById('toggle-sabores-btn');
+                const saboresGrid = document.getElementById('sabores-grid'); 
+                if (saboresGrid) { 
+                    const hiddenFlavors = Array.from(saboresGrid.querySelectorAll('.flavor-card, .coming-soon-card')).slice(4);
+                    if (hiddenFlavors.length > 0) {
+                        saboresGrid.classList.add('sabores-grid-collapsed');
                         hiddenFlavors.forEach(flavor => {
-                            flavor.classList.toggle('flavor-hidden'); 
+                            if (!flavor.classList.contains('flavor-hidden')) {
+                                flavor.classList.add('flavor-hidden');
+                            }
                         });
-                        toggleSaboresBtn.textContent = flavorsVisible ? 'Mostrar menos sabores' : 'Mostrar más sabores';
-                    });
+                    } else if (toggleSaboresBtn) {
+                        toggleSaboresBtn.style.display = 'none';
+                    }
+                    let flavorsVisible = false; 
+                    if (toggleSaboresBtn && hiddenFlavors.length > 0) { 
+                        toggleSaboresBtn.addEventListener('click', () => {
+                            flavorsVisible = !flavorsVisible; 
+                            saboresGrid.classList.toggle('sabores-grid-collapsed'); 
+                            hiddenFlavors.forEach(flavor => {
+                                flavor.classList.toggle('flavor-hidden'); 
+                            });
+                            toggleSaboresBtn.textContent = flavorsVisible ? 'Mostrar menos sabores' : 'Mostrar más sabores';
+                        });
+                    }
                 }
-            }
 
-            // --- Lógica del Carrito ---
-            const cartCountElement = document.getElementById('cart-count');
-            function updateCartCount() {
-                let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
-                let totalItems = 0;
-                cart.forEach(item => { totalItems += item.quantity; });
-                if (cartCountElement) { cartCountElement.textContent = totalItems; }
-            }
-            updateCartCount(); 
-            console.log('index.html (inicializarLogicaDeLaPagina): Page logic initialization finished.');
-        } // Fin de inicializarLogicaDeLaPagina
+                // --- Lógica del Carrito ---
+                const cartCountElement = document.getElementById('cart-count');
+                function updateCartCount() {
+                    let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
+                    let totalItems = 0;
+                    cart.forEach(item => { totalItems += item.quantity; });
+                    if (cartCountElement) { cartCountElement.textContent = totalItems; }
+                }
+                updateCartCount(); 
+                console.log('index.html (inicializarLogicaDeLaPagina): Page logic initialization finished.');
+            } // Fin de inicializarLogicaDeLaPagina
 
-        // INICIALIZACIÓN DE SUPABASE Y LUEGO LA LÓGICA DE LA PÁGINA
-        // Este bloque se ejecutará después de que el script del CDN de Supabase (en el head) se haya cargado y procesado.
-        console.log('index.html: Attempting to initialize Supabase and page logic.');
-        if (typeof supabaseJs !== 'undefined') {
-            console.log('index.html: supabaseJs IS defined. Proceeding with Supabase client initialization.');
-            const supabaseUrl = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-            const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
-            
-            window.supabase = null; 
+            // INICIALIZACIÓN DE SUPABASE Y LUEGO LA LÓGICA DE LA PÁGINA
+            console.log('index.html (DOMContentLoaded): Attempting to initialize Supabase.');
+            if (typeof supabaseJs !== 'undefined') {
+                console.log('index.html (DOMContentLoaded): supabaseJs IS defined. Proceeding with Supabase client initialization.');
+                const supabaseUrl = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+                
+                window.supabase = null; 
 
-            try {
-                console.log('index.html: Attempting to create Supabase client.');
-                window.supabase = supabaseJs.createClient(supabaseUrl, supabaseAnonKey);
+                try {
+                    console.log('index.html (DOMContentLoaded): Attempting to create Supabase client.');
+                    window.supabase = supabaseJs.createClient(supabaseUrl, supabaseAnonKey);
 
-                if (window.supabase && typeof window.supabase.from === 'function') {
-                    console.log('index.html: Supabase client CREATED successfully and VALID.', window.supabase);
-                } else {
-                    console.error('index.html: Supabase client was created, but it appears INVALID. Object:', window.supabase);
+                    if (window.supabase && typeof window.supabase.from === 'function') {
+                        console.log('index.html (DOMContentLoaded): Supabase client CREATED successfully and VALID.', window.supabase);
+                    } else {
+                        console.error('index.html (DOMContentLoaded): Supabase client was created, but it appears INVALID. Object:', window.supabase);
+                        window.supabase = null;
+                    }
+                } catch (e) {
+                    console.error('index.html (DOMContentLoaded): Error occurred during supabaseJs.createClient() execution:', e);
                     window.supabase = null;
                 }
-            } catch (e) {
-                console.error('index.html: Error occurred during supabaseJs.createClient() execution:', e);
-                window.supabase = null;
+            } else {
+                console.error('index.html (DOMContentLoaded): CRITICAL - supabaseJs is not defined when trying to initialize Supabase client. Supabase CDN script in <head> might have failed to load or execute.');
+                window.supabase = null; 
             }
-        } else {
-            console.error('index.html: CRITICAL - supabaseJs is not defined when trying to initialize Supabase client. Supabase CDN script might have failed to load.');
-            window.supabase = null; // Asegurarse de que sea null si supabaseJs no está definido
-        }
 
-        // Llama a inicializarLogicaDeLaPagina independientemente de si Supabase se inicializó,
-        // para que la UI no dependiente de Supabase pueda funcionar y los errores se muestren.
-        // Se recomienda que inicializarLogicaDeLaPagina maneje internamente el caso de window.supabase nulo.
-        if (typeof inicializarLogicaDeLaPagina === "function") {
+            // Llama a inicializarLogicaDeLaPagina después de intentar inicializar Supabase.
+            // La función inicializarLogicaDeLaPagina verificará internamente si window.supabase es válido.
             inicializarLogicaDeLaPagina();
-        } else {
-            // Este caso no debería ocurrir si el script está estructurado correctamente.
-            console.error("index.html: CRITICAL - inicializarLogicaDeLaPagina is not defined. Cannot initialize page UI.");
-        }
-        
-        console.log('index.html: Main script block at the end of body finished.');
+            
+            console.log('index.html (DOMContentLoaded): Event listener finished.');
+        });
     </script>
 
 </body>
 </html>
-```
-
-**Cambios Clave en este `index.html`:**
-
-1.  **CDN de Supabase en `<head>`**: `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>` se ha movido al `<head>`. Esto hace que el navegador lo descargue y ejecute antes de procesar el `<body>`.
-2.  **Script Principal al Final del `<body>`**: Todo tu JavaScript personalizado (incluyendo la definición de `inicializarLogicaDeLaPagina`, la inicialización de `window.supabase` y la llamada a `inicializarLogicaDeLaPagina`) está ahora en un solo bloque `<script>` justo antes de `</body>`.
-    * Esto asegura que todo el DOM HTML esté disponible cuando tu script se ejecute.
-    * Cuando este script se ejecuta, `supabaseJs` (del CDN en el `<head>`) ya debería estar definido globalmente.
-
-**Pasos a seguir (muy importantes):**
-
-1.  **Reemplaza TODO el contenido de tu archivo `index.html`** con el código de arriba.
-2.  **ELIMINA el archivo `config.js`** de tu proyecto si aún existe, ya que no lo estamos usando.
-3.  **BORRA LA CACHÉ DE TU NAVEGADOR COMPLETAMENTE Y REALIZA UNA ACTUALIZACIÓN FORZADA (HARD REFRESH)**.
-    * En Chrome, puedes abrir las herramientas de desarrollador (F12), ir a la pestaña "Network", marcar "Disable cache", y luego recargar la página (Ctrl+R o Cmd+R). Luego puedes desmarcar "Disable cache".
-    * Alternativamente, usa una ventana de incógnito/privada.
-4.  **Abre la Consola de Desarrollador** (`F12`) *antes* de cargar la página.
-5.  **Carga la página y observa los mensajes de la consola.**
-6.  **Intenta enviar el formulario.**
-
-**Qué esperar en la consola (en orden aproximado):**
-
-1.  `index.html: Main script block at the end of body started.`
-2.  `index.html: Attempting to initialize Supabase and page logic.`
-3.  `index.html: supabaseJs IS defined. Proceeding with Supabase client initialization.` (¡Este es un buen signo!)
-4.  `index.html: Attempting to create Supabase client.`
-5.  `index.html: Supabase client CREATED successfully and VALID.` (¡Este es el signo crucial!)
-6.  `index.html (inicializarLogicaDeLaPagina): Initializing page logic.`
-7.  `index.html (inicializarLogicaDeLaPagina): "window.supabase" client IS defined and valid. Setting up form.`
-8.  `index.html (inicializarLogicaDeLaPagina): Page logic initialization finished.`
-9.  `index.html: Main script block at the end of body finished.`
-
-Si ves el error `CRITICAL - supabaseJs is not defined...` al principio, significa que el script del CDN de Supabase en el `<head>` no se cargó o no se ejecutó correctamente. Verifica la URL del CDN y tu conexión a internet.
-
-Si el `SyntaxError` sobre `inicializarLogicaDeLaPagina` persiste, sería muy extraño con esta nueva estructura, ya que la función se define claramente antes de ser llamada dentro del mismo bloque de script.
-
-Por favor, prueba esto con mucha atención a la limpieza de la caché. ¡Espero que esta vez funcio
