@@ -596,11 +596,3 @@
     </script>
 </body>
 </html>
-```
-
-**Recordatorio Importante:**
-
-* **Limpia la caché del navegador y realiza una actualización forzada** (`Ctrl+Shift+R` o `Cmd+Shift+R`) después de aplicar este cambio. Esto es crucial.
-* Verifica la consola del navegador para asegurarte de que los mensajes de inicialización de `window.supabaseClient` sean exitosos.
-
-Si después de esto el envío de datos aún falla, el error que aparezca en la consola (especialmente el de `Error de Supabase al insertar:`) nos dará la pista definitiva. Podría estar relacionado con las políticas de seguridad de tu tabla en Supabase (Row Level Security) si la inserción es denegada, o algún otro problema de configuración del lado de Supaba
