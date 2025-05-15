@@ -421,6 +421,7 @@
 
     <script>
         // --- Inicialización de Supabase ---
+        // Se espera que 'supabase' sea inicializado globalmente por config.js
         if (typeof supabase !== 'undefined' && supabase) {
             const contactForm = document.getElementById('contact-form');
             const formResponseMessage = document.getElementById('form-response-message');
@@ -479,11 +480,9 @@
                 });
             }
         } else {
-            // Este console.error y el mensaje en la página solo se mostrarán si 'supabase' no está definido.
-            // Si config.js funciona y define 'supabase' globalmente, esta parte del 'else' no se ejecutará.
-            console.error('Cliente Supabase no definido. Asegúrate de que config.js esté cargado y correcto, y que inicialice la variable global "supabase".');
-             const formResponseMessage = document.getElementById('form-response-message');
-            if(formResponseMessage) { // Solo intenta modificar si el elemento existe
+            console.error('Error Crítico: Cliente Supabase no definido. Verifica config.js y el orden de carga de scripts.');
+            const formResponseMessage = document.getElementById('form-response-message');
+            if(formResponseMessage) { 
                 formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
                 formResponseMessage.className = 'form-message error';
             }
