@@ -13,26 +13,50 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('CRITICAL ERROR: Supabase UMD CDN script failed to load. Check network connection and CDN URL.')"></script>
+
     <script>
-        // Configuración de Tailwind CSS (igual que en otras páginas)
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-navy-primary': '#0D1B2A',
-                        'brand-navy-text': '#1B263B',
-                        'brand-blue': '#0f2a66',
-                        'brand-off-white': '#FDFBF9',
-                        'brand-gold-accent': '#BFA181',
-                    },
-                    fontFamily: {
-                        'serif': ['Playfair Display', 'serif'],
-                        'sans': ['Lato', 'sans-serif'],
-                    }
-                }
+        console.log('checkout.html (head): Attempting to initialize Supabase client from UMD global.');
+        const SUPABASE_URL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+        
+        if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
+            try {
+                window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('checkout.html (head): window.supabaseClient initialized successfully from UMD.', window.supabaseClient);
+            } catch (e) {
+                console.error('checkout.html (head): Error initializing window.supabaseClient from UMD global:', e);
+                window.supabaseClient = null;
             }
+        } else {
+            console.error('checkout.html (head): CRITICAL - Global "supabase" object from UMD not found or not a valid Supabase entry point.');
+            window.supabaseClient = null;
         }
     </script>
+
+    <script>
+        // Configuración de Tailwind
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'brand-navy-primary': '#0D1B2A',
+                            'brand-navy-text': '#1B263B',
+                            'brand-blue': '#0f2a66',
+                            'brand-off-white': '#FDFBF9',
+                            'brand-gold-accent': '#BFA181',
+                        },
+                        fontFamily: {
+                            'serif': ['Playfair Display', 'serif'],
+                            'sans': ['Lato', 'sans-serif'],
+                        }
+                    }
+                }
+            };
+        }
+    </script>
+    
     <style>
         html { scroll-behavior: smooth; }
         body {
@@ -53,6 +77,10 @@
         .btn-action:hover {
              background-color: #0D1B2A; /* brand-navy-primary */
              transform: scale(1.03);
+        }
+        .btn-action:disabled {
+            background-color: #A0AEC0; /* gray-400 */
+            cursor: not-allowed;
         }
         .btn-secondary-outline {
             background-color: transparent;
@@ -84,34 +112,34 @@
          footer .footer-text-secondary {
              color: #D1B490; /* Un tono más claro de brand-gold-accent */
          }
-        #mobile-menu-checkout-page { /* ID único para el menú móvil de esta página */
+        #mobile-menu-checkout-page { 
             transition: transform 0.3s ease-in-out;
         }
         .form-section {
             background-color: white;
-            padding: 1.5rem; /* p-6 */
-            border-radius: 0.5rem; /* rounded-lg */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
-            margin-bottom: 2rem; /* mb-8 */
+            padding: 1.5rem; 
+            border-radius: 0.5rem; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+            margin-bottom: 2rem; 
         }
         .form-input, .form-select {
             width: 100%;
-            padding: 0.75rem 1rem; /* px-4 py-3 */
-            border: 1px solid #D1D5DB; /* border-gray-300 */
-            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.75rem 1rem; 
+            border: 1px solid #D1D5DB; 
+            border-radius: 0.375rem; 
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             background-color: white;
         }
         .form-input:focus, .form-select:focus {
             outline: none;
-            border-color: #0f2a66; /* brand-blue */
-            box-shadow: 0 0 0 2px rgba(15, 42, 102, 0.3); /* Anillo de foco similar a brand-blue */
+            border-color: #0f2a66; 
+            box-shadow: 0 0 0 2px rgba(15, 42, 102, 0.3); 
         }
         .form-label {
             display: block;
-            margin-bottom: 0.5rem; /* mb-2 */
-            font-weight: 600; /* font-semibold */
-            color: #1B263B; /* brand-navy-text */
+            margin-bottom: 0.5rem; 
+            font-weight: 600; 
+            color: #1B263B; 
         }
         .radio-label {
             display: flex;
@@ -125,16 +153,36 @@
         .radio-label input[type="radio"] {
             margin-right: 0.5rem;
         }
-        .radio-label:hover, input[type="radio"]:checked + .radio-label {
-            border-color: #0f2a66; /* brand-blue */
-            background-color: #EBF8FF; /* Un azul muy claro, similar a brand-blue/10 */
+        .radio-label:hover, input[type="radio"]:checked + .radio-label-span { /* Aplicar estilo al span para mejor control */
+            border-color: #0f2a66;
+        }
+        input[type="radio"]:checked ~ .radio-label-span-container {
+             border-color: #0f2a66;
+             background-color: #EBF8FF;
         }
         .payment-method-details {
-            background-color: #f9fafb; /* gray-50 */
-            border: 1px solid #e5e7eb; /* gray-200 */
-            border-radius: 0.375rem; /* rounded-md */
+            background-color: #f9fafb; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 0.375rem; 
             padding: 1rem;
             margin-top: 0.5rem;
+        }
+        .form-message {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+        .form-message.success {
+            background-color: #c6f6d5; /* Tailwind green-200 */
+            color: #2f855a; /* Tailwind green-700 */
+            border: 1px solid #9ae6b4; /* Tailwind green-300 */
+        }
+        .form-message.error {
+            background-color: #fed7d7; /* Tailwind red-200 */
+            color: #c53030; /* Tailwind red-700 */
+            border: 1px solid #fbb6ce; /* Tailwind red-300 */
         }
     </style>
 </head>
@@ -228,14 +276,18 @@
                         <div class="form-section">
                             <h2 class="text-2xl font-semibold text-brand-navy-text mb-6">3. Tipo de Entrega</h2>
                             <div class="space-y-3">
-                                <label class="radio-label">
-                                    <input type="radio" name="tipo-entrega" value="domicilio" checked onchange="toggleEnvioInfo(true)">
-                                    Envío a Domicilio
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="tipo-entrega" value="tienda" onchange="toggleEnvioInfo(false)">
-                                    Retiro en Tienda (Temuco Centro, se coordina por WhatsApp)
-                                </label>
+                                <div class="radio-label-span-container border border-gray-300 rounded-md">
+                                    <label class="radio-label">
+                                        <input type="radio" name="tipo-entrega" value="domicilio" checked onchange="toggleEnvioInfo(true)">
+                                        <span class="radio-label-span">Envío a Domicilio</span>
+                                    </label>
+                                </div>
+                                <div class="radio-label-span-container border border-gray-300 rounded-md">
+                                    <label class="radio-label">
+                                        <input type="radio" name="tipo-entrega" value="tienda" onchange="toggleEnvioInfo(false)">
+                                         <span class="radio-label-span">Retiro en Tienda (Temuco Centro, se coordina por WhatsApp)</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -294,15 +346,18 @@
                                 </div>
                                 <button type="button" id="aplicar-cupon-btn" class="btn-secondary-outline py-3 px-6 rounded-md h-12">Aplicar Cupón</button>
                             </div>
+                            <div id="cupon-message" class="text-sm mt-2"></div>
                         </div>
 
                         <div class="form-section">
                             <h2 class="text-2xl font-semibold text-brand-navy-text mb-6">6. Método de Pago</h2>
                             <div class="space-y-3">
-                                <label class="radio-label">
-                                    <input type="radio" name="metodo-pago" value="transferencia" checked>
-                                    Transferencia Bancaria Directa
-                                </label>
+                                <div class="radio-label-span-container border border-gray-300 rounded-md">
+                                    <label class="radio-label">
+                                        <input type="radio" name="metodo-pago" value="transferencia" checked>
+                                        <span class="radio-label-span">Transferencia Bancaria Directa</span>
+                                    </label>
+                                </div>
                                 <div class="payment-method-details text-sm text-brand-navy-text/80">
                                     <p><strong>Banco:</strong> Banco Estado</p>
                                     <p><strong>Tipo de Cuenta:</strong> Cuenta Corriente</p>
@@ -312,9 +367,12 @@
                                     <p><strong>Email para comprobante:</strong> pagos@christophoroscioccolato.cl</p>
                                     <p class="mt-2">Por favor, incluye el número de pedido en el asunto de la transferencia.</p>
                                 </div>
-                                <label class="radio-label">
-                                    <input type="radio" name="metodo-pago" value="mercadopago">
-                                    Mercado Pago <img src="images/mercado-pago-logo.png" alt="Mercado Pago" class="h-5 inline-block ml-2"> </label>
+                                <div class="radio-label-span-container border border-gray-300 rounded-md">
+                                    <label class="radio-label">
+                                        <input type="radio" name="metodo-pago" value="mercadopago">
+                                        <span class="radio-label-span">Mercado Pago <img src="images/mercado-pago-logo.png" alt="Mercado Pago" class="h-5 inline-block ml-2"></span>
+                                    </label>
+                                </div>
                                 <p class="text-sm text-brand-navy-text/70 mt-1">Serás redirigido a Mercado Pago para completar tu compra de forma segura.</p>
                             </div>
                         </div>
@@ -325,9 +383,11 @@
                                 <span class="text-sm text-brand-navy-text/90">He leído y acepto los <a href="#" class="text-brand-blue hover:underline">Términos y Condiciones</a> y la <a href="#" class="text-brand-blue hover:underline">Política de Privacidad</a>. <span class="text-red-500">*</span></span>
                             </label>
                         </div>
+                        <div id="form-checkout-response-message" class="form-message mt-4"></div>
+
 
                         <div class="mt-8 text-right">
-                            <button type="submit" class="btn-action text-lg font-semibold py-3 px-10 rounded-md shadow-lg">
+                            <button type="submit" id="finalizar-compra-btn" class="btn-action text-lg font-semibold py-3 px-10 rounded-md shadow-lg">
                                 Finalizar Compra y Realizar Pedido
                             </button>
                         </div>
@@ -371,133 +431,282 @@
     </footer>
 
     <script>
-        // Lógica para el menú móvil
-        const mobileMenuButtonCheckout = document.getElementById('mobile-menu-button-checkout');
-        const mobileMenuCheckoutPage = document.getElementById('mobile-menu-checkout-page');
-        const menuIconOpenCheckout = document.getElementById('menu-icon-open-checkout');
-        const menuIconCloseCheckout = document.getElementById('menu-icon-close-checkout');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('checkout.html (DOMContentLoaded): DOM fully loaded. Initializing page logic.');
 
-        if (mobileMenuButtonCheckout) {
-             mobileMenuButtonCheckout.addEventListener('click', () => {
-                const isExpanded = mobileMenuButtonCheckout.getAttribute('aria-expanded') === 'true';
-                mobileMenuButtonCheckout.setAttribute('aria-expanded', !isExpanded);
-                mobileMenuCheckoutPage.classList.toggle('-translate-y-full'); 
-                mobileMenuCheckoutPage.classList.toggle('z-10'); 
-                mobileMenuCheckoutPage.classList.toggle('-z-10'); 
-                if (menuIconOpenCheckout) menuIconOpenCheckout.classList.toggle('hidden');
-                if (menuIconCloseCheckout) menuIconCloseCheckout.classList.toggle('hidden');
-            });
+            // Lógica para el menú móvil
+            const mobileMenuButtonCheckout = document.getElementById('mobile-menu-button-checkout');
+            const mobileMenuCheckoutPage = document.getElementById('mobile-menu-checkout-page');
+            const menuIconOpenCheckout = document.getElementById('menu-icon-open-checkout');
+            const menuIconCloseCheckout = document.getElementById('menu-icon-close-checkout');
 
-            if (mobileMenuCheckoutPage) { 
-                mobileMenuCheckoutPage.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        mobileMenuButtonCheckout.setAttribute('aria-expanded', 'false');
-                        mobileMenuCheckoutPage.classList.add('-translate-y-full');
-                        mobileMenuCheckoutPage.classList.add('-z-10');
-                        mobileMenuCheckoutPage.classList.remove('z-10');
-                        if (menuIconOpenCheckout) menuIconOpenCheckout.classList.remove('hidden');
-                        if (menuIconCloseCheckout) menuIconCloseCheckout.classList.add('hidden');
-                    });
+            if (mobileMenuButtonCheckout) {
+                mobileMenuButtonCheckout.addEventListener('click', () => {
+                    const isExpanded = mobileMenuButtonCheckout.getAttribute('aria-expanded') === 'true';
+                    mobileMenuButtonCheckout.setAttribute('aria-expanded', !isExpanded);
+                    mobileMenuCheckoutPage.classList.toggle('-translate-y-full'); 
+                    mobileMenuCheckoutPage.classList.toggle('z-10'); 
+                    mobileMenuCheckoutPage.classList.toggle('-z-10'); 
+                    if (menuIconOpenCheckout) menuIconOpenCheckout.classList.toggle('hidden');
+                    if (menuIconCloseCheckout) menuIconCloseCheckout.classList.toggle('hidden');
                 });
-            }
-        }
-
-        // Lógica para cargar el resumen del pedido y actualizar contador del carrito
-        const orderSummaryItemsContainer = document.getElementById('order-summary-items');
-        const summarySubtotalEl = document.getElementById('summary-subtotal');
-        const summaryDiscountEl = document.getElementById('summary-discount');
-        const summaryTotalEl = document.getElementById('summary-total');
-        const cartCountCheckoutEl = document.getElementById('cart-count-checkout');
-
-        function formatPrice(price) {
-            return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 });
-        }
-
-        function loadOrderSummary() {
-            const cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
-            let subtotal = 0;
-            let totalItemsInCart = 0;
-            // Simulación de descuento, puedes implementar la lógica real aquí
-            let discountAmount = 0; 
-            
-            if (orderSummaryItemsContainer) orderSummaryItemsContainer.innerHTML = ''; 
-
-            if (cart.length === 0) {
-                if (orderSummaryItemsContainer) {
-                    orderSummaryItemsContainer.innerHTML = '<p class="text-sm text-brand-navy-text/70">Tu carrito está vacío.</p>';
+                if (mobileMenuCheckoutPage) { 
+                    mobileMenuCheckoutPage.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('click', () => {
+                            mobileMenuButtonCheckout.setAttribute('aria-expanded', 'false');
+                            mobileMenuCheckoutPage.classList.add('-translate-y-full');
+                            mobileMenuCheckoutPage.classList.add('-z-10');
+                            mobileMenuCheckoutPage.classList.remove('z-10');
+                            if (menuIconOpenCheckout) menuIconOpenCheckout.classList.remove('hidden');
+                            if (menuIconCloseCheckout) menuIconCloseCheckout.classList.add('hidden');
+                        });
+                    });
                 }
-            } else {
-                cart.forEach(item => {
-                    const itemTotal = item.price * item.quantity;
-                    subtotal += itemTotal;
-                    totalItemsInCart += item.quantity;
+            }
 
+            const orderSummaryItemsContainer = document.getElementById('order-summary-items');
+            const summarySubtotalEl = document.getElementById('summary-subtotal');
+            const summaryDiscountEl = document.getElementById('summary-discount');
+            const summaryTotalEl = document.getElementById('summary-total');
+            const cartCountCheckoutEl = document.getElementById('cart-count-checkout');
+            let currentDiscountAmount = 0; // Variable para almacenar el descuento actual
+
+            function formatPrice(price) {
+                return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 });
+            }
+
+            function loadOrderSummary() {
+                const cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
+                let subtotal = 0;
+                let totalItemsInCart = 0;
+                
+                if (orderSummaryItemsContainer) orderSummaryItemsContainer.innerHTML = ''; 
+
+                if (cart.length === 0) {
                     if (orderSummaryItemsContainer) {
-                        const itemDiv = document.createElement('div');
-                        itemDiv.className = 'flex justify-between items-center text-sm';
-                        itemDiv.innerHTML = `
-                            <div class="flex items-center">
-                                <img src="${item.image || 'images/default-product.png'}" alt="${item.name}" class="h-10 w-10 object-contain rounded-md mr-3">
-                                <span>${item.name} (x${item.quantity})</span>
-                            </div>
-                            <span>${formatPrice(itemTotal)}</span>
-                        `;
-                        orderSummaryItemsContainer.appendChild(itemDiv);
+                        orderSummaryItemsContainer.innerHTML = '<p class="text-sm text-brand-navy-text/70">Tu carrito está vacío.</p>';
+                    }
+                     document.getElementById('finalizar-compra-btn').disabled = true; // Deshabilitar botón si el carrito está vacío
+                } else {
+                     document.getElementById('finalizar-compra-btn').disabled = false;
+                    cart.forEach(item => {
+                        const itemTotal = item.price * item.quantity;
+                        subtotal += itemTotal;
+                        totalItemsInCart += item.quantity;
+
+                        if (orderSummaryItemsContainer) {
+                            const itemDiv = document.createElement('div');
+                            itemDiv.className = 'flex justify-between items-center text-sm';
+                            itemDiv.innerHTML = `
+                                <div class="flex items-center">
+                                    <img src="${item.image || 'images/default-product.png'}" alt="${item.name}" class="h-10 w-10 object-contain rounded-md mr-3">
+                                    <span>${item.name} (x${item.quantity})</span>
+                                </div>
+                                <span>${formatPrice(itemTotal)}</span>
+                            `;
+                            orderSummaryItemsContainer.appendChild(itemDiv);
+                        }
+                    });
+                }
+                
+                const total = subtotal - currentDiscountAmount;
+
+                if (summarySubtotalEl) summarySubtotalEl.textContent = formatPrice(subtotal);
+                if (summaryDiscountEl) summaryDiscountEl.textContent = `-${formatPrice(currentDiscountAmount)}`;
+                if (summaryTotalEl) summaryTotalEl.textContent = formatPrice(total);
+                if (cartCountCheckoutEl) cartCountCheckoutEl.textContent = totalItemsInCart;
+            }
+            
+            loadOrderSummary(); // Cargar al inicio
+
+            const infoEnvioSection = document.getElementById('info-envio-section');
+            const envioInputs = infoEnvioSection ? Array.from(infoEnvioSection.querySelectorAll('input[type="text"], input[type="tel"], select, textarea')) : [];
+
+            function toggleEnvioInfo(show) {
+                if (infoEnvioSection) {
+                    if (show) {
+                        infoEnvioSection.style.display = 'block';
+                        envioInputs.forEach(input => input.required = true);
+                    } else {
+                        infoEnvioSection.style.display = 'none';
+                        envioInputs.forEach(input => input.required = false);
+                    }
+                }
+            }
+            const tipoEntregaRadios = document.querySelectorAll('input[name="tipo-entrega"]');
+            tipoEntregaRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    toggleEnvioInfo(this.value === 'domicilio');
+                });
+            });
+            // Inicializar basado en la opción por defecto
+            const defaultEntrega = document.querySelector('input[name="tipo-entrega"]:checked');
+            if (defaultEntrega) {
+                toggleEnvioInfo(defaultEntrega.value === 'domicilio');
+            }
+
+
+            const checkoutForm = document.getElementById('checkout-form');
+            const formResponseMessageCheckout = document.getElementById('form-checkout-response-message');
+
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    console.log("Form submit event triggered");
+
+                    const submitButton = document.getElementById('finalizar-compra-btn');
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Procesando...';
+                    if (formResponseMessageCheckout) {
+                        formResponseMessageCheckout.textContent = '';
+                        formResponseMessageCheckout.className = 'form-message';
+                    }
+
+                    // Validación simple (puedes hacerla más robusta)
+                    let isValid = true;
+                    const requiredInputs = checkoutForm.querySelectorAll('[required]');
+                    requiredInputs.forEach(input => {
+                        // Solo validar si el input es visible (para la sección de envío condicional)
+                        if (input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) {
+                            if (!input.value.trim()) {
+                                isValid = false;
+                                input.classList.add('border-red-500'); // Resaltar campo vacío
+                                console.warn(`Campo requerido vacío: ${input.name || input.id}`);
+                            } else {
+                                input.classList.remove('border-red-500');
+                            }
+                        }
+                    });
+                     const terminosCheckbox = document.getElementById('terminos');
+                    if (!terminosCheckbox.checked) {
+                        isValid = false;
+                        alert("Debes aceptar los términos y condiciones.");
+                        console.warn("Términos y condiciones no aceptados.");
+                    }
+
+
+                    if (!isValid) {
+                        if (formResponseMessageCheckout) {
+                            formResponseMessageCheckout.textContent = 'Por favor, completa todos los campos obligatorios (*) y acepta los términos.';
+                            formResponseMessageCheckout.className = 'form-message error';
+                        }
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
+                        return;
+                    }
+                    
+                    console.log("Form is valid. Checking Supabase client...");
+
+                    if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient && typeof window.supabaseClient.from === 'function') {
+                        console.log("Supabase client found. Proceeding to collect data.");
+                        const formData = new FormData(checkoutForm);
+                        const cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
+                        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                        const total = subtotal - currentDiscountAmount; // Asumiendo que currentDiscountAmount se actualiza
+
+                        const orderData = {
+                            nombre_contacto: formData.get('checkout-nombre'),
+                            apellido_contacto: formData.get('checkout-apellido'),
+                            email_contacto: formData.get('checkout-email'),
+                            telefono_contacto: formData.get('checkout-telefono-contacto'),
+                            nombre_boleta: formData.get('boleta-nombre'),
+                            rut_boleta: formData.get('boleta-rut'),
+                            tipo_entrega: formData.get('tipo-entrega'),
+                            nombre_recibe_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-nombre-recibe') : null,
+                            rut_recibe_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-rut-recibe') : null,
+                            telefono_recibe_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-telefono-recibe') : null,
+                            direccion_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-direccion') : null,
+                            depto_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-depto') : null,
+                            region_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-region') : null,
+                            comuna_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-comuna') : null,
+                            instrucciones_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-instrucciones') : null,
+                            cupon_descuento: formData.get('cupon'),
+                            metodo_pago: formData.get('metodo-pago'),
+                            items_pedido: cart, // Guardar el carrito como JSON
+                            subtotal_pedido: subtotal,
+                            descuento_pedido: currentDiscountAmount,
+                            total_pedido: total,
+                            estado_pedido: 'pendiente' // Estado inicial del pedido
+                        };
+
+                        console.log("Order data collected:", orderData);
+
+                        try {
+                            console.log("Attempting to insert order into Supabase table 'Pedidos'.");
+                            const { data, error } = await window.supabaseClient
+                                .from('Pedidos') // Asegúrate que esta tabla exista en Supabase
+                                .insert([orderData]);
+
+                            if (error) {
+                                console.error('Error de Supabase al insertar pedido:', error);
+                                throw error;
+                            }
+                            
+                            console.log("Order inserted successfully:", data);
+                            if (formResponseMessageCheckout) {
+                                formResponseMessageCheckout.textContent = '¡Pedido realizado con éxito! Gracias por tu compra.';
+                                formResponseMessageCheckout.className = 'form-message success';
+                            }
+                            localStorage.removeItem('christophorosCart'); // Limpiar carrito
+                            loadOrderSummary(); // Actualizar UI del resumen y contador
+                            checkoutForm.reset(); // Resetear formulario
+                            // Podrías redirigir a una página de "gracias"
+                            // window.location.href = 'gracias.html';
+
+                        } catch (error) {
+                            console.error('Error al procesar el pedido:', error.message ? error.message : error);
+                            if (formResponseMessageCheckout) {
+                                formResponseMessageCheckout.textContent = 'Hubo un error al procesar tu pedido. Por favor, inténtalo de nuevo o contáctanos.';
+                                formResponseMessageCheckout.className = 'form-message error';
+                            }
+                        } finally {
+                            submitButton.disabled = false;
+                            submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
+                        }
+                    } else {
+                        console.error("Supabase client (window.supabaseClient) is not defined or invalid. Cannot submit order.");
+                         if (formResponseMessageCheckout) {
+                            formResponseMessageCheckout.textContent = 'Error de configuración del servicio. No se puede procesar el pedido.';
+                            formResponseMessageCheckout.className = 'form-message error';
+                        }
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
                     }
                 });
             }
-            
-            const total = subtotal - discountAmount;
 
-            if (summarySubtotalEl) summarySubtotalEl.textContent = formatPrice(subtotal);
-            if (summaryDiscountEl) summaryDiscountEl.textContent = `-${formatPrice(discountAmount)}`;
-            if (summaryTotalEl) summaryTotalEl.textContent = formatPrice(total);
-            if (cartCountCheckoutEl) cartCountCheckoutEl.textContent = totalItemsInCart;
-        }
-        
-        document.addEventListener('DOMContentLoaded', loadOrderSummary);
+            const aplicarCuponBtn = document.getElementById('aplicar-cupon-btn');
+            const cuponMessageEl = document.getElementById('cupon-message');
 
-        // Lógica para mostrar/ocultar información de envío
-        const infoEnvioSection = document.getElementById('info-envio-section');
-        const envioInputs = infoEnvioSection.querySelectorAll('input[type="text"], input[type="tel"], select, textarea');
-
-        function toggleEnvioInfo(show) {
-            if (show) {
-                infoEnvioSection.style.display = 'block';
-                envioInputs.forEach(input => input.required = true);
-            } else {
-                infoEnvioSection.style.display = 'none';
-                envioInputs.forEach(input => input.required = false);
+            if(aplicarCuponBtn) {
+                aplicarCuponBtn.addEventListener('click', function() {
+                    const cuponInput = document.getElementById('cupon');
+                    if (cuponInput && cuponInput.value.trim() !== "") {
+                        // Lógica de simulación de cupón
+                        if (cuponInput.value.toUpperCase() === "DESC10") {
+                            currentDiscountAmount = 5000; // Ejemplo de descuento fijo
+                            if(cuponMessageEl) {
+                                cuponMessageEl.textContent = `Cupón "${cuponInput.value}" aplicado: ${formatPrice(currentDiscountAmount)} de descuento.`;
+                                cuponMessageEl.className = 'text-sm mt-2 text-green-600';
+                            }
+                        } else {
+                            currentDiscountAmount = 0;
+                             if(cuponMessageEl) {
+                                cuponMessageEl.textContent = "Cupón no válido.";
+                                cuponMessageEl.className = 'text-sm mt-2 text-red-600';
+                             }
+                        }
+                        loadOrderSummary(); // Recalcular totales
+                    } else {
+                        if(cuponMessageEl) {
+                            cuponMessageEl.textContent = "Por favor, ingresa un código de cupón.";
+                            cuponMessageEl.className = 'text-sm mt-2 text-red-600';
+                        }
+                    }
+                });
             }
-        }
-        // Inicializar basado en la opción por defecto (Envío a Domicilio)
-        toggleEnvioInfo(true); 
-
-
-        // Manejo del envío del formulario de checkout (placeholder)
-        const checkoutForm = document.getElementById('checkout-form');
-        if (checkoutForm) {
-            checkoutForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                alert('Procesando pedido... (Esta es una funcionalidad de marcador de posición)');
-            });
-        }
-
-        // Placeholder para el botón de aplicar cupón
-        const aplicarCuponBtn = document.getElementById('aplicar-cupon-btn');
-        if(aplicarCuponBtn) {
-            aplicarCuponBtn.addEventListener('click', function() {
-                const cuponInput = document.getElementById('cupon');
-                if (cuponInput && cuponInput.value.trim() !== "") {
-                    alert(`Cupón "${cuponInput.value}" aplicado (simulación).`);
-                    // Aquí iría la lógica para verificar el cupón y actualizar el descuento.
-                    // Por ahora, solo es una simulación.
-                } else {
-                    alert("Por favor, ingresa un código de cupón.");
-                }
-            });
-        }
-
+            console.log('checkout.html (DOMContentLoaded): Event listeners and page setup finished.');
+        });
     </script>
 
 </body>
