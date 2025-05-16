@@ -184,6 +184,9 @@
             color: #c53030; 
             border: 1px solid #fbb6ce; 
         }
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="font-sans">
@@ -276,23 +279,20 @@
                         <div class="form-section">
                             <h2 class="text-2xl font-semibold text-brand-navy-text mb-6">3. Tipo de Entrega</h2>
                             <div class="space-y-3">
-                                <div class="radio-label-span-container border border-gray-300 rounded-md">
-                                    <label class="radio-label">
-                                        <input type="radio" name="tipo-entrega" value="domicilio" checked onchange="toggleEnvioInfo(true)">
+                                <div class="radio-label-span-container border border-gray-300 rounded-md hidden"> <label class="radio-label">
+                                        <input type="radio" name="tipo-entrega" value="domicilio" onchange="toggleEnvioInfo(true)">
                                         <span class="radio-label-span">Envío a Domicilio</span>
                                     </label>
                                 </div>
                                 <div class="radio-label-span-container border border-gray-300 rounded-md">
                                     <label class="radio-label">
-                                        <input type="radio" name="tipo-entrega" value="retiro" onchange="toggleEnvioInfo(false)">
-                                         <span class="radio-label-span">Retiro en Tienda (Temuco Centro, se coordina por WhatsApp)</span>
+                                        <input type="radio" name="tipo-entrega" value="retiro" checked onchange="toggleEnvioInfo(false)"> <span class="radio-label-span">Retiro en Tienda (Temuco Centro, se coordina por WhatsApp)</span>
                                     </label>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="info-envio-section" class="form-section">
-                            <h2 class="text-2xl font-semibold text-brand-navy-text mb-4">4. Información de Envío</h2>
+                        <div id="info-envio-section" class="form-section hidden"> <h2 class="text-2xl font-semibold text-brand-navy-text mb-4">4. Información de Envío</h2>
                             <p class="text-sm text-brand-navy-text/70 mb-4">El envío es siempre por pagar en destino.</p>
                             <div class="space-y-4">
                                 <div>
@@ -367,14 +367,12 @@
                                     <p><strong>Email para comprobante:</strong> pagos@christophoroscioccolato.cl</p>
                                     <p class="mt-2">Por favor, incluye el número de pedido en el asunto de la transferencia.</p>
                                 </div>
-                                <div class="radio-label-span-container border border-gray-300 rounded-md">
-                                    <label class="radio-label">
+                                <div class="radio-label-span-container border border-gray-300 rounded-md hidden"> <label class="radio-label">
                                         <input type="radio" name="metodo-pago" value="mercadopago">
                                         <span class="radio-label-span">Mercado Pago <img src="images/mercado-pago-logo.png" alt="Mercado Pago" class="h-5 inline-block ml-2"></span>
                                     </label>
                                 </div>
-                                <p class="text-sm text-brand-navy-text/70 mt-1">Serás redirigido a Mercado Pago para completar tu compra de forma segura.</p>
-                            </div>
+                                <p class="text-sm text-brand-navy-text/70 mt-1 hidden">Serás redirigido a Mercado Pago para completar tu compra de forma segura.</p> </div>
                         </div>
 
                         <div class="mt-6">
@@ -411,8 +409,7 @@
                             </div>
                             <div class="flex justify-between text-brand-navy-text/80">
                                 <span>Envío:</span>
-                                <span id="summary-shipping">Por Pagar en Destino</span>
-                            </div>
+                                <span id="summary-shipping">Retiro en Tienda</span> </div>
                             <div class="flex justify-between text-xl font-bold text-brand-navy-text mt-2">
                                 <span>TOTAL:</span>
                                 <span id="summary-total">$0</span>
@@ -473,6 +470,8 @@
         const summaryDiscountEl = document.getElementById('summary-discount');
         const summaryTotalEl = document.getElementById('summary-total');
         const cartCountCheckoutEl = document.getElementById('cart-count-checkout');
+        const summaryShippingEl = document.getElementById('summary-shipping');
+
 
         function formatPrice(price) {
             return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 });
@@ -516,15 +515,23 @@
                 });
             }
             
-            const total = subtotal - currentDiscountAmount;
+            const total = subtotal - currentDiscountAmount; 
 
             if (summarySubtotalEl) summarySubtotalEl.textContent = formatPrice(subtotal);
             if (summaryDiscountEl) summaryDiscountEl.textContent = `-${formatPrice(currentDiscountAmount)}`;
-            if (summaryTotalEl) summaryTotalEl.textContent = formatPrice(total);
+            if (summaryTotalEl) summaryTotalEl.textContent = formatPrice(total); 
             if (cartCountCheckoutEl) cartCountCheckoutEl.textContent = totalItemsInCart;
+
+            const selectedEntrega = document.querySelector('input[name="tipo-entrega"]:checked');
+            if (summaryShippingEl) {
+                if (selectedEntrega && selectedEntrega.value === 'domicilio') {
+                    summaryShippingEl.textContent = 'Por Pagar en Destino';
+                } else {
+                    summaryShippingEl.textContent = 'Retiro en Tienda';
+                }
+            }
         }
         
-        // Lógica para mostrar/ocultar información de envío
         const infoEnvioSection = document.getElementById('info-envio-section');
         const envioInputs = infoEnvioSection ? Array.from(infoEnvioSection.querySelectorAll('input[type="text"], input[type="tel"], select, textarea')) : [];
 
@@ -532,12 +539,13 @@
             if (infoEnvioSection) {
                 const isRequired = show; 
                 if (show) {
-                    infoEnvioSection.style.display = 'block';
+                    infoEnvioSection.classList.remove('hidden');
                 } else {
-                    infoEnvioSection.style.display = 'none';
+                    infoEnvioSection.classList.add('hidden');
                 }
                 envioInputs.forEach(input => input.required = isRequired);
             }
+            loadOrderSummary(); 
         }
         
         const tipoEntregaRadios = document.querySelectorAll('input[name="tipo-entrega"]');
@@ -547,7 +555,6 @@
             });
         });
         
-        // Placeholder para el botón de aplicar cupón
         const aplicarCuponBtn = document.getElementById('aplicar-cupon-btn');
         const cuponMessageEl = document.getElementById('cupon-message');
 
@@ -676,7 +683,6 @@
               pagado:                 false,
               estado_pago:            'pendiente',
               fecha_verificacion_pago: null
-              // items_pedido y estado_pedido se han eliminado de este objeto principal
             };
 
             console.log('PedidosUMD: Order data to send to "pedidos" table:', pedidoData);
@@ -766,6 +772,10 @@
               form.reset();
               if (typeof loadOrderSummary === 'function') loadOrderSummary(); 
               if (typeof toggleEnvioInfo === 'function') toggleEnvioInfo(true); 
+              
+              // Redirección a success.html
+              window.location.href = 'success.html';
+
 
             } catch (error) {
               console.error('PedidosUMD: error general en el proceso de envío del pedido:', error);
@@ -774,6 +784,8 @@
                 if (error && error.message) {
                     if(!error.code) { 
                          errorMessage += ' Detalle: ' + error.message;
+                    } else {
+                        errorMessage += ` Detalle: ${error.message} (Código: ${error.code})`;
                     }
                 }
                 msg.textContent = errorMessage;
@@ -785,13 +797,13 @@
           } // Fin de handleSubmit
 
           function init(selector) {
-            console.log('PedidosUMD: init for', selector);
-            const form = document.querySelector(selector);
+            console.log("PedidosUMD: init called for form:", selector);
+            var form = document.querySelector(selector);
             if (form) {
               form.addEventListener('submit', handleSubmit);
-              console.log('PedidosUMD: listener attached');
+              console.log("PedidosUMD: Event listener attached to form.");
             } else {
-              console.warn('PedidosUMD: formulario no encontrado', selector);
+              console.warn('PedidosUMD: Formulario no encontrado: ' + selectorForm); // Corregido: selectorForm a selector
             }
           }
 
@@ -822,3 +834,188 @@
     </script>
 </body>
 </html>
+```
+
+Y aquí está el archivo `success.html` básico:
+
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido Confirmado | Christophoros Cioccolato</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <script>
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'brand-navy-primary': '#0D1B2A',
+                            'brand-navy-text': '#1B263B',
+                            'brand-blue': '#0f2a66',
+                            'brand-off-white': '#FDFBF9',
+                            'brand-gold-accent': '#BFA181',
+                        },
+                        fontFamily: {
+                            'serif': ['Playfair Display', 'serif'],
+                            'sans': ['Lato', 'sans-serif'],
+                        }
+                    }
+                }
+            };
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Lato', sans-serif;
+            color: #1B263B;
+            background-color: #FDFBF9;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            color: #1B263B;
+        }
+        .btn-action {
+             background-color: #0f2a66;
+             color: white;
+             transition: background-color 0.3s ease, transform 0.2s ease;
+             cursor: pointer;
+        }
+        .btn-action:hover {
+             background-color: #0D1B2A;
+             transform: scale(1.03);
+        }
+        header { 
+            background-color: rgba(253, 251, 249, 0.95);
+            backdrop-filter: blur(8px);
+        }
+        footer { 
+            background-color: #0D1B2A;
+            color: #FDFBF9;
+        }
+        footer a {
+            color: #BFA181;
+        }
+        footer a:hover {
+            color: #FDFBF9;
+        }
+        footer h4, footer h5 {
+             color: #FDFBF9;
+        }
+         footer .footer-text-secondary {
+             color: #D1B490;
+         }
+        #mobile-menu-success-page {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="font-sans">
+
+    <header class="shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html#inicio" class="flex items-center text-3xl font-serif font-bold text-brand-navy-text">
+                <img src="images/favicon.png" alt="Logo Christophoros" class="h-8 w-8 mr-3 rounded-full">
+                <span>Christophoros</span>
+            </a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="index.html#inicio" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Inicio</a>
+                <a href="index.html#sabores" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Sabores</a>
+                <a href="index.html#formatos" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Formatos</a>
+                <a href="index.html#nosotros" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Nuestra Travesía</a>
+                <a href="index.html#contacto" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Contacto</a>
+                </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button-success" class="text-brand-navy-text focus:outline-none" aria-expanded="false">
+                    <svg id="menu-icon-open-success" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                     <svg id="menu-icon-close-success" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu-success-page" class="md:hidden absolute top-full left-0 w-full bg-brand-off-white shadow-lg py-4 transform -translate-y-full -z-10">
+             <a href="index.html#inicio" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Inicio</a>
+             <a href="index.html#sabores" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Sabores</a>
+             <a href="index.html#formatos" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Formatos</a>
+             <a href="index.html#nosotros" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Nuestra Travesía</a>
+             <a href="index.html#contacto" class="block px-6 py-2 text-brand-navy-text hover:bg-brand-navy-text/10">Contacto</a>
+        </div>
+    </header>
+
+    <main class="py-12 md:py-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="bg-white shadow-lg rounded-lg p-8 md:p-12 max-w-2xl mx-auto">
+                <svg class="w-16 h-16 text-green-500 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-brand-navy-text mb-4">¡Pedido Realizado con Éxito!</h1>
+                <p class="text-lg text-brand-navy-text/80 mb-6">
+                    Gracias por tu compra en Christophoros Cioccolato. Hemos recibido tu pedido y lo estamos procesando.
+                </p>
+                <p class="text-md text-brand-navy-text/80 mb-2">
+                    Recibirás un correo electrónico de confirmación en breve con los detalles de tu pedido.
+                </p>
+                <p class="text-md text-brand-navy-text/80 mb-8">
+                    Si elegiste transferencia bancaria, por favor recuerda realizar el pago y enviar el comprobante a <a href="mailto:pagos@christophoroscioccolato.cl" class="text-brand-blue hover:underline">pagos@christophoroscioccolato.cl</a>.
+                </p>
+                <a href="index.html" class="btn-action text-lg font-semibold py-3 px-8 rounded-md shadow-lg">
+                    Volver a la Tienda
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-12 mt-16 md:mt-24">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm footer-text-secondary">&copy; 2024 Christophoros Cioccolato. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Lógica para el menú móvil
+        const mobileMenuButtonSuccess = document.getElementById('mobile-menu-button-success');
+        const mobileMenuSuccessPage = document.getElementById('mobile-menu-success-page');
+        const menuIconOpenSuccess = document.getElementById('menu-icon-open-success');
+        const menuIconCloseSuccess = document.getElementById('menu-icon-close-success');
+
+        if (mobileMenuButtonSuccess) {
+             mobileMenuButtonSuccess.addEventListener('click', () => {
+                const isExpanded = mobileMenuButtonSuccess.getAttribute('aria-expanded') === 'true';
+                mobileMenuButtonSuccess.setAttribute('aria-expanded', !isExpanded);
+                mobileMenuSuccessPage.classList.toggle('-translate-y-full'); 
+                mobileMenuSuccessPage.classList.toggle('z-10'); 
+                mobileMenuSuccessPage.classList.toggle('-z-10'); 
+                if (menuIconOpenSuccess) menuIconOpenSuccess.classList.toggle('hidden');
+                if (menuIconCloseSuccess) menuIconCloseSuccess.classList.toggle('hidden');
+            });
+
+            if (mobileMenuSuccessPage) { 
+                mobileMenuSuccessPage.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenuButtonSuccess.setAttribute('aria-expanded', 'false');
+                        mobileMenuSuccessPage.classList.add('-translate-y-full');
+                        mobileMenuSuccessPage.classList.add('-z-10');
+                        mobileMenuSuccessPage.classList.remove('z-10');
+                        if (menuIconOpenSuccess) menuIconOpenSuccess.classList.remove('hidden');
+                        if (menuIconCloseSuccess) menuIconCloseSuccess.classList.add('hidden');
+                    });
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
+
