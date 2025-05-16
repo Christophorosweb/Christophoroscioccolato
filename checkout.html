@@ -16,7 +16,28 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('CRITICAL ERROR: Supabase UMD CDN script failed to load. Check network connection and CDN URL.')"></script>
 
     <script>
-        // Configuración de Tailwind (se ejecuta después de que Tailwind CSS se carga)
+        console.log('checkout.html (head): Attempting to initialize Supabase client from UMD global.');
+        const SUPABASE_URL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+        
+        // 'supabase' (minúsculas) aquí es el objeto global que exporta el script UMD.
+        if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
+            try {
+                // Asignamos nuestra instancia de cliente a window.supabaseClient
+                window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('checkout.html (head): window.supabaseClient initialized successfully from UMD.', window.supabaseClient);
+            } catch (e) {
+                console.error('checkout.html (head): Error initializing window.supabaseClient from UMD global:', e);
+                window.supabaseClient = null;
+            }
+        } else {
+            console.error('checkout.html (head): CRITICAL - Global "supabase" object from UMD not found or not a valid Supabase entry point. Ensure the UMD script loaded and executed correctly before this script.');
+            window.supabaseClient = null;
+        }
+    </script>
+
+    <script>
+        // Configuración de Tailwind
         if (typeof tailwind !== 'undefined') {
             tailwind.config = {
                 theme: {
@@ -461,7 +482,7 @@
             return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 });
         }
         
-        function getCartItemsForUMD() { // Renombrada para evitar conflicto si se usa en otro lado
+        function getCartItemsForUMD() { 
             return JSON.parse(localStorage.getItem('christophorosCart')) || [];
         }
 
@@ -513,7 +534,7 @@
 
         function toggleEnvioInfo(show) {
             if (infoEnvioSection) {
-                const isRequired = show; // Los campos de envío son requeridos solo si 'show' es true
+                const isRequired = show; 
                 if (show) {
                     infoEnvioSection.style.display = 'block';
                 } else {
@@ -538,7 +559,7 @@
             aplicarCuponBtn.addEventListener('click', function() {
                 const cuponInput = document.getElementById('cupon');
                 if (cuponInput && cuponInput.value.trim() !== "") {
-                    if (cuponInput.value.toUpperCase() === "DESC10") { // Ejemplo de cupón
+                    if (cuponInput.value.toUpperCase() === "DESC10") { 
                         currentDiscountAmount = 5000; 
                         if(cuponMessageEl) {
                             cuponMessageEl.textContent = `Cupón "${cuponInput.value}" aplicado: ${formatPrice(currentDiscountAmount)} de descuento.`;
@@ -551,7 +572,7 @@
                             cuponMessageEl.className = 'text-sm mt-2 text-red-600';
                          }
                     }
-                    loadOrderSummary(); // Recalcular totales
+                    loadOrderSummary(); 
                 } else {
                     if(cuponMessageEl) {
                         cuponMessageEl.textContent = "Por favor, ingresa un código de cupón.";
@@ -564,35 +585,31 @@
         // --- MÓDULO UMD PARA PEDIDOS ---
         (function (root, factory) {
             if (typeof define === 'function' && define.amd) {
-                define([], factory); // No depende de @supabase/supabase-js como módulo AMD, usa el global
+                define([], factory); 
             } else if (typeof module === 'object' && module.exports) {
-                module.exports = factory(); // No requiere @supabase/supabase-js, usa el global
+                module.exports = factory(); 
             } else {
                 root.PedidosUMD = factory();
             }
         }(typeof self !== 'undefined' ? self : this, function () {
             'use strict';
 
-            // Esta instancia de supabase se crea usando el objeto global 'supabase' del CDN UMD
-            var supabaseClientInstance;
-            if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
-                 const SUPABASE_URL_MODULE = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-                 const SUPABASE_KEY_MODULE = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
-                supabaseClientInstance = supabase.createClient(SUPABASE_URL_MODULE, SUPABASE_KEY_MODULE);
-                console.log("PedidosUMD: Supabase client instance created within UMD module.");
-            } else {
-                console.error("PedidosUMD: Global 'supabase' object from UMD CDN not available. Cannot create client instance.");
-                supabaseClientInstance = null;
-            }
+            var supabaseClientInstance; // Se usará el window.supabaseClient definido en el <head>
+            
+            // La inicialización del cliente ahora se hace directamente en el <head>
+            // y se accede a él a través de window.supabaseClient
 
             async function handleSubmit(event) {
                 event.preventDefault();
                 console.log("PedidosUMD: handleSubmit triggered.");
 
                 const form = event.target;
-                const submitButton = document.getElementById('finalizar-compra-btn'); // Usar el ID global
+                const formData = new FormData(form); 
+                const tipoEntrega = formData.get('tipo-entrega'); 
 
-                if (formResponseMessageCheckout) { // Usar la variable global
+                const submitButton = document.getElementById('finalizar-compra-btn'); 
+
+                if (formResponseMessageCheckout) { 
                     formResponseMessageCheckout.textContent = '';
                     formResponseMessageCheckout.className = 'form-message';
                 }
@@ -606,7 +623,7 @@
                 let isValid = true;
                 const requiredInputs = form.querySelectorAll('[required]');
                 requiredInputs.forEach(input => {
-                    if (input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) {
+                    if ((input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) && input.name !== 'tipo-entrega') {
                         if (!input.value.trim()) {
                             isValid = false;
                             input.classList.add('border-red-500');
@@ -619,7 +636,6 @@
                 const terminosCheckbox = document.getElementById('terminos');
                 if (!terminosCheckbox.checked) {
                     isValid = false;
-                    // alert("Debes aceptar los términos y condiciones."); // Ya no usamos alert
                     if (formResponseMessageCheckout) {
                         formResponseMessageCheckout.textContent = 'Debes aceptar los términos y condiciones.';
                         formResponseMessageCheckout.className = 'form-message error';
@@ -628,7 +644,7 @@
                 }
 
                 if (!isValid) {
-                    if (formResponseMessageCheckout && !formResponseMessageCheckout.textContent) { // Solo si no hay ya un mensaje de términos
+                    if (formResponseMessageCheckout && !formResponseMessageCheckout.textContent) { 
                         formResponseMessageCheckout.textContent = 'Por favor, completa todos los campos obligatorios (*).';
                         formResponseMessageCheckout.className = 'form-message error';
                     }
@@ -639,8 +655,9 @@
                     return;
                 }
 
-                if (!supabaseClientInstance) {
-                    console.error('PedidosUMD: Supabase client instance is not available in handleSubmit.');
+                // Usar window.supabaseClient que se inicializó en el <head>
+                if (!window.supabaseClient) { 
+                    console.error('PedidosUMD: window.supabaseClient is not available in handleSubmit.');
                     if (formResponseMessageCheckout) {
                         formResponseMessageCheckout.textContent = 'Error crítico: No se pudo conectar con el servicio de pedidos.';
                         formResponseMessageCheckout.className = 'form-message error';
@@ -652,14 +669,10 @@
                     return;
                 }
                 
-                // Recoger datos del formulario
-                const formData = new FormData(form);
-                const cartItems = getCartItemsForUMD(); // Usar la función global
+                const cartItems = getCartItemsForUMD(); 
                 const subtotalCalculado = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const costoEnvioCalculado = tipoEntrega === 'domicilio' ? (subtotalCalculado >= 50000 ? 0 : 3000) : 0; // Ejemplo, ajustar según tu lógica real
-                const totalCalculado = subtotalCalculado + costoEnvioCalculado - currentDiscountAmount; // Usa currentDiscountAmount global
-
-                const tipoEntrega = formData.get('tipo-entrega');
+                const costoEnvioCalculado = tipoEntrega === 'domicilio' ? (subtotalCalculado >= 50000 ? 0 : 3000) : 0; 
+                const totalCalculado = subtotalCalculado + costoEnvioCalculado - currentDiscountAmount; 
 
                 const pedidoData = {
                     nombre_contacto: formData.get('checkout-nombre'),
@@ -683,63 +696,35 @@
                     costo_envio: costoEnvioCalculado,
                     total: totalCalculado,
                     metodo_pago: formData.get('metodo-pago'),
-                    detalles_pago: formData.get('metodo-pago') === 'mercadopago' ? { status: 'pendiente_redireccion' } : null, // Ejemplo
+                    detalles_pago: formData.get('metodo-pago') === 'mercadopago' ? { status: 'pendiente_redireccion' } : null, 
                     items_pedido: cartItems,
                     estado_pedido: 'pendiente'
                 };
                 console.log("PedidosUMD: Order data to be sent:", pedidoData);
 
                 try {
-                    const pedidoRes = await supabaseClientInstance
-                        .from('Pedidos') // Nombre de tu tabla de pedidos
+                    const pedidoRes = await window.supabaseClient // Usar window.supabaseClient
+                        .from('Pedidos') 
                         .insert([pedidoData])
-                        .select('id') // Solicitar el ID del pedido insertado
+                        .select('id') 
                         .single();
 
                     if (pedidoRes.error) {
                         console.error('PedidosUMD: Error creando pedido en Supabase:', pedidoRes.error);
-                        throw pedidoRes.error; // Lanzar para el catch general
+                        throw pedidoRes.error; 
                     }
 
                     const pedidoId = pedidoRes.data.id;
                     console.log('PedidosUMD: Pedido creado con ID:', pedidoId);
-
-                    // Crear líneas de pedido (opcional si ya guardaste items_pedido como JSON)
-                    // Si 'items_pedido' en la tabla 'Pedidos' es de tipo JSONB y guarda el array,
-                    // no necesitas una tabla 'lineas_pedido' separada, a menos que lo prefieras por normalización.
-                    // Si la necesitas, aquí va la lógica:
-                    /*
-                    const lineas = cartItems.map(function(item) {
-                        return {
-                            pedido_id: pedidoId,
-                            nombre_producto: item.name, // Asegúrate que 'name' exista en tus items de carrito
-                            cantidad: item.quantity,    // Asegúrate que 'quantity' exista
-                            precio_unitario: item.price // Asegúrate que 'price' exista
-                        };
-                    });
-
-                    if (lineas.length > 0) {
-                        const lineasRes = await supabaseClientInstance
-                            .from('lineas_pedido') // Nombre de tu tabla de líneas de pedido
-                            .insert(lineas);
-
-                        if (lineasRes.error) {
-                            console.error('PedidosUMD: Error insertando líneas de pedido:', lineasRes.error);
-                            // Considera cómo manejar este error parcial (pedido creado pero líneas no)
-                        } else {
-                            console.log('PedidosUMD: Líneas de pedido insertadas con éxito.');
-                        }
-                    }
-                    */
 
                     if (formResponseMessageCheckout) {
                         formResponseMessageCheckout.textContent = '¡Pedido realizado con éxito! ID del Pedido: ' + pedidoId;
                         formResponseMessageCheckout.className = 'form-message success';
                     }
                     localStorage.removeItem('christophorosCart');
-                    loadOrderSummary(); // Actualizar UI
-                    form.reset(); // Resetear formulario
-                    toggleEnvioInfo(true); // Resetear visibilidad de envío a domicilio
+                    loadOrderSummary(); 
+                    form.reset(); 
+                    toggleEnvioInfo(true); 
 
                 } catch (error) {
                     console.error('PedidosUMD: Error en el proceso de envío del pedido:', error);
@@ -753,7 +738,7 @@
                         submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
                     }
                 }
-            }
+            } // Fin de handleSubmit
 
             function init(selectorForm) {
                 console.log("PedidosUMD: init called for form:", selectorForm);
@@ -769,24 +754,22 @@
             return {
                 init: init
             };
-        }));
+        })); // Fin del UMD
 
         // INICIALIZAR TODO CUANDO EL DOM ESTÉ LISTO
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('checkout.html (DOMContentLoaded): DOM fully loaded. Initializing UMD module.');
-            loadOrderSummary(); // Cargar resumen al inicio
+            console.log('checkout.html (DOMContentLoaded): DOM fully loaded. Initializing UMD module and page elements.');
+            loadOrderSummary(); 
             
-            // Inicializar la visibilidad de la sección de envío basada en la opción por defecto
             const defaultEntregaRadio = document.querySelector('input[name="tipo-entrega"]:checked');
             if (defaultEntregaRadio) {
                 toggleEnvioInfo(defaultEntregaRadio.value === 'domicilio');
             }
 
-
             if (window.PedidosUMD && typeof window.PedidosUMD.init === 'function') {
                 window.PedidosUMD.init('#checkout-form');
             } else {
-                console.error("checkout.html (DOMContentLoaded): PedidosUMD module or its init function is not available at DOMContentLoaded. This might indicate the UMD script itself had an issue or didn't expose PedidosUMD correctly.");
+                console.error("checkout.html (DOMContentLoaded): PedidosUMD module or its init function is not available.");
                 if (formResponseMessageCheckout) {
                     formResponseMessageCheckout.textContent = 'Error crítico al cargar el sistema de pedidos. Por favor, recarga la página.';
                     formResponseMessageCheckout.className = 'form-message error';
