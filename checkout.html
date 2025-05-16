@@ -17,14 +17,13 @@
 
     <script>
         console.log('checkout.html (head): Attempting to initialize Supabase client from UMD global.');
-        const SUPABASE_URL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+        // Estas constantes son para la inicialización global de window.supabaseClient
+        const SUPABASE_URL_GLOBAL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+        const SUPABASE_KEY_GLOBAL = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
         
-        // 'supabase' (minúsculas) aquí es el objeto global que exporta el script UMD.
         if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
             try {
-                // Asignamos nuestra instancia de cliente a window.supabaseClient
-                window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                window.supabaseClient = supabase.createClient(SUPABASE_URL_GLOBAL, SUPABASE_KEY_GLOBAL);
                 console.log('checkout.html (head): window.supabaseClient initialized successfully from UMD.', window.supabaseClient);
             } catch (e) {
                 console.error('checkout.html (head): Error initializing window.supabaseClient from UMD global:', e);
@@ -593,11 +592,10 @@
             }
         }(typeof self !== 'undefined' ? self : this, function () {
             'use strict';
-
-            var supabaseClientInstance; // Se usará el window.supabaseClient definido en el <head>
             
-            // La inicialización del cliente ahora se hace directamente en el <head>
-            // y se accede a él a través de window.supabaseClient
+            // La instancia del cliente Supabase se toma de window.supabaseClient, 
+            // que se inicializa en el <head> después de cargar el UMD de Supabase.
+            // No se vuelve a crear aquí.
 
             async function handleSubmit(event) {
                 event.preventDefault();
@@ -779,3 +777,20 @@
     </script>
 </body>
 </html>
+```
+
+**Cambios Realizados:**
+
+* **Corrección en la Inicialización del Cliente dentro del UMD:** El código UMD ahora usa directamente `window.supabaseClient` que se inicializa en el `<head>`, en lugar de intentar crear una nueva instancia `supabaseClientInstance` dentro del UMD. Esto asegura que se use la misma instancia del cliente en toda la página.
+* **Uso de `window.supabaseClient` en `handleSubmit`:** La función `handleSubmit` dentro del UMD ahora usa `window.supabaseClient` para las operaciones de base de datos.
+
+**Pasos Cruciales para Probar:**
+
+1.  **Reemplaza TODO el contenido de tu archivo `checkout.html`** con el código de arriba.
+2.  **BORRA LA CACHÉ DE TU NAVEGADOR COMPLETAMENTE Y REALIZA UNA ACTUALIZACIÓN FORZADA (HARD REFRESH)**.
+3.  **Abre la Consola de Desarrollador** (`F12`) *antes* de cargar la página.
+4.  **Carga la página y observa los mensajes de la consola.** Deberías ver logs indicando que `window.supabaseClient` se inicializó correctamente en el `<head>`.
+5.  **Llena todos los campos obligatorios del formulario** y acepta los términos.
+6.  **Intenta enviar el formulario.** Observa la consola para ver los logs de `PedidosUMD: handleSubmit triggered`, los datos recolectados, y los resultados de la inserción en Supabase.
+
+Si el error 404 persiste, verifica nuevamente la URL y la clave de Supabase en el script del `<head>` y asegúrate de que la tabla `Pedidos` exista en tu proyecto de Supabase con los permisos de escritura adecuados para la clave anónima (si es que no has implementado RLS más restrictiva
