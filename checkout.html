@@ -32,6 +32,7 @@
       window.supabaseClient = null;
     }
   </script>
+
     <script>
         // Configuración de Tailwind (se ejecuta después de que Tailwind CSS se carga)
         if (typeof tailwind !== 'undefined') {
@@ -595,14 +596,15 @@
 
             const form = event.target;
             const formData = new FormData(form);
-            const tipoEntrega = formData.get('tipo-entrega'); // Definido aquí
+            const tipoEntrega = formData.get('tipo-entrega'); 
 
             const btn = document.getElementById('finalizar-compra-btn');
             const msg = document.getElementById('form-checkout-response-message');
             if (btn) { btn.disabled = true; btn.textContent = 'Procesando...'; }
             if (msg) { msg.textContent = ''; msg.className = 'form-message'; }
 
-            if (!formData.get('terminos')) {
+            // Validar checkbox T&C
+            if (!formData.get('terminos')) { 
               if (msg) {
                 msg.textContent = 'Debes aceptar términos y condiciones.';
                 msg.className = 'form-message error';
@@ -611,16 +613,14 @@
               return;
             }
             
-            // Validación de campos requeridos (simplificada, puedes expandirla)
+            // Validación de campos requeridos
             let isValid = true;
             const requiredFields = form.querySelectorAll('[required]');
             requiredFields.forEach(input => {
-                // Solo validar si el input es visible (para la sección de envío condicional)
-                // y si el input no es el propio tipoEntrega radio (ya que su valor se obtiene de otra manera)
-                if ((input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) && input.name !== 'tipo-entrega') {
+                if ((input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) && input.name !== 'tipo-entrega' && input.name !== 'terminos') {
                     if (!input.value.trim()) {
                         isValid = false;
-                        input.classList.add('border-red-500'); // Resaltar campo vacío
+                        input.classList.add('border-red-500'); 
                         console.warn(`PedidosUMD: Campo requerido vacío: ${input.id}`);
                     } else {
                         input.classList.remove('border-red-500');
@@ -629,7 +629,7 @@
             });
 
             if (!isValid) {
-                if (msg && !msg.textContent) { // Solo si no hay ya un mensaje de términos
+                if (msg && !msg.textContent) { 
                     msg.textContent = 'Por favor, completa todos los campos obligatorios (*).';
                     msg.className = 'form-message error';
                 }
@@ -637,45 +637,45 @@
                 return;
             }
 
-
-            const cartItems = getCartItemsForUMD();
+            const cartItems = getCartItemsForUMD(); 
             let subtotalCalc = 0;
             cartItems.forEach(i => { subtotalCalc += i.price * i.quantity; });
             
             const envioCalc = tipoEntrega === 'domicilio'
-              ? (subtotalCalc >= 50000 ? 0 : 3000)
+              ? (subtotalCalc >= 50000 ? 0 : 3000) 
               : 0;
-            const descuento = window.currentDiscountAmount || 0;
+            const descuento = window.currentDiscountAmount || 0; 
             const totalCalc = subtotalCalc + envioCalc - descuento;
 
+            // Reconstruir objeto de pedido con las claves EXACTAS de la tabla `pedidos`
             const pedidoData = {
-              nombre_contacto: formData.get('checkout-nombre'), // Cambiado de 'nombre'
-              apellido_contacto: formData.get('checkout-apellido'), // Cambiado de 'apellido'
-              correo: formData.get('checkout-email'),
-              telefono: formData.get('checkout-telefono-contacto'),
-              nombre_factura: formData.get('boleta-nombre'),
-              rut_factura: formData.get('boleta-rut'),
-              tipo_entrega: tipoEntrega,
-              nombre_destinatario: tipoEntrega === 'domicilio' ? formData.get('envio-nombre-recibe') : null,
-              rut_destinatario: tipoEntrega === 'domicilio' ? formData.get('envio-rut-recibe') : null,
-              telefono_destinatario: tipoEntrega === 'domicilio' ? formData.get('envio-telefono-recibe') : null,
-              direccion_envio: tipoEntrega === 'domicilio' ? formData.get('envio-direccion') : null,
-              oficina_envio: tipoEntrega === 'domicilio' ? formData.get('envio-depto') : null,
-              region_envio: tipoEntrega === 'domicilio' ? formData.get('envio-region') : null,
-              comuna_envio: tipoEntrega === 'domicilio' ? formData.get('envio-comuna') : null,
-              instrucciones_envio: tipoEntrega === 'domicilio' ? formData.get('envio-instrucciones') : null,
-              codigo_cupon: formData.get('cupon') || null,
-              descuento_cupon: descuento,
-              subtotal: subtotalCalc,
-              costo_envio: envioCalc,
-              total: totalCalc,
-              metodo_pago: formData.get('metodo-pago'),
-              detalles_pago: formData.get('metodo-pago') === 'mercadopago'
-                ? { status: 'pendiente_redireccion' }
-                : null,
-              items_pedido: cartItems, // Guardar el carrito como JSON
-              estado_pedido: 'pendiente', // Estado inicial del pedido
-              pagado: false,
+              nombre:                 formData.get('checkout-nombre'),
+              apellido:               formData.get('checkout-apellido'),
+              correo:                 formData.get('checkout-email'),
+              telefono:               formData.get('checkout-telefono-contacto'),
+              nombre_factura:         formData.get('boleta-nombre'),
+              rut_factura:            formData.get('boleta-rut'),
+              tipo_entrega:           tipoEntrega,
+              nombre_destinatario:    tipoEntrega === 'domicilio' ? formData.get('envio-nombre-recibe') : null,
+              rut_destinatario:       tipoEntrega === 'domicilio' ? formData.get('envio-rut-recibe')    : null,
+              telefono_destinatario:  tipoEntrega === 'domicilio' ? formData.get('envio-telefono-recibe'): null,
+              direccion_envio:        tipoEntrega === 'domicilio' ? formData.get('envio-direccion')     : null,
+              oficina_envio:          tipoEntrega === 'domicilio' ? formData.get('envio-depto')         : null,
+              region_envio:           tipoEntrega === 'domicilio' ? formData.get('envio-region')        : null,
+              comuna_envio:           tipoEntrega === 'domicilio' ? formData.get('envio-comuna')        : null,
+              instrucciones_envio:    tipoEntrega === 'domicilio' ? formData.get('envio-instrucciones'): null,
+              codigo_cupon:           formData.get('cupon') || null,
+              descuento_cupon:        descuento,
+              subtotal:               subtotalCalc,
+              costo_envio:            envioCalc,
+              total:                  totalCalc,
+              metodo_pago:            formData.get('metodo-pago'),
+              detalles_pago:          formData.get('metodo-pago') === 'mercadopago'
+                                        ? { status: 'pendiente_redireccion' } 
+                                        : null,
+              // items_pedido y estado_pedido se eliminan de aquí si no son columnas directas en 'pedidos'
+              pagado:                 false,
+              estado_pago:            'pendiente',
               fecha_verificacion_pago: null
             };
 
@@ -693,41 +693,49 @@
 
             try {
               const { data: pedido, error: errPedido } = await window.supabaseClient
-                .from('pedidos') // Nombre de tabla en minúsculas
-                .insert([pedidoData]) // No es necesario { returning: 'representation' } para insert, .select() después sí.
-                .select() // Para obtener el registro insertado
-                .single(); // Asumiendo que insertas un solo pedido a la vez
+                .from('pedidos') // Tabla en minúsculas
+                .insert([pedidoData], { returning: 'representation' }) 
+                .single();
 
-              if (errPedido) throw errPedido;
-              console.log('PedidosUMD: Pedido creado ID=', pedido.id);
-
-              // Si necesitas insertar líneas de pedido en una tabla separada:
-              /*
-              const lineas = cartItems.map(i => ({
-                pedido_id: pedido.id,
-                nombre_producto: i.name,
-                cantidad: i.quantity,
-                precio_unitario: i.price
-              }));
-              if (lineas.length > 0) {
-                  const { error: errLineas } = await window.supabaseClient
-                    .from('lineas_pedido') // Nombre de tabla en minúsculas
-                    .insert(lineas);
-                  if (errLineas) throw errLineas;
+              if (errPedido) {
+                console.error('PedidosUMD: Error creando pedido en Supabase:', errPedido);
+                throw errPedido; 
               }
-              */
+              
+              console.log('PedidosUMD: Pedido creado con éxito, datos devueltos:', pedido);
+              const pedidoId = pedido.id; 
+
+              // Insertar líneas de pedido (si es necesario y tienes una tabla 'lineas_pedido')
+              if (cartItems && cartItems.length > 0) {
+                  const lineas = cartItems.map(i => ({
+                    pedido_id:       pedidoId, 
+                    nombre_producto: i.name,     
+                    cantidad:        i.quantity, 
+                    precio_unitario: i.price     
+                  }));
+                  
+                  const { error: errLineas } = await window.supabaseClient
+                    .from('lineas_pedido') 
+                    .insert(lineas);
+                  
+                  if (errLineas) {
+                    console.error('PedidosUMD: Error insertando líneas de pedido:', errLineas);
+                  } else {
+                    console.log('PedidosUMD: Líneas de pedido insertadas con éxito.');
+                  }
+              }
               
               if (msg) {
-                msg.textContent = `¡Pedido exitoso! ID: ${pedido.id}`;
+                msg.textContent = `¡Pedido exitoso! ID: ${pedidoId}`;
                 msg.className = 'form-message success';
               }
               localStorage.removeItem('christophorosCart');
               form.reset();
-              loadOrderSummary();
-              toggleEnvioInfo(true); // Resetear a envío a domicilio
-            
+              if (typeof loadOrderSummary === 'function') loadOrderSummary(); 
+              if (typeof toggleEnvioInfo === 'function') toggleEnvioInfo(true); 
+
             } catch (error) {
-              console.error('PedidosUMD: error en el proceso:', error);
+              console.error('PedidosUMD: error en el proceso de envío del pedido:', error);
               if (msg) {
                 msg.textContent = 'Error al procesar tu pedido. Intenta de nuevo. Detalle: ' + error.message;
                 msg.className = 'form-message error';
@@ -735,7 +743,7 @@
             } finally {
               if (btn) { btn.disabled = false; btn.textContent = 'Finalizar Compra y Realizar Pedido'; }
             }
-          }
+          } // Fin de handleSubmit
 
           function init(selector) {
             console.log('PedidosUMD: init for', selector);
@@ -749,7 +757,7 @@
           }
 
           return { init };
-        }));
+        })); // Fin del UMD
 
         // INICIALIZACIÓN AL CARGAR DOM
         document.addEventListener('DOMContentLoaded', () => {
@@ -775,3 +783,13 @@
     </script>
 </body>
 </html>
+```
+
+**Recordatorios Cruciales:**
+
+* **Limpieza de Caché:** Es fundamental que borres la caché de tu navegador y realices una actualización forzada (`Ctrl+Shift+R` o `Cmd+Shift+R`) después de reemplazar el archivo.
+* **Nombres de Columnas en Supabase:** Verifica que las claves usadas en el objeto `pedidoData` coincidan **exactamente** con los nombres de las columnas en tu tabla `pedidos` en Supabase.
+* **Tabla `lineas_pedido`:** Si planeas usar una tabla separada para los ítems del pedido, asegúrate de que la tabla `lineas_pedido` exista y que las columnas (`pedido_id`, `nombre_producto`, `cantidad`, `precio_unitario`) sean correctas. Si no, puedes eliminar o mantener comentada esa sección.
+* **Consola del Navegador:** Mantén la consola abierta para revisar cualquier mensaje.
+
+Espero que esta versión completa y corregida te permita avanz
