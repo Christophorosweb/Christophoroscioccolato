@@ -95,10 +95,13 @@
             margin-bottom: 0.75rem; /* mb-3 */
             color: #1B263B; /* brand-navy-text */
         }
-        .info-section p {
+        .info-section p { /* Se añade un margen inferior por defecto a los párrafos dentro de info-section */
             font-size: 0.875rem; /* text-sm */
             color: #4B5563; /* gray-600 */
-            margin-bottom: 0.25rem; /* mb-1 */
+            margin-bottom: 0.35rem; /* Ajusta este valor para el interlineado deseado */
+        }
+        .info-section p:last-child {
+            margin-bottom: 0; /* Evitar doble margen en el último párrafo */
         }
         .product-item {
             display: flex;
@@ -114,7 +117,7 @@
             display: flex;
             justify-content: space-between;
             font-size: 0.875rem; /* text-sm */
-            padding: 0.25rem 0;
+            padding: 0.35rem 0; /* Ajusta este valor para el interlineado */
         }
         .totals-section .total-final {
             font-size: 1.125rem; /* text-lg */
@@ -168,41 +171,48 @@
                     <svg class="w-20 h-20 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <h1 class="text-4xl md:text-5xl font-serif font-bold text-brand-navy-text">¡Hemos recibido tu pedido!</h1>
                     <p class="text-lg text-brand-navy-text/80 mt-2">Gracias por tu compra. Número de Documento: <strong id="order-id">Cargando...</strong></p>
+                    <p class="text-md text-brand-navy-text/70 mt-3">Recibirás un correo electrónico de confirmación en breve con los detalles de tu pedido.</p>
+                    <p class="text-md text-brand-navy-text/70 mt-1">Una vez confirmado el pago (si aplica), tu pedido será preparado para la entrega.</p>
                 </div>
 
                 <div class="grid md:grid-cols-3 gap-6 mb-8">
                     <div class="info-section">
                         <h3>Tus Datos</h3>
-                        <p><strong>Nombre:</strong> <span id="data-nombre"></span></p>
-                        <p><strong>RUT:</strong> <span id="data-rut"></span></p>
-                        <p><strong>Teléfono:</strong> <span id="data-telefono"></span></p>
-                        <p><strong>Email:</strong> <span id="data-email"></span></p>
+                        <div class="space-y-1"> <p><strong>Nombre:</strong> <span id="data-nombre"></span></p>
+                            <p><strong>RUT:</strong> <span id="data-rut"></span></p>
+                            <p><strong>Teléfono:</strong> <span id="data-telefono"></span></p>
+                            <p><strong>Email:</strong> <span id="data-email"></span></p>
+                        </div>
                     </div>
                     <div class="info-section">
                         <h3>Despacho</h3>
-                        <p id="data-tipo-entrega"></p>
-                        <div id="data-direccion-despacho" class="hidden">
-                             <p><strong>Dirección:</strong> <span id="data-direccion"></span></p>
-                             <p><span id="data-comuna-region"></span></p>
-                             <p><strong>Recibe:</strong> <span id="data-nombre-recibe"></span></p>
-                             <p><strong>RUT Recibe:</strong> <span id="data-rut-recibe"></span></p>
-                             <p><strong>Tel. Recibe:</strong> <span id="data-telefono-recibe"></span></p>
-                             <p id="data-instrucciones-envio-container" class="hidden"><strong>Instrucciones:</strong> <span id="data-instrucciones-envio"></span></p>
+                        <div class="space-y-1">
+                            <p id="data-tipo-entrega"></p>
+                            <div id="data-direccion-despacho" class="hidden space-y-1">
+                                 <p><strong>Dirección:</strong> <span id="data-direccion"></span></p>
+                                 <p><span id="data-comuna-region"></span></p>
+                                 <p><strong>Recibe:</strong> <span id="data-nombre-recibe"></span></p>
+                                 <p><strong>RUT Recibe:</strong> <span id="data-rut-recibe"></span></p>
+                                 <p><strong>Tel. Recibe:</strong> <span id="data-telefono-recibe"></span></p>
+                                 <p id="data-instrucciones-envio-container" class="hidden"><strong>Instrucciones:</strong> <span id="data-instrucciones-envio"></span></p>
+                            </div>
                         </div>
                     </div>
                     <div class="info-section">
                         <h3>Forma de Pago</h3>
-                        <p id="data-metodo-pago"></p>
-                        <div id="data-transferencia-details" class="hidden text-xs mt-2">
-                            <p>Recuerda realizar una transferencia a:</p>
-                            <p><strong>Banco:</strong> Mercado Pago</p>
-                            <p><strong>Tipo de Cuenta:</strong> Vista</p>
-                            <p><strong>Número de Cuenta:</strong> 1057094402</p>
-                            <p><strong>RUT:</strong> 20583954-2</p>
-                            <p><strong>Nombre Titular:</strong> Cristóbal Monti Venegas</p>
-                            <p><strong>Email para comprobante:</strong> Christophoroschile@gmail.com</p>
+                        <div class="space-y-1">
+                            <p id="data-metodo-pago"></p>
+                            <div id="data-transferencia-details" class="hidden text-xs mt-2 space-y-1">
+                                <p>Recuerda realizar una transferencia a:</p>
+                                <p><strong>Banco:</strong> Mercado Pago</p>
+                                <p><strong>Tipo de Cuenta:</strong> Vista</p>
+                                <p><strong>Número de Cuenta:</strong> 1057094402</p>
+                                <p><strong>RUT:</strong> 20583954-2</p>
+                                <p><strong>Nombre Titular:</strong> Cristóbal Monti Venegas</p>
+                                <p><strong>Email para comprobante:</strong> Christophoroschile@gmail.com</p>
+                            </div>
+                             <p id="data-mercadopago-message" class="hidden text-xs mt-2">Una vez confirmado el pago, finalizaremos tu compra para Despacho.</p>
                         </div>
-                         <p id="data-mercadopago-message" class="hidden text-xs mt-2">Una vez confirmado el pago, finalizaremos tu compra para Despacho.</p>
                     </div>
                 </div>
 
@@ -317,11 +327,9 @@
             const orderDataString = localStorage.getItem('lastOrderData');
             const cartItemsString = localStorage.getItem('lastOrderCartItems');
 
-            // === LOGS DE DIAGNÓSTICO ADICIONALES ===
             console.log("success.html: Retrieved from localStorage - lastOrderId:", orderId);
             console.log("success.html: Retrieved from localStorage - lastOrderData (string):", orderDataString);
             console.log("success.html: Retrieved from localStorage - lastOrderCartItems (string):", cartItemsString);
-            // === FIN DE LOGS DE DIAGNÓSTICO ===
 
             if (orderId && orderDataString && cartItemsString && orderDataString !== "null" && cartItemsString !== "null") {
                 console.log("success.html: Datos del pedido encontrados y válidos en localStorage.");
@@ -332,10 +340,11 @@
                     if (orderIdEl) orderIdEl.textContent = orderId;
 
                     // Tus Datos
-                    if (dataNombreEl) dataNombreEl.textContent = `${orderData.nombre_contacto || ''} ${orderData.apellido_contacto || ''}`;
-                    if (dataRutEl) dataRutEl.textContent = orderData.rut_factura || 'No especificado'; // Asumiendo rut_factura es el RUT del cliente aquí
-                    if (dataTelefonoEl) dataTelefonoEl.textContent = orderData.telefono_contacto || 'No especificado';
-                    if (dataEmailEl) dataEmailEl.textContent = orderData.correo || 'No especificado'; // 'correo' es la clave en pedidoData
+                    // CORRECCIÓN: Usar las claves correctas que se guardan desde checkout.html
+                    if (dataNombreEl) dataNombreEl.textContent = `${orderData.nombre || ''} ${orderData.apellido || ''}`;
+                    if (dataRutEl) dataRutEl.textContent = orderData.rut_factura || 'No especificado'; 
+                    if (dataTelefonoEl) dataTelefonoEl.textContent = orderData.telefono || 'No especificado'; // Corregido a 'telefono'
+                    if (dataEmailEl) dataEmailEl.textContent = orderData.correo || 'No especificado';
 
                     // Despacho
                     if (dataTipoEntregaEl) {
@@ -416,7 +425,6 @@
 
                 } catch (e) {
                     console.error("success.html: Error parseando datos del pedido desde localStorage:", e);
-                    // Mostrar mensaje de error genérico si el parseo falla
                     const mainCard = document.querySelector('.order-summary-card');
                     if(mainCard){
                         mainCard.innerHTML = `
