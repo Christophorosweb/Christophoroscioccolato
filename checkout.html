@@ -284,7 +284,7 @@
                                 </div>
                                 <div class="radio-label-span-container border border-gray-300 rounded-md">
                                     <label class="radio-label">
-                                        <input type="radio" name="tipo-entrega" value="tienda" onchange="toggleEnvioInfo(false)">
+                                        <input type="radio" name="tipo-entrega" value="retiro" onchange="toggleEnvioInfo(false)">
                                          <span class="radio-label-span">Retiro en Tienda (Temuco Centro, se coordina por WhatsApp)</span>
                                     </label>
                                 </div>
@@ -673,11 +673,9 @@
               detalles_pago:          formData.get('metodo-pago') === 'mercadopago'
                                         ? { status: 'pendiente_redireccion' } 
                                         : null,
-              // items_pedido y estado_pedido se eliminan de aquí si no son columnas directas en 'pedidos'
-              // PERO SÍ LOS SOLICITASTE EN TU ÚLTIMO CONTEXTO, ASÍ QUE LOS MANTENGO.
-              // SI NO SON COLUMNAS, DEBEN ELIMINARSE O LA INSERCIÓN FALLARÁ.
-              // items_pedido:           cartItems, // Esta línea fue eliminada en la instrucción anterior, pero la tabla 'pedidos' SÍ debe tener una columna para esto (JSONB)
-              // estado_pedido:          'pendiente', // Esta línea fue eliminada en la instrucción anterior, pero la tabla 'pedidos' SÍ debe tener una columna para esto
+              // items_pedido y estado_pedido se eliminan de este objeto si no son columnas directas en 'pedidos'
+              // Si son columnas, asegúrate que los nombres coincidan.
+              // Si items_pedido es para una tabla relacionada, se maneja después.
               pagado:                 false,
               estado_pago:            'pendiente',
               fecha_verificacion_pago: null
@@ -715,7 +713,6 @@
               const pedidoId = pedido.id; 
 
               // Insertar líneas de pedido (si es necesario y tienes una tabla 'lineas_pedido')
-              // Y si la columna items_pedido no existe en la tabla 'pedidos'
               if (cartItems && cartItems.length > 0) {
                   const lineas = cartItems.map(i => ({
                     pedido_id:       pedidoId, 
@@ -747,7 +744,6 @@
             } catch (error) {
               console.error('PedidosUMD: error en el proceso de envío del pedido:', error);
               if (msg) {
-                // Muestra el mensaje de error de Supabase si está disponible, sino un mensaje genérico.
                 let errorMessage = 'Error al procesar tu pedido. Intenta de nuevo.';
                 if (error && error.message) {
                     errorMessage += ' Detalle: ' + error.message;
