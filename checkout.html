@@ -16,26 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('CRITICAL ERROR: Supabase UMD CDN script failed to load. Check network connection and CDN URL.')"></script>
 
     <script>
-        console.log('checkout.html (head): Attempting to initialize Supabase client from UMD global.');
-        const SUPABASE_URL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
-        
-        if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
-            try {
-                window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log('checkout.html (head): window.supabaseClient initialized successfully from UMD.', window.supabaseClient);
-            } catch (e) {
-                console.error('checkout.html (head): Error initializing window.supabaseClient from UMD global:', e);
-                window.supabaseClient = null;
-            }
-        } else {
-            console.error('checkout.html (head): CRITICAL - Global "supabase" object from UMD not found or not a valid Supabase entry point.');
-            window.supabaseClient = null;
-        }
-    </script>
-
-    <script>
-        // Configuración de Tailwind
+        // Configuración de Tailwind (se ejecuta después de que Tailwind CSS se carga)
         if (typeof tailwind !== 'undefined') {
             tailwind.config = {
                 theme: {
@@ -54,6 +35,8 @@
                     }
                 }
             };
+        } else {
+            console.warn("checkout.html (head): Tailwind CSS object not found when trying to set config.")
         }
     </script>
     
@@ -153,10 +136,10 @@
         .radio-label input[type="radio"] {
             margin-right: 0.5rem;
         }
-        .radio-label:hover, input[type="radio"]:checked + .radio-label-span { /* Aplicar estilo al span para mejor control */
+        .radio-label:hover, input[type="radio"]:checked + .radio-label-span { 
             border-color: #0f2a66;
         }
-        input[type="radio"]:checked ~ .radio-label-span-container {
+        input[type="radio"]:checked ~ .radio-label-span-container { /* Estilo para el contenedor del radio seleccionado */
              border-color: #0f2a66;
              background-color: #EBF8FF;
         }
@@ -175,14 +158,14 @@
             text-align: center;
         }
         .form-message.success {
-            background-color: #c6f6d5; /* Tailwind green-200 */
-            color: #2f855a; /* Tailwind green-700 */
-            border: 1px solid #9ae6b4; /* Tailwind green-300 */
+            background-color: #c6f6d5; 
+            color: #2f855a; 
+            border: 1px solid #9ae6b4; 
         }
         .form-message.error {
-            background-color: #fed7d7; /* Tailwind red-200 */
-            color: #c53030; /* Tailwind red-700 */
-            border: 1px solid #fbb6ce; /* Tailwind red-300 */
+            background-color: #fed7d7; 
+            color: #c53030; 
+            border: 1px solid #fbb6ce; 
         }
     </style>
 </head>
@@ -431,283 +414,385 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('checkout.html (DOMContentLoaded): DOM fully loaded. Initializing page logic.');
+        // Variables globales para el script de la página
+        let currentDiscountAmount = 0;
+        const formResponseMessageCheckout = document.getElementById('form-checkout-response-message');
+        const submitButtonGlobal = document.getElementById('finalizar-compra-btn');
 
-            // Lógica para el menú móvil
-            const mobileMenuButtonCheckout = document.getElementById('mobile-menu-button-checkout');
-            const mobileMenuCheckoutPage = document.getElementById('mobile-menu-checkout-page');
-            const menuIconOpenCheckout = document.getElementById('menu-icon-open-checkout');
-            const menuIconCloseCheckout = document.getElementById('menu-icon-close-checkout');
 
-            if (mobileMenuButtonCheckout) {
-                mobileMenuButtonCheckout.addEventListener('click', () => {
-                    const isExpanded = mobileMenuButtonCheckout.getAttribute('aria-expanded') === 'true';
-                    mobileMenuButtonCheckout.setAttribute('aria-expanded', !isExpanded);
-                    mobileMenuCheckoutPage.classList.toggle('-translate-y-full'); 
-                    mobileMenuCheckoutPage.classList.toggle('z-10'); 
-                    mobileMenuCheckoutPage.classList.toggle('-z-10'); 
-                    if (menuIconOpenCheckout) menuIconOpenCheckout.classList.toggle('hidden');
-                    if (menuIconCloseCheckout) menuIconCloseCheckout.classList.toggle('hidden');
+        // Lógica para el menú móvil
+        const mobileMenuButtonCheckout = document.getElementById('mobile-menu-button-checkout');
+        const mobileMenuCheckoutPage = document.getElementById('mobile-menu-checkout-page');
+        const menuIconOpenCheckout = document.getElementById('menu-icon-open-checkout');
+        const menuIconCloseCheckout = document.getElementById('menu-icon-close-checkout');
+
+        if (mobileMenuButtonCheckout) {
+            mobileMenuButtonCheckout.addEventListener('click', () => {
+                const isExpanded = mobileMenuButtonCheckout.getAttribute('aria-expanded') === 'true';
+                mobileMenuButtonCheckout.setAttribute('aria-expanded', !isExpanded);
+                mobileMenuCheckoutPage.classList.toggle('-translate-y-full'); 
+                mobileMenuCheckoutPage.classList.toggle('z-10'); 
+                mobileMenuCheckoutPage.classList.toggle('-z-10'); 
+                if (menuIconOpenCheckout) menuIconOpenCheckout.classList.toggle('hidden');
+                if (menuIconCloseCheckout) menuIconCloseCheckout.classList.toggle('hidden');
+            });
+            if (mobileMenuCheckoutPage) { 
+                mobileMenuCheckoutPage.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenuButtonCheckout.setAttribute('aria-expanded', 'false');
+                        mobileMenuCheckoutPage.classList.add('-translate-y-full');
+                        mobileMenuCheckoutPage.classList.add('-z-10');
+                        mobileMenuCheckoutPage.classList.remove('z-10');
+                        if (menuIconOpenCheckout) menuIconOpenCheckout.classList.remove('hidden');
+                        if (menuIconCloseCheckout) menuIconCloseCheckout.classList.add('hidden');
+                    });
                 });
-                if (mobileMenuCheckoutPage) { 
-                    mobileMenuCheckoutPage.querySelectorAll('a').forEach(link => {
-                        link.addEventListener('click', () => {
-                            mobileMenuButtonCheckout.setAttribute('aria-expanded', 'false');
-                            mobileMenuCheckoutPage.classList.add('-translate-y-full');
-                            mobileMenuCheckoutPage.classList.add('-z-10');
-                            mobileMenuCheckoutPage.classList.remove('z-10');
-                            if (menuIconOpenCheckout) menuIconOpenCheckout.classList.remove('hidden');
-                            if (menuIconCloseCheckout) menuIconCloseCheckout.classList.add('hidden');
-                        });
-                    });
+            }
+        }
+
+        // Lógica para cargar el resumen del pedido y actualizar contador del carrito
+        const orderSummaryItemsContainer = document.getElementById('order-summary-items');
+        const summarySubtotalEl = document.getElementById('summary-subtotal');
+        const summaryDiscountEl = document.getElementById('summary-discount');
+        const summaryTotalEl = document.getElementById('summary-total');
+        const cartCountCheckoutEl = document.getElementById('cart-count-checkout');
+
+        function formatPrice(price) {
+            return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 });
+        }
+        
+        function getCartItemsForUMD() { // Renombrada para evitar conflicto si se usa en otro lado
+            return JSON.parse(localStorage.getItem('christophorosCart')) || [];
+        }
+
+        function loadOrderSummary() {
+            const cart = getCartItemsForUMD();
+            let subtotal = 0;
+            let totalItemsInCart = 0;
+            
+            if (orderSummaryItemsContainer) orderSummaryItemsContainer.innerHTML = ''; 
+
+            if (cart.length === 0) {
+                if (orderSummaryItemsContainer) {
+                    orderSummaryItemsContainer.innerHTML = '<p class="text-sm text-brand-navy-text/70">Tu carrito está vacío.</p>';
                 }
-            }
+                if (submitButtonGlobal) submitButtonGlobal.disabled = true;
+            } else {
+                if (submitButtonGlobal) submitButtonGlobal.disabled = false;
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    totalItemsInCart += item.quantity;
 
-            const orderSummaryItemsContainer = document.getElementById('order-summary-items');
-            const summarySubtotalEl = document.getElementById('summary-subtotal');
-            const summaryDiscountEl = document.getElementById('summary-discount');
-            const summaryTotalEl = document.getElementById('summary-total');
-            const cartCountCheckoutEl = document.getElementById('cart-count-checkout');
-            let currentDiscountAmount = 0; // Variable para almacenar el descuento actual
-
-            function formatPrice(price) {
-                return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 });
-            }
-
-            function loadOrderSummary() {
-                const cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
-                let subtotal = 0;
-                let totalItemsInCart = 0;
-                
-                if (orderSummaryItemsContainer) orderSummaryItemsContainer.innerHTML = ''; 
-
-                if (cart.length === 0) {
                     if (orderSummaryItemsContainer) {
-                        orderSummaryItemsContainer.innerHTML = '<p class="text-sm text-brand-navy-text/70">Tu carrito está vacío.</p>';
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'flex justify-between items-center text-sm';
+                        itemDiv.innerHTML = `
+                            <div class="flex items-center">
+                                <img src="${item.image || 'images/default-product.png'}" alt="${item.name}" class="h-10 w-10 object-contain rounded-md mr-3">
+                                <span>${item.name} (x${item.quantity})</span>
+                            </div>
+                            <span>${formatPrice(itemTotal)}</span>
+                        `;
+                        orderSummaryItemsContainer.appendChild(itemDiv);
                     }
-                     document.getElementById('finalizar-compra-btn').disabled = true; // Deshabilitar botón si el carrito está vacío
-                } else {
-                     document.getElementById('finalizar-compra-btn').disabled = false;
-                    cart.forEach(item => {
-                        const itemTotal = item.price * item.quantity;
-                        subtotal += itemTotal;
-                        totalItemsInCart += item.quantity;
-
-                        if (orderSummaryItemsContainer) {
-                            const itemDiv = document.createElement('div');
-                            itemDiv.className = 'flex justify-between items-center text-sm';
-                            itemDiv.innerHTML = `
-                                <div class="flex items-center">
-                                    <img src="${item.image || 'images/default-product.png'}" alt="${item.name}" class="h-10 w-10 object-contain rounded-md mr-3">
-                                    <span>${item.name} (x${item.quantity})</span>
-                                </div>
-                                <span>${formatPrice(itemTotal)}</span>
-                            `;
-                            orderSummaryItemsContainer.appendChild(itemDiv);
-                        }
-                    });
-                }
-                
-                const total = subtotal - currentDiscountAmount;
-
-                if (summarySubtotalEl) summarySubtotalEl.textContent = formatPrice(subtotal);
-                if (summaryDiscountEl) summaryDiscountEl.textContent = `-${formatPrice(currentDiscountAmount)}`;
-                if (summaryTotalEl) summaryTotalEl.textContent = formatPrice(total);
-                if (cartCountCheckoutEl) cartCountCheckoutEl.textContent = totalItemsInCart;
+                });
             }
             
-            loadOrderSummary(); // Cargar al inicio
+            const total = subtotal - currentDiscountAmount;
 
-            const infoEnvioSection = document.getElementById('info-envio-section');
-            const envioInputs = infoEnvioSection ? Array.from(infoEnvioSection.querySelectorAll('input[type="text"], input[type="tel"], select, textarea')) : [];
+            if (summarySubtotalEl) summarySubtotalEl.textContent = formatPrice(subtotal);
+            if (summaryDiscountEl) summaryDiscountEl.textContent = `-${formatPrice(currentDiscountAmount)}`;
+            if (summaryTotalEl) summaryTotalEl.textContent = formatPrice(total);
+            if (cartCountCheckoutEl) cartCountCheckoutEl.textContent = totalItemsInCart;
+        }
+        
+        // Lógica para mostrar/ocultar información de envío
+        const infoEnvioSection = document.getElementById('info-envio-section');
+        const envioInputs = infoEnvioSection ? Array.from(infoEnvioSection.querySelectorAll('input[type="text"], input[type="tel"], select, textarea')) : [];
 
-            function toggleEnvioInfo(show) {
-                if (infoEnvioSection) {
-                    if (show) {
-                        infoEnvioSection.style.display = 'block';
-                        envioInputs.forEach(input => input.required = true);
+        function toggleEnvioInfo(show) {
+            if (infoEnvioSection) {
+                const isRequired = show; // Los campos de envío son requeridos solo si 'show' es true
+                if (show) {
+                    infoEnvioSection.style.display = 'block';
+                } else {
+                    infoEnvioSection.style.display = 'none';
+                }
+                envioInputs.forEach(input => input.required = isRequired);
+            }
+        }
+        
+        const tipoEntregaRadios = document.querySelectorAll('input[name="tipo-entrega"]');
+        tipoEntregaRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                toggleEnvioInfo(this.value === 'domicilio');
+            });
+        });
+        
+        // Placeholder para el botón de aplicar cupón
+        const aplicarCuponBtn = document.getElementById('aplicar-cupon-btn');
+        const cuponMessageEl = document.getElementById('cupon-message');
+
+        if(aplicarCuponBtn) {
+            aplicarCuponBtn.addEventListener('click', function() {
+                const cuponInput = document.getElementById('cupon');
+                if (cuponInput && cuponInput.value.trim() !== "") {
+                    if (cuponInput.value.toUpperCase() === "DESC10") { // Ejemplo de cupón
+                        currentDiscountAmount = 5000; 
+                        if(cuponMessageEl) {
+                            cuponMessageEl.textContent = `Cupón "${cuponInput.value}" aplicado: ${formatPrice(currentDiscountAmount)} de descuento.`;
+                            cuponMessageEl.className = 'text-sm mt-2 text-green-600';
+                        }
                     } else {
-                        infoEnvioSection.style.display = 'none';
-                        envioInputs.forEach(input => input.required = false);
+                        currentDiscountAmount = 0;
+                         if(cuponMessageEl) {
+                            cuponMessageEl.textContent = "Cupón no válido.";
+                            cuponMessageEl.className = 'text-sm mt-2 text-red-600';
+                         }
+                    }
+                    loadOrderSummary(); // Recalcular totales
+                } else {
+                    if(cuponMessageEl) {
+                        cuponMessageEl.textContent = "Por favor, ingresa un código de cupón.";
+                        cuponMessageEl.className = 'text-sm mt-2 text-red-600';
+                    }
+                }
+            });
+        }
+
+        // --- MÓDULO UMD PARA PEDIDOS ---
+        (function (root, factory) {
+            if (typeof define === 'function' && define.amd) {
+                define([], factory); // No depende de @supabase/supabase-js como módulo AMD, usa el global
+            } else if (typeof module === 'object' && module.exports) {
+                module.exports = factory(); // No requiere @supabase/supabase-js, usa el global
+            } else {
+                root.PedidosUMD = factory();
+            }
+        }(typeof self !== 'undefined' ? self : this, function () {
+            'use strict';
+
+            // Esta instancia de supabase se crea usando el objeto global 'supabase' del CDN UMD
+            var supabaseClientInstance;
+            if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
+                 const SUPABASE_URL_MODULE = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+                 const SUPABASE_KEY_MODULE = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+                supabaseClientInstance = supabase.createClient(SUPABASE_URL_MODULE, SUPABASE_KEY_MODULE);
+                console.log("PedidosUMD: Supabase client instance created within UMD module.");
+            } else {
+                console.error("PedidosUMD: Global 'supabase' object from UMD CDN not available. Cannot create client instance.");
+                supabaseClientInstance = null;
+            }
+
+            async function handleSubmit(event) {
+                event.preventDefault();
+                console.log("PedidosUMD: handleSubmit triggered.");
+
+                const form = event.target;
+                const submitButton = document.getElementById('finalizar-compra-btn'); // Usar el ID global
+
+                if (formResponseMessageCheckout) { // Usar la variable global
+                    formResponseMessageCheckout.textContent = '';
+                    formResponseMessageCheckout.className = 'form-message';
+                }
+                
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Procesando...';
+                }
+
+                // Validación
+                let isValid = true;
+                const requiredInputs = form.querySelectorAll('[required]');
+                requiredInputs.forEach(input => {
+                    if (input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) {
+                        if (!input.value.trim()) {
+                            isValid = false;
+                            input.classList.add('border-red-500');
+                            console.warn(`PedidosUMD: Campo requerido vacío: ${input.id}`);
+                        } else {
+                            input.classList.remove('border-red-500');
+                        }
+                    }
+                });
+                const terminosCheckbox = document.getElementById('terminos');
+                if (!terminosCheckbox.checked) {
+                    isValid = false;
+                    // alert("Debes aceptar los términos y condiciones."); // Ya no usamos alert
+                    if (formResponseMessageCheckout) {
+                        formResponseMessageCheckout.textContent = 'Debes aceptar los términos y condiciones.';
+                        formResponseMessageCheckout.className = 'form-message error';
+                    }
+                    console.warn("PedidosUMD: Términos y condiciones no aceptados.");
+                }
+
+                if (!isValid) {
+                    if (formResponseMessageCheckout && !formResponseMessageCheckout.textContent) { // Solo si no hay ya un mensaje de términos
+                        formResponseMessageCheckout.textContent = 'Por favor, completa todos los campos obligatorios (*).';
+                        formResponseMessageCheckout.className = 'form-message error';
+                    }
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
+                    }
+                    return;
+                }
+
+                if (!supabaseClientInstance) {
+                    console.error('PedidosUMD: Supabase client instance is not available in handleSubmit.');
+                    if (formResponseMessageCheckout) {
+                        formResponseMessageCheckout.textContent = 'Error crítico: No se pudo conectar con el servicio de pedidos.';
+                        formResponseMessageCheckout.className = 'form-message error';
+                    }
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
+                    }
+                    return;
+                }
+                
+                // Recoger datos del formulario
+                const formData = new FormData(form);
+                const cartItems = getCartItemsForUMD(); // Usar la función global
+                const subtotalCalculado = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const costoEnvioCalculado = tipoEntrega === 'domicilio' ? (subtotalCalculado >= 50000 ? 0 : 3000) : 0; // Ejemplo, ajustar según tu lógica real
+                const totalCalculado = subtotalCalculado + costoEnvioCalculado - currentDiscountAmount; // Usa currentDiscountAmount global
+
+                const tipoEntrega = formData.get('tipo-entrega');
+
+                const pedidoData = {
+                    nombre_contacto: formData.get('checkout-nombre'),
+                    apellido_contacto: formData.get('checkout-apellido'),
+                    email_contacto: formData.get('checkout-email'),
+                    telefono_contacto: formData.get('checkout-telefono-contacto'),
+                    nombre_boleta: formData.get('boleta-nombre'),
+                    rut_boleta: formData.get('boleta-rut'),
+                    tipo_entrega: tipoEntrega,
+                    nombre_recibe_envio: tipoEntrega === 'domicilio' ? formData.get('envio-nombre-recibe') : null,
+                    rut_recibe_envio: tipoEntrega === 'domicilio' ? formData.get('envio-rut-recibe') : null,
+                    telefono_recibe_envio: tipoEntrega === 'domicilio' ? formData.get('envio-telefono-recibe') : null,
+                    direccion_envio: tipoEntrega === 'domicilio' ? formData.get('envio-direccion') : null,
+                    depto_envio: tipoEntrega === 'domicilio' ? formData.get('envio-depto') : null,
+                    region_envio: tipoEntrega === 'domicilio' ? formData.get('envio-region') : null,
+                    comuna_envio: tipoEntrega === 'domicilio' ? formData.get('envio-comuna') : null,
+                    instrucciones_envio: tipoEntrega === 'domicilio' ? formData.get('envio-instrucciones') : null,
+                    codigo_cupon: formData.get('cupon') || null,
+                    descuento_cupon: currentDiscountAmount,
+                    subtotal: subtotalCalculado,
+                    costo_envio: costoEnvioCalculado,
+                    total: totalCalculado,
+                    metodo_pago: formData.get('metodo-pago'),
+                    detalles_pago: formData.get('metodo-pago') === 'mercadopago' ? { status: 'pendiente_redireccion' } : null, // Ejemplo
+                    items_pedido: cartItems,
+                    estado_pedido: 'pendiente'
+                };
+                console.log("PedidosUMD: Order data to be sent:", pedidoData);
+
+                try {
+                    const pedidoRes = await supabaseClientInstance
+                        .from('Pedidos') // Nombre de tu tabla de pedidos
+                        .insert([pedidoData])
+                        .select('id') // Solicitar el ID del pedido insertado
+                        .single();
+
+                    if (pedidoRes.error) {
+                        console.error('PedidosUMD: Error creando pedido en Supabase:', pedidoRes.error);
+                        throw pedidoRes.error; // Lanzar para el catch general
+                    }
+
+                    const pedidoId = pedidoRes.data.id;
+                    console.log('PedidosUMD: Pedido creado con ID:', pedidoId);
+
+                    // Crear líneas de pedido (opcional si ya guardaste items_pedido como JSON)
+                    // Si 'items_pedido' en la tabla 'Pedidos' es de tipo JSONB y guarda el array,
+                    // no necesitas una tabla 'lineas_pedido' separada, a menos que lo prefieras por normalización.
+                    // Si la necesitas, aquí va la lógica:
+                    /*
+                    const lineas = cartItems.map(function(item) {
+                        return {
+                            pedido_id: pedidoId,
+                            nombre_producto: item.name, // Asegúrate que 'name' exista en tus items de carrito
+                            cantidad: item.quantity,    // Asegúrate que 'quantity' exista
+                            precio_unitario: item.price // Asegúrate que 'price' exista
+                        };
+                    });
+
+                    if (lineas.length > 0) {
+                        const lineasRes = await supabaseClientInstance
+                            .from('lineas_pedido') // Nombre de tu tabla de líneas de pedido
+                            .insert(lineas);
+
+                        if (lineasRes.error) {
+                            console.error('PedidosUMD: Error insertando líneas de pedido:', lineasRes.error);
+                            // Considera cómo manejar este error parcial (pedido creado pero líneas no)
+                        } else {
+                            console.log('PedidosUMD: Líneas de pedido insertadas con éxito.');
+                        }
+                    }
+                    */
+
+                    if (formResponseMessageCheckout) {
+                        formResponseMessageCheckout.textContent = '¡Pedido realizado con éxito! ID del Pedido: ' + pedidoId;
+                        formResponseMessageCheckout.className = 'form-message success';
+                    }
+                    localStorage.removeItem('christophorosCart');
+                    loadOrderSummary(); // Actualizar UI
+                    form.reset(); // Resetear formulario
+                    toggleEnvioInfo(true); // Resetear visibilidad de envío a domicilio
+
+                } catch (error) {
+                    console.error('PedidosUMD: Error en el proceso de envío del pedido:', error);
+                    if (formResponseMessageCheckout) {
+                        formResponseMessageCheckout.textContent = 'Hubo un error al procesar tu pedido. Por favor, inténtalo de nuevo o contáctanos.';
+                        formResponseMessageCheckout.className = 'form-message error';
+                    }
+                } finally {
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
                     }
                 }
             }
-            const tipoEntregaRadios = document.querySelectorAll('input[name="tipo-entrega"]');
-            tipoEntregaRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    toggleEnvioInfo(this.value === 'domicilio');
-                });
-            });
-            // Inicializar basado en la opción por defecto
-            const defaultEntrega = document.querySelector('input[name="tipo-entrega"]:checked');
-            if (defaultEntrega) {
-                toggleEnvioInfo(defaultEntrega.value === 'domicilio');
+
+            function init(selectorForm) {
+                console.log("PedidosUMD: init called for form:", selectorForm);
+                var form = document.querySelector(selectorForm);
+                if (form) {
+                    form.addEventListener('submit', handleSubmit);
+                    console.log("PedidosUMD: Event listener attached to form.");
+                } else {
+                    console.warn('PedidosUMD: Formulario no encontrado: ' + selectorForm);
+                }
+            }
+
+            return {
+                init: init
+            };
+        }));
+
+        // INICIALIZAR TODO CUANDO EL DOM ESTÉ LISTO
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('checkout.html (DOMContentLoaded): DOM fully loaded. Initializing UMD module.');
+            loadOrderSummary(); // Cargar resumen al inicio
+            
+            // Inicializar la visibilidad de la sección de envío basada en la opción por defecto
+            const defaultEntregaRadio = document.querySelector('input[name="tipo-entrega"]:checked');
+            if (defaultEntregaRadio) {
+                toggleEnvioInfo(defaultEntregaRadio.value === 'domicilio');
             }
 
 
-            const checkoutForm = document.getElementById('checkout-form');
-            const formResponseMessageCheckout = document.getElementById('form-checkout-response-message');
-
-            if (checkoutForm) {
-                checkoutForm.addEventListener('submit', async function(event) {
-                    event.preventDefault();
-                    console.log("Form submit event triggered");
-
-                    const submitButton = document.getElementById('finalizar-compra-btn');
-                    submitButton.disabled = true;
-                    submitButton.textContent = 'Procesando...';
-                    if (formResponseMessageCheckout) {
-                        formResponseMessageCheckout.textContent = '';
-                        formResponseMessageCheckout.className = 'form-message';
-                    }
-
-                    // Validación simple (puedes hacerla más robusta)
-                    let isValid = true;
-                    const requiredInputs = checkoutForm.querySelectorAll('[required]');
-                    requiredInputs.forEach(input => {
-                        // Solo validar si el input es visible (para la sección de envío condicional)
-                        if (input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) {
-                            if (!input.value.trim()) {
-                                isValid = false;
-                                input.classList.add('border-red-500'); // Resaltar campo vacío
-                                console.warn(`Campo requerido vacío: ${input.name || input.id}`);
-                            } else {
-                                input.classList.remove('border-red-500');
-                            }
-                        }
-                    });
-                     const terminosCheckbox = document.getElementById('terminos');
-                    if (!terminosCheckbox.checked) {
-                        isValid = false;
-                        alert("Debes aceptar los términos y condiciones.");
-                        console.warn("Términos y condiciones no aceptados.");
-                    }
-
-
-                    if (!isValid) {
-                        if (formResponseMessageCheckout) {
-                            formResponseMessageCheckout.textContent = 'Por favor, completa todos los campos obligatorios (*) y acepta los términos.';
-                            formResponseMessageCheckout.className = 'form-message error';
-                        }
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
-                        return;
-                    }
-                    
-                    console.log("Form is valid. Checking Supabase client...");
-
-                    if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient && typeof window.supabaseClient.from === 'function') {
-                        console.log("Supabase client found. Proceeding to collect data.");
-                        const formData = new FormData(checkoutForm);
-                        const cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
-                        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                        const total = subtotal - currentDiscountAmount; // Asumiendo que currentDiscountAmount se actualiza
-
-                        const orderData = {
-                            nombre_contacto: formData.get('checkout-nombre'),
-                            apellido_contacto: formData.get('checkout-apellido'),
-                            email_contacto: formData.get('checkout-email'),
-                            telefono_contacto: formData.get('checkout-telefono-contacto'),
-                            nombre_boleta: formData.get('boleta-nombre'),
-                            rut_boleta: formData.get('boleta-rut'),
-                            tipo_entrega: formData.get('tipo-entrega'),
-                            nombre_recibe_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-nombre-recibe') : null,
-                            rut_recibe_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-rut-recibe') : null,
-                            telefono_recibe_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-telefono-recibe') : null,
-                            direccion_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-direccion') : null,
-                            depto_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-depto') : null,
-                            region_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-region') : null,
-                            comuna_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-comuna') : null,
-                            instrucciones_envio: formData.get('tipo-entrega') === 'domicilio' ? formData.get('envio-instrucciones') : null,
-                            cupon_descuento: formData.get('cupon'),
-                            metodo_pago: formData.get('metodo-pago'),
-                            items_pedido: cart, // Guardar el carrito como JSON
-                            subtotal_pedido: subtotal,
-                            descuento_pedido: currentDiscountAmount,
-                            total_pedido: total,
-                            estado_pedido: 'pendiente' // Estado inicial del pedido
-                        };
-
-                        console.log("Order data collected:", orderData);
-
-                        try {
-                            console.log("Attempting to insert order into Supabase table 'Pedidos'.");
-                            const { data, error } = await window.supabaseClient
-                                .from('Pedidos') // Asegúrate que esta tabla exista en Supabase
-                                .insert([orderData]);
-
-                            if (error) {
-                                console.error('Error de Supabase al insertar pedido:', error);
-                                throw error;
-                            }
-                            
-                            console.log("Order inserted successfully:", data);
-                            if (formResponseMessageCheckout) {
-                                formResponseMessageCheckout.textContent = '¡Pedido realizado con éxito! Gracias por tu compra.';
-                                formResponseMessageCheckout.className = 'form-message success';
-                            }
-                            localStorage.removeItem('christophorosCart'); // Limpiar carrito
-                            loadOrderSummary(); // Actualizar UI del resumen y contador
-                            checkoutForm.reset(); // Resetear formulario
-                            // Podrías redirigir a una página de "gracias"
-                            // window.location.href = 'gracias.html';
-
-                        } catch (error) {
-                            console.error('Error al procesar el pedido:', error.message ? error.message : error);
-                            if (formResponseMessageCheckout) {
-                                formResponseMessageCheckout.textContent = 'Hubo un error al procesar tu pedido. Por favor, inténtalo de nuevo o contáctanos.';
-                                formResponseMessageCheckout.className = 'form-message error';
-                            }
-                        } finally {
-                            submitButton.disabled = false;
-                            submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
-                        }
-                    } else {
-                        console.error("Supabase client (window.supabaseClient) is not defined or invalid. Cannot submit order.");
-                         if (formResponseMessageCheckout) {
-                            formResponseMessageCheckout.textContent = 'Error de configuración del servicio. No se puede procesar el pedido.';
-                            formResponseMessageCheckout.className = 'form-message error';
-                        }
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
-                    }
-                });
+            if (window.PedidosUMD && typeof window.PedidosUMD.init === 'function') {
+                window.PedidosUMD.init('#checkout-form');
+            } else {
+                console.error("checkout.html (DOMContentLoaded): PedidosUMD module or its init function is not available at DOMContentLoaded. This might indicate the UMD script itself had an issue or didn't expose PedidosUMD correctly.");
+                if (formResponseMessageCheckout) {
+                    formResponseMessageCheckout.textContent = 'Error crítico al cargar el sistema de pedidos. Por favor, recarga la página.';
+                    formResponseMessageCheckout.className = 'form-message error';
+                }
             }
-
-            const aplicarCuponBtn = document.getElementById('aplicar-cupon-btn');
-            const cuponMessageEl = document.getElementById('cupon-message');
-
-            if(aplicarCuponBtn) {
-                aplicarCuponBtn.addEventListener('click', function() {
-                    const cuponInput = document.getElementById('cupon');
-                    if (cuponInput && cuponInput.value.trim() !== "") {
-                        // Lógica de simulación de cupón
-                        if (cuponInput.value.toUpperCase() === "DESC10") {
-                            currentDiscountAmount = 5000; // Ejemplo de descuento fijo
-                            if(cuponMessageEl) {
-                                cuponMessageEl.textContent = `Cupón "${cuponInput.value}" aplicado: ${formatPrice(currentDiscountAmount)} de descuento.`;
-                                cuponMessageEl.className = 'text-sm mt-2 text-green-600';
-                            }
-                        } else {
-                            currentDiscountAmount = 0;
-                             if(cuponMessageEl) {
-                                cuponMessageEl.textContent = "Cupón no válido.";
-                                cuponMessageEl.className = 'text-sm mt-2 text-red-600';
-                             }
-                        }
-                        loadOrderSummary(); // Recalcular totales
-                    } else {
-                        if(cuponMessageEl) {
-                            cuponMessageEl.textContent = "Por favor, ingresa un código de cupón.";
-                            cuponMessageEl.className = 'text-sm mt-2 text-red-600';
-                        }
-                    }
-                });
-            }
-            console.log('checkout.html (DOMContentLoaded): Event listeners and page setup finished.');
         });
     </script>
-
 </body>
 </html>
