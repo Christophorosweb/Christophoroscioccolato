@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras | Christophoros Cioccolato</title>
     <meta name="description" content="Revisa tu selección de bombones Christophoros y procede con tu compra.">
-    <meta name="robots" content="noindex, nofollow"> <link rel="icon" type="image/png" href="images/favicon.png">
+    <meta name="robots" content="noindex, nofollow"> 
+    
+    <link rel="icon" type="image/png" href="images/favicon.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,14 +55,14 @@
              transform: scale(1.03);
         }
         .btn-danger {
-            background-color: #C84B31; /* Rojo de tu paleta original */
+            background-color: #C84B31; 
             color: white;
-            padding: 0.3rem 0.6rem; /* Ajuste de padding */
-            border-radius: 0.375rem; /* rounded-md */
-            font-size: 0.875rem; /* text-sm */
+            padding: 0.3rem 0.6rem; 
+            border-radius: 0.375rem; 
+            font-size: 0.875rem; 
         }
         .btn-danger:hover {
-            background-color: #A77979; /* Marrón claro de tu paleta */
+            background-color: #A77979; 
         }
         header { 
             background-color: rgba(253, 251, 249, 0.95);
@@ -88,7 +90,7 @@
         .quantity-input {
             width: 3rem; 
             text-align: center;
-            border-top: 1px solid #e2e8f0; /* Tailwind: border-gray-300 */
+            border-top: 1px solid #e2e8f0; 
             border-bottom: 1px solid #e2e8f0;
             -moz-appearance: textfield;
         }
@@ -98,8 +100,8 @@
             margin: 0;
         }
         .quantity-btn {
-            border: 1px solid #e2e8f0; /* Tailwind: border-gray-300 */
-            padding: 0.25rem 0.75rem; /* Tailwind: py-1 px-3 */
+            border: 1px solid #e2e8f0; 
+            padding: 0.25rem 0.75rem; 
         }
     </style>
 </head>
@@ -173,13 +175,10 @@
                                 <span id="cart-total">$ 0</span>
                             </div>
                         </div>
-                        <button id="checkout-button" class="btn-action w-full text-lg font-semibold py-3 px-8 rounded-md shadow-lg disabled:opacity-50" disabled>
+                        <a href="checkout.html" id="checkout-button-link" class="btn-action w-full text-lg font-semibold py-3 px-8 rounded-md shadow-lg text-center block">
                             Continuar Compra
-                        </button>
-                        <p class="text-xs text-center mt-3 text-brand-navy-text/60">
-                            (Este botón es un marcador de posición.)
-                        </p>
-                    </div>
+                        </a>
+                        </div>
                 </div>
             </div>
         </div>
@@ -195,7 +194,7 @@
         const cartItemsContainer = document.getElementById('cart-items-container');
         const cartSubtotalElement = document.getElementById('cart-subtotal');
         const cartTotalElement = document.getElementById('cart-total');
-        const checkoutButton = document.getElementById('checkout-button');
+        const checkoutButtonLink = document.getElementById('checkout-button-link'); // Actualizado a enlace
         const cartCountHeader = document.getElementById('cart-count'); 
 
         function formatPrice(price) {
@@ -210,8 +209,7 @@
 
             if (cart.length === 0) {
                 cartItemsContainer.innerHTML = '<p class="text-center text-brand-navy-text/70 py-8">Tu carrito está vacío. <a href="index.html#formatos" class="text-brand-blue hover:underline">Continúa comprando</a>.</p>';
-                checkoutButton.disabled = true;
-                checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
+                checkoutButtonLink.classList.add('opacity-50', 'pointer-events-none'); // Deshabilitar enlace visualmente
             } else {
                 cart.forEach((item, index) => {
                     const itemTotal = item.price * item.quantity;
@@ -241,8 +239,7 @@
                     `;
                     cartItemsContainer.appendChild(cartItemDiv);
                 });
-                checkoutButton.disabled = false;
-                checkoutButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                checkoutButtonLink.classList.remove('opacity-50', 'pointer-events-none'); // Habilitar enlace
             }
             cartSubtotalElement.textContent = formatPrice(subtotal);
             cartTotalElement.textContent = formatPrice(subtotal); 
@@ -301,13 +298,8 @@
 
         document.addEventListener('DOMContentLoaded', renderCart);
 
-        if(checkoutButton) {
-            checkoutButton.addEventListener('click', () => {
-                // En una implementación real, aquí iría la lógica para pasar a una pasarela de pago.
-                // Por ahora, redirigimos a la página de contacto.
-                window.location.href = 'index.html#contacto';
-            });
-        }
+        // No se necesita el event listener para el botón de checkout si es un enlace directo.
+        // Si el carrito está vacío, el enlace se deshabilita visualmente.
     </script>
 
 </body>
