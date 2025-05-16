@@ -317,104 +317,122 @@
             const orderDataString = localStorage.getItem('lastOrderData');
             const cartItemsString = localStorage.getItem('lastOrderCartItems');
 
-            if (orderId && orderDataString && cartItemsString) {
-                console.log("Datos del pedido encontrados en localStorage.");
-                const orderData = JSON.parse(orderDataString);
-                const cartItems = JSON.parse(cartItemsString);
+            // === LOGS DE DIAGNÓSTICO ADICIONALES ===
+            console.log("success.html: Retrieved from localStorage - lastOrderId:", orderId);
+            console.log("success.html: Retrieved from localStorage - lastOrderData (string):", orderDataString);
+            console.log("success.html: Retrieved from localStorage - lastOrderCartItems (string):", cartItemsString);
+            // === FIN DE LOGS DE DIAGNÓSTICO ===
 
-                if (orderIdEl) orderIdEl.textContent = orderId;
+            if (orderId && orderDataString && cartItemsString && orderDataString !== "null" && cartItemsString !== "null") {
+                console.log("success.html: Datos del pedido encontrados y válidos en localStorage.");
+                try {
+                    const orderData = JSON.parse(orderDataString);
+                    const cartItems = JSON.parse(cartItemsString);
 
-                // Tus Datos
-                if (dataNombreEl) dataNombreEl.textContent = `${orderData.nombre_contacto || ''} ${orderData.apellido_contacto || ''}`;
-                if (dataRutEl) dataRutEl.textContent = orderData.rut_factura || 'No especificado';
-                if (dataTelefonoEl) dataTelefonoEl.textContent = orderData.telefono_contacto || 'No especificado';
-                if (dataEmailEl) dataEmailEl.textContent = orderData.correo || 'No especificado';
+                    if (orderIdEl) orderIdEl.textContent = orderId;
 
-                // Despacho
-                if (dataTipoEntregaEl) {
-                    if (orderData.tipo_entrega === 'domicilio') {
-                        dataTipoEntregaEl.textContent = 'Despacho a Domicilio. Recibes entre 2 a 4 días hábiles.';
-                        if(dataDireccionDespachoEl) dataDireccionDespachoEl.classList.remove('hidden');
-                        if(dataDireccionEl) dataDireccionEl.textContent = orderData.direccion_envio || '';
-                        if(dataComunaRegionEl) dataComunaRegionEl.textContent = `${orderData.comuna_envio || ''}, ${orderData.region_envio || ''}`;
-                        if(dataNombreRecibeEl) dataNombreRecibeEl.textContent = orderData.nombre_destinatario || '';
-                        if(dataRutRecibeEl) dataRutRecibeEl.textContent = orderData.rut_destinatario || '';
-                        if(dataTelefonoRecibeEl) dataTelefonoRecibeEl.textContent = orderData.telefono_destinatario || '';
-                        if(orderData.instrucciones_envio && dataInstruccionesEnvioContainerEl && dataInstruccionesEnvioEl){
-                            dataInstruccionesEnvioContainerEl.classList.remove('hidden');
-                            dataInstruccionesEnvioEl.textContent = orderData.instrucciones_envio;
+                    // Tus Datos
+                    if (dataNombreEl) dataNombreEl.textContent = `${orderData.nombre_contacto || ''} ${orderData.apellido_contacto || ''}`;
+                    if (dataRutEl) dataRutEl.textContent = orderData.rut_factura || 'No especificado'; // Asumiendo rut_factura es el RUT del cliente aquí
+                    if (dataTelefonoEl) dataTelefonoEl.textContent = orderData.telefono_contacto || 'No especificado';
+                    if (dataEmailEl) dataEmailEl.textContent = orderData.correo || 'No especificado'; // 'correo' es la clave en pedidoData
+
+                    // Despacho
+                    if (dataTipoEntregaEl) {
+                        if (orderData.tipo_entrega === 'domicilio') {
+                            dataTipoEntregaEl.textContent = 'Despacho a Domicilio. Recibes entre 2 a 4 días hábiles.';
+                            if(dataDireccionDespachoEl) dataDireccionDespachoEl.classList.remove('hidden');
+                            if(dataDireccionEl) dataDireccionEl.textContent = orderData.direccion_envio || '';
+                            if(dataComunaRegionEl) dataComunaRegionEl.textContent = `${orderData.comuna_envio || ''}, ${orderData.region_envio || ''}`;
+                            if(dataNombreRecibeEl) dataNombreRecibeEl.textContent = orderData.nombre_destinatario || '';
+                            if(dataRutRecibeEl) dataRutRecibeEl.textContent = orderData.rut_destinatario || '';
+                            if(dataTelefonoRecibeEl) dataTelefonoRecibeEl.textContent = orderData.telefono_destinatario || '';
+                            if(orderData.instrucciones_envio && dataInstruccionesEnvioContainerEl && dataInstruccionesEnvioEl){
+                                dataInstruccionesEnvioContainerEl.classList.remove('hidden');
+                                dataInstruccionesEnvioEl.textContent = orderData.instrucciones_envio;
+                            } else if (dataInstruccionesEnvioContainerEl) {
+                                dataInstruccionesEnvioContainerEl.classList.add('hidden');
+                            }
+
+                        } else if (orderData.tipo_entrega === 'retiro') {
+                            dataTipoEntregaEl.textContent = 'Retiro en Tienda (Temuco Centro). Nos coordinaremos contigo por WhatsApp para el retiro.';
+                            if(dataDireccionDespachoEl) dataDireccionDespachoEl.classList.add('hidden');
+                        } else {
+                            dataTipoEntregaEl.textContent = 'Tipo de entrega no especificado.';
+                             if(dataDireccionDespachoEl) dataDireccionDespachoEl.classList.add('hidden');
                         }
-
-                    } else if (orderData.tipo_entrega === 'retiro') {
-                        dataTipoEntregaEl.textContent = 'Retiro en Tienda (Temuco Centro). Nos coordinaremos contigo por WhatsApp para el retiro.';
-                        if(dataDireccionDespachoEl) dataDireccionDespachoEl.classList.add('hidden');
-                    } else {
-                        dataTipoEntregaEl.textContent = 'Tipo de entrega no especificado.';
-                         if(dataDireccionDespachoEl) dataDireccionDespachoEl.classList.add('hidden');
                     }
-                }
-                
-                // Forma de Pago
-                if (dataMetodoPagoEl) {
-                    if (orderData.metodo_pago === 'transferencia') {
-                        dataMetodoPagoEl.textContent = 'Transferencia Bancaria';
-                        if(dataTransferenciaDetailsEl) dataTransferenciaDetailsEl.classList.remove('hidden');
-                        if(dataMercadoPagoMessageEl) dataMercadoPagoMessageEl.classList.add('hidden');
-                    } else if (orderData.metodo_pago === 'mercadopago') {
-                        dataMetodoPagoEl.textContent = 'Mercado Pago';
-                         if(dataTransferenciaDetailsEl) dataTransferenciaDetailsEl.classList.add('hidden');
-                        if(dataMercadoPagoMessageEl) dataMercadoPagoMessageEl.classList.remove('hidden');
-                    } else {
-                        dataMetodoPagoEl.textContent = 'Método de pago no especificado.';
+                    
+                    // Forma de Pago
+                    if (dataMetodoPagoEl) {
+                        if (orderData.metodo_pago === 'transferencia') {
+                            dataMetodoPagoEl.textContent = 'Transferencia Bancaria';
+                            if(dataTransferenciaDetailsEl) dataTransferenciaDetailsEl.classList.remove('hidden');
+                            if(dataMercadoPagoMessageEl) dataMercadoPagoMessageEl.classList.add('hidden');
+                        } else if (orderData.metodo_pago === 'mercadopago') {
+                            dataMetodoPagoEl.textContent = 'Mercado Pago';
+                             if(dataTransferenciaDetailsEl) dataTransferenciaDetailsEl.classList.add('hidden');
+                            if(dataMercadoPagoMessageEl) dataMercadoPagoMessageEl.classList.remove('hidden');
+                        } else {
+                            dataMetodoPagoEl.textContent = 'Método de pago no especificado.';
+                        }
                     }
-                }
 
 
-                // Detalle de tu Compra
-                if (orderItemsDetailsContainer) {
-                    orderItemsDetailsContainer.innerHTML = ''; // Limpiar
-                    cartItems.forEach(item => {
-                        const itemEl = document.createElement('div');
-                        itemEl.className = 'product-item';
-                        itemEl.innerHTML = `
-                            <div class="flex items-center">
-                                <img src="${item.image || 'images/default-product.png'}" alt="${item.name}" class="h-12 w-12 object-contain rounded-md mr-4">
-                                <div>
-                                    <p class="font-semibold text-brand-navy-text">${item.name}</p>
-                                    <p class="text-xs text-gray-500">SKU: ${item.id || 'N/A'}</p>
+                    // Detalle de tu Compra
+                    if (orderItemsDetailsContainer) {
+                        orderItemsDetailsContainer.innerHTML = ''; // Limpiar
+                        cartItems.forEach(item => {
+                            const itemEl = document.createElement('div');
+                            itemEl.className = 'product-item';
+                            itemEl.innerHTML = `
+                                <div class="flex items-center">
+                                    <img src="${item.image || 'images/default-product.png'}" alt="${item.name}" class="h-12 w-12 object-contain rounded-md mr-4">
+                                    <div>
+                                        <p class="font-semibold text-brand-navy-text">${item.name}</p>
+                                        <p class="text-xs text-gray-500">SKU: ${item.id || 'N/A'}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="text-right">
-                                <p>${item.quantity} cant.</p>
-                                <p class="font-semibold">${formatPrice(item.price * item.quantity)}</p>
-                            </div>
-                        `;
-                        orderItemsDetailsContainer.appendChild(itemEl);
-                    });
-                }
+                                <div class="text-right">
+                                    <p>${item.quantity} cant.</p>
+                                    <p class="font-semibold">${formatPrice(item.price * item.quantity)}</p>
+                                </div>
+                            `;
+                            orderItemsDetailsContainer.appendChild(itemEl);
+                        });
+                    }
 
-                if (detailsSubtotalEl) detailsSubtotalEl.textContent = formatPrice(orderData.subtotal || 0);
-                if (orderData.descuento_cupon > 0) {
-                    if(detailsDiscountRowEl) detailsDiscountRowEl.classList.remove('hidden');
-                    if(detailsDiscountEl) detailsDiscountEl.textContent = `-${formatPrice(orderData.descuento_cupon || 0)}`;
-                } else {
-                    if(detailsDiscountRowEl) detailsDiscountRowEl.classList.add('hidden');
-                }
-                if (detailsShippingEl) {
-                     detailsShippingEl.textContent = (orderData.tipo_entrega === 'domicilio') ? 'Por Pagar en Destino' : 'Retiro en Tienda';
-                }
-                if (detailsTotalEl) detailsTotalEl.textContent = formatPrice(orderData.total || 0);
+                    if (detailsSubtotalEl) detailsSubtotalEl.textContent = formatPrice(orderData.subtotal || 0);
+                    if (orderData.descuento_cupon > 0) {
+                        if(detailsDiscountRowEl) detailsDiscountRowEl.classList.remove('hidden');
+                        if(detailsDiscountEl) detailsDiscountEl.textContent = `-${formatPrice(orderData.descuento_cupon || 0)}`;
+                    } else {
+                        if(detailsDiscountRowEl) detailsDiscountRowEl.classList.add('hidden');
+                    }
+                    if (detailsShippingEl) {
+                         detailsShippingEl.textContent = (orderData.tipo_entrega === 'domicilio') ? 'Por Pagar en Destino' : 'Retiro en Tienda';
+                    }
+                    if (detailsTotalEl) detailsTotalEl.textContent = formatPrice(orderData.total || 0);
 
-                // Opcional: Limpiar los datos de localStorage después de mostrarlos
-                // localStorage.removeItem('lastOrderId');
-                // localStorage.removeItem('lastOrderData');
-                // localStorage.removeItem('lastOrderCartItems');
-                // console.log("Datos del pedido eliminados de localStorage.");
-
+                } catch (e) {
+                    console.error("success.html: Error parseando datos del pedido desde localStorage:", e);
+                    // Mostrar mensaje de error genérico si el parseo falla
+                    const mainCard = document.querySelector('.order-summary-card');
+                    if(mainCard){
+                        mainCard.innerHTML = `
+                            <div class="text-center">
+                                <h1 class="text-3xl md:text-4xl font-serif font-bold text-brand-navy-text mb-4">Error al cargar el detalle del pedido.</h1>
+                                <p class="text-lg text-brand-navy-text/80 mb-6">
+                                    Si acabas de realizar una compra, por favor revisa tu correo electrónico para la confirmación.
+                                </p>
+                                <a href="index.html" class="btn-action text-lg font-semibold py-3 px-8 rounded-md shadow-lg">
+                                    Volver a la Tienda
+                                </a>
+                            </div>`;
+                    }
+                }
             } else {
-                console.warn("No se encontraron datos del pedido en localStorage. Mostrando mensaje genérico.");
-                if (orderIdEl) orderIdEl.textContent = 'No disponible';
-                // Podrías mostrar un mensaje más prominente en la página si faltan datos.
+                console.warn("success.html: No se encontraron datos del pedido válidos en localStorage. Mostrando mensaje genérico. Values:", {orderId, orderDataString, cartItemsString});
                 const mainCard = document.querySelector('.order-summary-card');
                 if(mainCard){
                     mainCard.innerHTML = `
