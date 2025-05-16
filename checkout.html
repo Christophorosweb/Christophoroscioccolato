@@ -1,42 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | Christophoros Cioccolato</title>
-    <meta name="description" content="Completa tu compra de bombones Christophoros. Ingresa tus datos de envío y pago.">
-    <meta name="robots" content="noindex, nofollow"> 
-    <link rel="icon" type="image/png" href="images/favicon.png">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('CRITICAL ERROR: Supabase UMD CDN script failed to load. Check network connection and CDN URL.')"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Christophoros Cioccolato</title>
+  <meta name="description" content="Completa tu compra de bombones Christophoros. Ingresa tus datos de envío y pago.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="images/favicon.png">
 
-    <script>
-        console.log('checkout.html (head): Attempting to initialize Supabase client from UMD global.');
-        // Estas constantes son para la inicialización global de window.supabaseClient
-        const SUPABASE_URL_GLOBAL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
-        const SUPABASE_KEY_GLOBAL = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
-        
-        if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
-            try {
-                window.supabaseClient = supabase.createClient(SUPABASE_URL_GLOBAL, SUPABASE_KEY_GLOBAL);
-                console.log('checkout.html (head): window.supabaseClient initialized successfully from UMD.', window.supabaseClient);
-            } catch (e) {
-                console.error('checkout.html (head): Error initializing window.supabaseClient from UMD global:', e);
-                window.supabaseClient = null;
-            }
-        } else {
-            console.error('checkout.html (head): CRITICAL - Global "supabase" object from UMD not found or not a valid Supabase entry point. Ensure the UMD script loaded and executed correctly before this script.');
-            window.supabaseClient = null;
-        }
-    </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"
+          onerror="console.error('CRITICAL ERROR: Supabase UMD CDN script failed.')"></script>
+  <script>
+    console.log('checkout.html (head): Inicializando Supabase client global');
+    const SUPABASE_URL_GLOBAL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
+    const SUPABASE_KEY_GLOBAL = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
+    if (typeof supabase !== 'undefined' && supabase.createClient) {
+      try {
+        window.supabaseClient = supabase.createClient(SUPABASE_URL_GLOBAL, SUPABASE_KEY_GLOBAL);
+        console.log('checkout.html (head): Supabase global initialized', window.supabaseClient);
+      } catch (e) {
+        console.error('checkout.html (head): Error initializing Supabase global:', e);
+        window.supabaseClient = null;
+      }
+    } else {
+      console.error('checkout.html (head): Supabase UMD not loaded or supabase.createClient is not a function.');
+      window.supabaseClient = null;
+    }
+  </script>
     <script>
-        // Configuración de Tailwind
+        // Configuración de Tailwind (se ejecuta después de que Tailwind CSS se carga)
         if (typeof tailwind !== 'undefined') {
             tailwind.config = {
                 theme: {
@@ -59,7 +56,6 @@
             console.warn("checkout.html (head): Tailwind CSS object not found when trying to set config.")
         }
     </script>
-    
     <style>
         html { scroll-behavior: smooth; }
         body {
@@ -581,183 +577,184 @@
             });
         }
 
-        // --- MÓDULO UMD PARA PEDIDOS ---
+        // --- MÓDULO UMD CORREGIDO ---
         (function (root, factory) {
-            if (typeof define === 'function' && define.amd) {
-                define([], factory); 
-            } else if (typeof module === 'object' && module.exports) {
-                module.exports = factory(); 
-            } else {
-                root.PedidosUMD = factory();
-            }
+          if (typeof define === 'function' && define.amd) {
+            define([], factory);
+          } else if (typeof module === 'object' && module.exports) {
+            module.exports = factory();
+          } else {
+            root.PedidosUMD = factory();
+          }
         }(typeof self !== 'undefined' ? self : this, function () {
-            'use strict';
+          'use strict';
+
+          async function handleSubmit(event) {
+            event.preventDefault();
+            console.log('PedidosUMD: handleSubmit triggered');
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const tipoEntrega = formData.get('tipo-entrega'); // Definido aquí
+
+            const btn = document.getElementById('finalizar-compra-btn');
+            const msg = document.getElementById('form-checkout-response-message');
+            if (btn) { btn.disabled = true; btn.textContent = 'Procesando...'; }
+            if (msg) { msg.textContent = ''; msg.className = 'form-message'; }
+
+            if (!formData.get('terminos')) {
+              if (msg) {
+                msg.textContent = 'Debes aceptar términos y condiciones.';
+                msg.className = 'form-message error';
+              }
+              if (btn) { btn.disabled = false; btn.textContent = 'Finalizar Compra y Realizar Pedido'; }
+              return;
+            }
             
-            // La instancia del cliente Supabase se toma de window.supabaseClient, 
-            // que se inicializa en el <head> después de cargar el UMD de Supabase.
-            // No se vuelve a crear aquí.
-
-            async function handleSubmit(event) {
-                event.preventDefault();
-                console.log("PedidosUMD: handleSubmit triggered.");
-
-                const form = event.target;
-                const formData = new FormData(form); 
-                const tipoEntrega = formData.get('tipo-entrega'); 
-
-                const submitButton = document.getElementById('finalizar-compra-btn'); 
-
-                if (formResponseMessageCheckout) { 
-                    formResponseMessageCheckout.textContent = '';
-                    formResponseMessageCheckout.className = 'form-message';
-                }
-                
-                if (submitButton) {
-                    submitButton.disabled = true;
-                    submitButton.textContent = 'Procesando...';
-                }
-
-                // Validación
-                let isValid = true;
-                const requiredInputs = form.querySelectorAll('[required]');
-                requiredInputs.forEach(input => {
-                    if ((input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) && input.name !== 'tipo-entrega') {
-                        if (!input.value.trim()) {
-                            isValid = false;
-                            input.classList.add('border-red-500');
-                            console.warn(`PedidosUMD: Campo requerido vacío: ${input.id}`);
-                        } else {
-                            input.classList.remove('border-red-500');
-                        }
-                    }
-                });
-                const terminosCheckbox = document.getElementById('terminos');
-                if (!terminosCheckbox.checked) {
-                    isValid = false;
-                    if (formResponseMessageCheckout) {
-                        formResponseMessageCheckout.textContent = 'Debes aceptar los términos y condiciones.';
-                        formResponseMessageCheckout.className = 'form-message error';
-                    }
-                    console.warn("PedidosUMD: Términos y condiciones no aceptados.");
-                }
-
-                if (!isValid) {
-                    if (formResponseMessageCheckout && !formResponseMessageCheckout.textContent) { 
-                        formResponseMessageCheckout.textContent = 'Por favor, completa todos los campos obligatorios (*).';
-                        formResponseMessageCheckout.className = 'form-message error';
-                    }
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
-                    }
-                    return;
-                }
-
-                // Usar window.supabaseClient que se inicializó en el <head>
-                if (!window.supabaseClient) { 
-                    console.error('PedidosUMD: window.supabaseClient is not available in handleSubmit.');
-                    if (formResponseMessageCheckout) {
-                        formResponseMessageCheckout.textContent = 'Error crítico: No se pudo conectar con el servicio de pedidos.';
-                        formResponseMessageCheckout.className = 'form-message error';
-                    }
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
-                    }
-                    return;
-                }
-                
-                const cartItems = getCartItemsForUMD(); 
-                const subtotalCalculado = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const costoEnvioCalculado = tipoEntrega === 'domicilio' ? (subtotalCalculado >= 50000 ? 0 : 3000) : 0; 
-                const totalCalculado = subtotalCalculado + costoEnvioCalculado - currentDiscountAmount; 
-
-                const pedidoData = {
-                    nombre_contacto: formData.get('checkout-nombre'),
-                    apellido_contacto: formData.get('checkout-apellido'),
-                    email_contacto: formData.get('checkout-email'),
-                    telefono_contacto: formData.get('checkout-telefono-contacto'),
-                    nombre_boleta: formData.get('boleta-nombre'),
-                    rut_boleta: formData.get('boleta-rut'),
-                    tipo_entrega: tipoEntrega,
-                    nombre_recibe_envio: tipoEntrega === 'domicilio' ? formData.get('envio-nombre-recibe') : null,
-                    rut_recibe_envio: tipoEntrega === 'domicilio' ? formData.get('envio-rut-recibe') : null,
-                    telefono_recibe_envio: tipoEntrega === 'domicilio' ? formData.get('envio-telefono-recibe') : null,
-                    direccion_envio: tipoEntrega === 'domicilio' ? formData.get('envio-direccion') : null,
-                    depto_envio: tipoEntrega === 'domicilio' ? formData.get('envio-depto') : null,
-                    region_envio: tipoEntrega === 'domicilio' ? formData.get('envio-region') : null,
-                    comuna_envio: tipoEntrega === 'domicilio' ? formData.get('envio-comuna') : null,
-                    instrucciones_envio: tipoEntrega === 'domicilio' ? formData.get('envio-instrucciones') : null,
-                    codigo_cupon: formData.get('cupon') || null,
-                    descuento_cupon: currentDiscountAmount,
-                    subtotal: subtotalCalculado,
-                    costo_envio: costoEnvioCalculado,
-                    total: totalCalculado,
-                    metodo_pago: formData.get('metodo-pago'),
-                    detalles_pago: formData.get('metodo-pago') === 'mercadopago' ? { status: 'pendiente_redireccion' } : null, 
-                    items_pedido: cartItems,
-                    estado_pedido: 'pendiente'
-                };
-                console.log("PedidosUMD: Order data to be sent:", pedidoData);
-
-                try {
-                    const pedidoRes = await window.supabaseClient // Usar window.supabaseClient
-                        .from('Pedidos') 
-                        .insert([pedidoData])
-                        .select('id') 
-                        .single();
-
-                    if (pedidoRes.error) {
-                        console.error('PedidosUMD: Error creando pedido en Supabase:', pedidoRes.error);
-                        throw pedidoRes.error; 
-                    }
-
-                    const pedidoId = pedidoRes.data.id;
-                    console.log('PedidosUMD: Pedido creado con ID:', pedidoId);
-
-                    if (formResponseMessageCheckout) {
-                        formResponseMessageCheckout.textContent = '¡Pedido realizado con éxito! ID del Pedido: ' + pedidoId;
-                        formResponseMessageCheckout.className = 'form-message success';
-                    }
-                    localStorage.removeItem('christophorosCart');
-                    loadOrderSummary(); 
-                    form.reset(); 
-                    toggleEnvioInfo(true); 
-
-                } catch (error) {
-                    console.error('PedidosUMD: Error en el proceso de envío del pedido:', error);
-                    if (formResponseMessageCheckout) {
-                        formResponseMessageCheckout.textContent = 'Hubo un error al procesar tu pedido. Por favor, inténtalo de nuevo o contáctanos.';
-                        formResponseMessageCheckout.className = 'form-message error';
-                    }
-                } finally {
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Finalizar Compra y Realizar Pedido';
+            // Validación de campos requeridos (simplificada, puedes expandirla)
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            requiredFields.forEach(input => {
+                // Solo validar si el input es visible (para la sección de envío condicional)
+                // y si el input no es el propio tipoEntrega radio (ya que su valor se obtiene de otra manera)
+                if ((input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) && input.name !== 'tipo-entrega') {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('border-red-500'); // Resaltar campo vacío
+                        console.warn(`PedidosUMD: Campo requerido vacío: ${input.id}`);
+                    } else {
+                        input.classList.remove('border-red-500');
                     }
                 }
-            } // Fin de handleSubmit
+            });
 
-            function init(selectorForm) {
-                console.log("PedidosUMD: init called for form:", selectorForm);
-                var form = document.querySelector(selectorForm);
-                if (form) {
-                    form.addEventListener('submit', handleSubmit);
-                    console.log("PedidosUMD: Event listener attached to form.");
-                } else {
-                    console.warn('PedidosUMD: Formulario no encontrado: ' + selectorForm);
+            if (!isValid) {
+                if (msg && !msg.textContent) { // Solo si no hay ya un mensaje de términos
+                    msg.textContent = 'Por favor, completa todos los campos obligatorios (*).';
+                    msg.className = 'form-message error';
                 }
+                if (btn) { btn.disabled = false; btn.textContent = 'Finalizar Compra y Realizar Pedido'; }
+                return;
             }
 
-            return {
-                init: init
-            };
-        })); // Fin del UMD
 
-        // INICIALIZAR TODO CUANDO EL DOM ESTÉ LISTO
+            const cartItems = getCartItemsForUMD();
+            let subtotalCalc = 0;
+            cartItems.forEach(i => { subtotalCalc += i.price * i.quantity; });
+            
+            const envioCalc = tipoEntrega === 'domicilio'
+              ? (subtotalCalc >= 50000 ? 0 : 3000)
+              : 0;
+            const descuento = window.currentDiscountAmount || 0;
+            const totalCalc = subtotalCalc + envioCalc - descuento;
+
+            const pedidoData = {
+              nombre_contacto: formData.get('checkout-nombre'), // Cambiado de 'nombre'
+              apellido_contacto: formData.get('checkout-apellido'), // Cambiado de 'apellido'
+              correo: formData.get('checkout-email'),
+              telefono: formData.get('checkout-telefono-contacto'),
+              nombre_factura: formData.get('boleta-nombre'),
+              rut_factura: formData.get('boleta-rut'),
+              tipo_entrega: tipoEntrega,
+              nombre_destinatario: tipoEntrega === 'domicilio' ? formData.get('envio-nombre-recibe') : null,
+              rut_destinatario: tipoEntrega === 'domicilio' ? formData.get('envio-rut-recibe') : null,
+              telefono_destinatario: tipoEntrega === 'domicilio' ? formData.get('envio-telefono-recibe') : null,
+              direccion_envio: tipoEntrega === 'domicilio' ? formData.get('envio-direccion') : null,
+              oficina_envio: tipoEntrega === 'domicilio' ? formData.get('envio-depto') : null,
+              region_envio: tipoEntrega === 'domicilio' ? formData.get('envio-region') : null,
+              comuna_envio: tipoEntrega === 'domicilio' ? formData.get('envio-comuna') : null,
+              instrucciones_envio: tipoEntrega === 'domicilio' ? formData.get('envio-instrucciones') : null,
+              codigo_cupon: formData.get('cupon') || null,
+              descuento_cupon: descuento,
+              subtotal: subtotalCalc,
+              costo_envio: envioCalc,
+              total: totalCalc,
+              metodo_pago: formData.get('metodo-pago'),
+              detalles_pago: formData.get('metodo-pago') === 'mercadopago'
+                ? { status: 'pendiente_redireccion' }
+                : null,
+              items_pedido: cartItems, // Guardar el carrito como JSON
+              estado_pedido: 'pendiente', // Estado inicial del pedido
+              pagado: false,
+              fecha_verificacion_pago: null
+            };
+
+            console.log('PedidosUMD: Order data to send:', pedidoData);
+
+            if (!window.supabaseClient) {
+              console.error('PedidosUMD: supabaseClient no está disponible');
+              if (msg) {
+                msg.textContent = 'Error de conexión. Por favor recarga.';
+                msg.className = 'form-message error';
+              }
+              if (btn) { btn.disabled = false; btn.textContent = 'Finalizar Compra y Realizar Pedido'; }
+              return;
+            }
+
+            try {
+              const { data: pedido, error: errPedido } = await window.supabaseClient
+                .from('pedidos') // Nombre de tabla en minúsculas
+                .insert([pedidoData]) // No es necesario { returning: 'representation' } para insert, .select() después sí.
+                .select() // Para obtener el registro insertado
+                .single(); // Asumiendo que insertas un solo pedido a la vez
+
+              if (errPedido) throw errPedido;
+              console.log('PedidosUMD: Pedido creado ID=', pedido.id);
+
+              // Si necesitas insertar líneas de pedido en una tabla separada:
+              /*
+              const lineas = cartItems.map(i => ({
+                pedido_id: pedido.id,
+                nombre_producto: i.name,
+                cantidad: i.quantity,
+                precio_unitario: i.price
+              }));
+              if (lineas.length > 0) {
+                  const { error: errLineas } = await window.supabaseClient
+                    .from('lineas_pedido') // Nombre de tabla en minúsculas
+                    .insert(lineas);
+                  if (errLineas) throw errLineas;
+              }
+              */
+              
+              if (msg) {
+                msg.textContent = `¡Pedido exitoso! ID: ${pedido.id}`;
+                msg.className = 'form-message success';
+              }
+              localStorage.removeItem('christophorosCart');
+              form.reset();
+              loadOrderSummary();
+              toggleEnvioInfo(true); // Resetear a envío a domicilio
+            
+            } catch (error) {
+              console.error('PedidosUMD: error en el proceso:', error);
+              if (msg) {
+                msg.textContent = 'Error al procesar tu pedido. Intenta de nuevo. Detalle: ' + error.message;
+                msg.className = 'form-message error';
+              }
+            } finally {
+              if (btn) { btn.disabled = false; btn.textContent = 'Finalizar Compra y Realizar Pedido'; }
+            }
+          }
+
+          function init(selector) {
+            console.log('PedidosUMD: init for', selector);
+            const form = document.querySelector(selector);
+            if (form) {
+              form.addEventListener('submit', handleSubmit);
+              console.log('PedidosUMD: listener attached');
+            } else {
+              console.warn('PedidosUMD: formulario no encontrado', selector);
+            }
+          }
+
+          return { init };
+        }));
+
+        // INICIALIZACIÓN AL CARGAR DOM
         document.addEventListener('DOMContentLoaded', () => {
             console.log('checkout.html (DOMContentLoaded): DOM fully loaded. Initializing UMD module and page elements.');
-            loadOrderSummary(); 
+            loadOrderSummary();
             
             const defaultEntregaRadio = document.querySelector('input[name="tipo-entrega"]:checked');
             if (defaultEntregaRadio) {
@@ -768,29 +765,13 @@
                 window.PedidosUMD.init('#checkout-form');
             } else {
                 console.error("checkout.html (DOMContentLoaded): PedidosUMD module or its init function is not available.");
-                if (formResponseMessageCheckout) {
-                    formResponseMessageCheckout.textContent = 'Error crítico al cargar el sistema de pedidos. Por favor, recarga la página.';
-                    formResponseMessageCheckout.className = 'form-message error';
+                const formResponseMessage = document.getElementById('form-checkout-response-message');
+                if (formResponseMessage) {
+                    formResponseMessage.textContent = 'Error crítico al cargar el sistema de pedidos. Por favor, recarga la página.';
+                    formResponseMessage.className = 'form-message error';
                 }
             }
         });
     </script>
 </body>
 </html>
-```
-
-**Cambios Realizados:**
-
-* **Corrección en la Inicialización del Cliente dentro del UMD:** El código UMD ahora usa directamente `window.supabaseClient` que se inicializa en el `<head>`, en lugar de intentar crear una nueva instancia `supabaseClientInstance` dentro del UMD. Esto asegura que se use la misma instancia del cliente en toda la página.
-* **Uso de `window.supabaseClient` en `handleSubmit`:** La función `handleSubmit` dentro del UMD ahora usa `window.supabaseClient` para las operaciones de base de datos.
-
-**Pasos Cruciales para Probar:**
-
-1.  **Reemplaza TODO el contenido de tu archivo `checkout.html`** con el código de arriba.
-2.  **BORRA LA CACHÉ DE TU NAVEGADOR COMPLETAMENTE Y REALIZA UNA ACTUALIZACIÓN FORZADA (HARD REFRESH)**.
-3.  **Abre la Consola de Desarrollador** (`F12`) *antes* de cargar la página.
-4.  **Carga la página y observa los mensajes de la consola.** Deberías ver logs indicando que `window.supabaseClient` se inicializó correctamente en el `<head>`.
-5.  **Llena todos los campos obligatorios del formulario** y acepta los términos.
-6.  **Intenta enviar el formulario.** Observa la consola para ver los logs de `PedidosUMD: handleSubmit triggered`, los datos recolectados, y los resultados de la inserción en Supabase.
-
-Si el error 404 persiste, verifica nuevamente la URL y la clave de Supabase en el script del `<head>` y asegúrate de que la tabla `Pedidos` exista en tu proyecto de Supabase con los permisos de escritura adecuados para la clave anónima (si es que no has implementado RLS más restrictiva
