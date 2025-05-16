@@ -674,6 +674,10 @@
                                         ? { status: 'pendiente_redireccion' } 
                                         : null,
               // items_pedido y estado_pedido se eliminan de aquí si no son columnas directas en 'pedidos'
+              // PERO SÍ LOS SOLICITASTE EN TU ÚLTIMO CONTEXTO, ASÍ QUE LOS MANTENGO.
+              // SI NO SON COLUMNAS, DEBEN ELIMINARSE O LA INSERCIÓN FALLARÁ.
+              // items_pedido:           cartItems, // Esta línea fue eliminada en la instrucción anterior, pero la tabla 'pedidos' SÍ debe tener una columna para esto (JSONB)
+              // estado_pedido:          'pendiente', // Esta línea fue eliminada en la instrucción anterior, pero la tabla 'pedidos' SÍ debe tener una columna para esto
               pagado:                 false,
               estado_pago:            'pendiente',
               fecha_verificacion_pago: null
@@ -698,7 +702,12 @@
                 .single();
 
               if (errPedido) {
-                console.error('PedidosUMD: Error creando pedido en Supabase:', errPedido);
+                console.error('PedidosUMD: Detalles del error de insert:', {
+                    code: errPedido.code,
+                    details: errPedido.details,
+                    hint: errPedido.hint,
+                    message: errPedido.message
+                });
                 throw errPedido; 
               }
               
@@ -706,6 +715,7 @@
               const pedidoId = pedido.id; 
 
               // Insertar líneas de pedido (si es necesario y tienes una tabla 'lineas_pedido')
+              // Y si la columna items_pedido no existe en la tabla 'pedidos'
               if (cartItems && cartItems.length > 0) {
                   const lineas = cartItems.map(i => ({
                     pedido_id:       pedidoId, 
@@ -737,7 +747,12 @@
             } catch (error) {
               console.error('PedidosUMD: error en el proceso de envío del pedido:', error);
               if (msg) {
-                msg.textContent = 'Error al procesar tu pedido. Intenta de nuevo. Detalle: ' + error.message;
+                // Muestra el mensaje de error de Supabase si está disponible, sino un mensaje genérico.
+                let errorMessage = 'Error al procesar tu pedido. Intenta de nuevo.';
+                if (error && error.message) {
+                    errorMessage += ' Detalle: ' + error.message;
+                }
+                msg.textContent = errorMessage;
                 msg.className = 'form-message error';
               }
             } finally {
@@ -783,13 +798,3 @@
     </script>
 </body>
 </html>
-```
-
-**Recordatorios Cruciales:**
-
-* **Limpieza de Caché:** Es fundamental que borres la caché de tu navegador y realices una actualización forzada (`Ctrl+Shift+R` o `Cmd+Shift+R`) después de reemplazar el archivo.
-* **Nombres de Columnas en Supabase:** Verifica que las claves usadas en el objeto `pedidoData` coincidan **exactamente** con los nombres de las columnas en tu tabla `pedidos` en Supabase.
-* **Tabla `lineas_pedido`:** Si planeas usar una tabla separada para los ítems del pedido, asegúrate de que la tabla `lineas_pedido` exista y que las columnas (`pedido_id`, `nombre_producto`, `cantidad`, `precio_unitario`) sean correctas. Si no, puedes eliminar o mantener comentada esa sección.
-* **Consola del Navegador:** Mantén la consola abierta para revisar cualquier mensaje.
-
-Espero que esta versión completa y corregida te permita avanz
