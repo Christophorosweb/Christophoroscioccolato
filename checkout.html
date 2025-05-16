@@ -673,15 +673,13 @@
               detalles_pago:          formData.get('metodo-pago') === 'mercadopago'
                                         ? { status: 'pendiente_redireccion' } 
                                         : null,
-              // items_pedido y estado_pedido se eliminan de este objeto si no son columnas directas en 'pedidos'
-              // Si son columnas, asegúrate que los nombres coincidan.
-              // Si items_pedido es para una tabla relacionada, se maneja después.
               pagado:                 false,
               estado_pago:            'pendiente',
               fecha_verificacion_pago: null
+              // items_pedido y estado_pedido se han eliminado de este objeto principal
             };
 
-            console.log('PedidosUMD: Order data to send:', pedidoData);
+            console.log('PedidosUMD: Order data to send to "pedidos" table:', pedidoData);
 
             if (!window.supabaseClient) {
               console.error('PedidosUMD: supabaseClient no está disponible');
@@ -694,13 +692,13 @@
             }
 
             try {
-              const { data: pedido, error: errPedido } = await window.supabaseClient
+              // 1️⃣ Insertamos el pedido (sin returning)
+              const { error: errPedido } = await window.supabaseClient
                 .from('pedidos') // Tabla en minúsculas
-                .insert([pedidoData], { returning: 'representation' }) 
-                .single();
+                .insert([pedidoData]); 
 
               if (errPedido) {
-                console.error('PedidosUMD: Detalles del error de insert:', {
+                console.error('PedidosUMD: Error creando pedido (insert):', {
                     code: errPedido.code,
                     details: errPedido.details,
                     hint: errPedido.hint,
@@ -708,11 +706,34 @@
                 });
                 throw errPedido; 
               }
-              
-              console.log('PedidosUMD: Pedido creado con éxito, datos devueltos:', pedido);
-              const pedidoId = pedido.id; 
+              console.log('PedidosUMD: Insert en "pedidos" exitoso. Procediendo a obtener ID.');
 
-              // Insertar líneas de pedido (si es necesario y tienes una tabla 'lineas_pedido')
+              // 2️⃣ Hacemos un SELECT para recuperar SOLO el id
+              const { data: pedidosSelect, error: errSelect } = await window.supabaseClient
+                .from('pedidos')
+                .select('id')
+                .eq('correo', pedidoData.correo) 
+                .order('created_at', { ascending: false }) 
+                .limit(1); 
+
+              if (errSelect) {
+                console.error('PedidosUMD: Error obteniendo ID de pedido (select):', {
+                    code: errSelect.code,
+                    details: errSelect.details,
+                    hint: errSelect.hint,
+                    message: errSelect.message
+                });
+                throw errSelect;
+              }
+
+              if (!pedidosSelect || pedidosSelect.length === 0) {
+                console.error('PedidosUMD: No se pudo recuperar el ID del pedido después de la inserción.');
+                throw new Error('No se pudo obtener el ID del pedido.');
+              }
+              
+              const pedidoId = pedidosSelect[0].id;
+              console.log('PedidosUMD: Pedido creado con ID recuperado:', pedidoId);
+              
               if (cartItems && cartItems.length > 0) {
                   const lineas = cartItems.map(i => ({
                     pedido_id:       pedidoId, 
@@ -726,7 +747,12 @@
                     .insert(lineas);
                   
                   if (errLineas) {
-                    console.error('PedidosUMD: Error insertando líneas de pedido:', errLineas);
+                    console.error('PedidosUMD: Error insertando líneas de pedido:', {
+                        code: errLineas.code,
+                        details: errLineas.details,
+                        hint: errLineas.hint,
+                        message: errLineas.message
+                    });
                   } else {
                     console.log('PedidosUMD: Líneas de pedido insertadas con éxito.');
                   }
@@ -742,11 +768,13 @@
               if (typeof toggleEnvioInfo === 'function') toggleEnvioInfo(true); 
 
             } catch (error) {
-              console.error('PedidosUMD: error en el proceso de envío del pedido:', error);
+              console.error('PedidosUMD: error general en el proceso de envío del pedido:', error);
               if (msg) {
                 let errorMessage = 'Error al procesar tu pedido. Intenta de nuevo.';
                 if (error && error.message) {
-                    errorMessage += ' Detalle: ' + error.message;
+                    if(!error.code) { 
+                         errorMessage += ' Detalle: ' + error.message;
+                    }
                 }
                 msg.textContent = errorMessage;
                 msg.className = 'form-message error';
