@@ -365,7 +365,7 @@
                                     <p><strong>RUT:</strong> 20583954-2</p>
                                     <p><strong>Nombre Titular:</strong> Cristóbal Monti Venegas</p>
                                     <p><strong>Email para comprobante:</strong> Christophoroschile@gmail.com</p>
-                                    </div>
+                                </div>
                                 <div class="radio-label-span-container border border-gray-300 rounded-md hidden"> <label class="radio-label">
                                         <input type="radio" name="metodo-pago" value="mercadopago">
                                         <span class="radio-label-span">Mercado Pago <img src="images/mercado-pago-logo.png" alt="Mercado Pago" class="h-5 inline-block ml-2"></span>
@@ -739,6 +739,16 @@
               const pedidoId = pedidosSelect[0].id;
               console.log('PedidosUMD: Pedido creado con ID recuperado:', pedidoId);
               
+              // Guardar datos del pedido en localStorage para la página de éxito
+              try {
+                localStorage.setItem('lastOrderData', JSON.stringify(pedidoData));
+                localStorage.setItem('lastOrderId', pedidoId);
+                localStorage.setItem('lastOrderCartItems', JSON.stringify(cartItems));
+                console.log('PedidosUMD: Datos del pedido guardados en localStorage para success.html');
+              } catch (e) {
+                console.error('PedidosUMD: Error guardando datos del pedido en localStorage', e);
+              }
+
               if (cartItems && cartItems.length > 0) {
                   const lineas = cartItems.map(i => ({
                     pedido_id:       pedidoId, 
@@ -818,7 +828,7 @@
             if (defaultEntregaRadio) { // Asegurarse que defaultEntregaRadio no sea null
                 toggleEnvioInfo(defaultEntregaRadio.value === 'domicilio');
             } else { // Si no hay nada chequeado por defecto (aunque debería haberlo), ocultar envío
-                toggleEnvioInfo(false);
+                 toggleEnvioInfo(false);
             }
 
 
