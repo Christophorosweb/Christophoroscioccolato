@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Christophoros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* Gris muy claro, similar a la imagen del carrito */
+        }
+        .christophoros-header {
+            background-color: #2c3e50; 
+            color: white;
+            padding: 1.25rem 0; /* Aumentar padding */
+            text-align: center;
+            font-size: 1.75rem; /* Aumentar tamaño */
+            font-weight: 700; /* Más bold */
+            border-bottom: 4px solid #3498db;
+        }
+        .form-section-title {
+            font-size: 1.30rem; /* Ligeramente más grande */
+            font-weight: 600;
+            color: #1f2937; /* Un gris más oscuro */
+            margin-bottom: 1.25rem; /* Más espacio abajo */
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #3498db;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151; /* Gris oscuro */
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.85rem; /* Un poco más de padding */
+            border: 1px solid #d1d5db; /* Borde gris estándar */
+            border-radius: 0.375rem; 
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: #3498db; 
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25); /* Sombra de foco más pronunciada */
+        }
+        .btn-primary {
+            background-color: #3498db; 
+            color: white;
+            padding: 0.85rem 1.75rem; /* Más padding */
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 1rem; /* Tamaño de fuente explícito */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        .btn-secondary {
+            background-color: #e5e7eb; /* Gris claro */
+            color: #374151; 
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .summary-card {
+            background-color: white;
+            border-radius: 0.5rem; /* Esquinas un poco más redondeadas */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra más suave y difusa */
+            padding: 1.75rem; /* Más padding interno */
+        }
+        .summary-title {
+            font-size: 1.3rem; /* Coincidir con form-section-title */
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.25rem;
+            text-align: center; /* Centrado como en la imagen */
+        }
+        .error-message {
+            color: #ef4444; /* Rojo de Tailwind */
+            font-size: 0.875rem;
+            margin-top: 0.3rem;
+        }
+        .form-input.invalid, .form-select.invalid {
+            border-color: #ef4444;
+        }
+        .payment-option, .delivery-option {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .payment-option.selected, .delivery-option.selected {
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        }
+        .payment-option input[type="radio"], .delivery-option input[type="radio"] {
+           margin-right: 0.75rem; /* Más espacio */
+           accent-color: #3498db; /* Color del radio button */
+        }
+        /* Estilos para el resumen de compra como en la imagen */
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0; /* Más padding vertical */
+            font-size: 0.95rem;
+        }
+        .summary-item span:first-child {
+            color: #4b5563; /* Gris medio */
+        }
+        .summary-item span:last-child {
+            color: #1f2937; /* Gris oscuro */
+            font-weight: 500;
+        }
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid #e5e7eb; /* Separador más claro */
+            font-size: 1.15rem; /* Más grande */
+            font-weight: 700; /* Bold */
+        }
+        .summary-total span:first-child {
+            color: #1f2937;
+        }
+         .summary-total span:last-child {
+            color: #1f2937;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="christophoros-header">
+        Checkout Christophoros
+    </header>
+
+    <div class="container mx-auto p-4 md:p-6 lg:p-8 max-w-6xl">
+        <form id="checkoutForm" class="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-6">
+            <div class="lg:col-span-2 space-y-8 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                
+                <section>
+                    <h2 class="form-section-title">1. Información de Contacto</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        <div>
+                            <label for="contactEmail" class="form-label">Email <span class="text-red-500">*</span></label>
+                            <input type="email" id="contactEmail" name="contactEmail" class="form-input" required>
+                        </div>
+                        <div>
+                            <label for="contactPhone" class="form-label">Teléfono <span class="text-red-500">*</span></label>
+                            <input type="tel" id="contactPhone" name="contactPhone" class="form-input" placeholder="+56912345678" required>
+                        </div>
+                        <div>
+                            <label for="contactFirstName" class="form-label">Nombre <span class="text-red-500">*</span></label>
+                            <input type="text" id="contactFirstName" name="contactFirstName" class="form-input" required>
+                        </div>
+                        <div>
+                            <label for="contactLastName" class="form-label">Apellidos <span class="text-red-500">*</span></label>
+                            <input type="text" id="contactLastName" name="contactLastName" class="form-input" required>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="form-section-title">2. Datos para Emisión de Boleta</h2>
+                    <p class="text-sm text-gray-600 mb-4">Emitimos únicamente boleta electrónica. Los siguientes campos son obligatorios.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        <div>
+                            <label for="boletaNombreCompleto" class="form-label">Nombre Completo (Titular Boleta) <span class="text-red-500">*</span></label>
+                            <input type="text" id="boletaNombreCompleto" name="boletaNombreCompleto" class="form-input" required>
+                        </div>
+                        <div>
+                            <label for="boletaRut" class="form-label">RUT (Titular Boleta, Ej: 12345678-9) <span class="text-red-500">*</span></label>
+                            <input type="text" id="boletaRut" name="boletaRut" class="form-input" required>
+                        </div>
+                    </div>
+                    </section>
+                
+                <section>
+                    <h2 class="form-section-title">3. Tipo de Entrega</h2>
+                    <div class="space-y-3">
+                        <div class="delivery-option" id="deliveryShipDiv">
+                            <label class="flex items-center">
+                                <input type="radio" name="deliveryMethod" value="envio" class="form-radio" required checked>
+                                <span class="ml-2 font-medium">Envío a Domicilio</span>
+                            </label>
+                        </div>
+                        <div class="delivery-option" id="deliveryPickupDiv">
+                             <label class="flex items-center">
+                                <input type="radio" name="deliveryMethod" value="retiro" class="form-radio" required>
+                                <span class="ml-2 font-medium">Retiro en Tienda</span>
+                            </label>
+                             <p id="pickupAddressInfo" class="mt-2 pl-8 text-sm text-gray-700 hidden">
+                                Dirección de retiro: Calle Falsa 123, Comuna Ejemplo, Ciudad. <br> Horario: Lunes a Viernes de 9:00 a 18:00 hrs.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="shippingSection">
+                    <h2 class="form-section-title">4. Información de Envío</h2>
+                    <p class="text-sm text-gray-600 mb-4">El envío es siempre por pagar en destino.</p>
+                    <div id="shippingDetails" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                           <div>
+                                <label for="shippingFullName" class="form-label">Nombre Completo de Quien Recibe <span class="text-red-500">*</span></label>
+                                <input type="text" id="shippingFullName" name="shippingFullName" class="form-input" required>
+                            </div>
+                             <div>
+                                <label for="shippingRut" class="form-label">RUT de Quien Recibe (Ej: 12345678-9) <span class="text-red-500">*</span></label>
+                                <input type="text" id="shippingRut" name="shippingRut" class="form-input" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="shippingPhone" class="form-label">Teléfono de Quien Recibe <span class="text-red-500">*</span></label>
+                            <input type="tel" id="shippingPhone" name="shippingPhone" class="form-input" placeholder="+569..." required>
+                        </div>
+                        <div id="shippingAddressFields"> <div>
+                                <label for="shippingAddress" class="form-label">Dirección de Envío (Calle y Número) <span class="text-red-500">*</span></label>
+                                <input type="text" id="shippingAddress" name="shippingAddress" class="form-input" required>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 mt-4">
+                                 <div>
+                                    <label for="shippingOffice" class="form-label">Oficina / Depto / Casa (Opcional)</label>
+                                    <input type="text" id="shippingOffice" name="shippingOffice" class="form-input">
+                                </div>
+                                <div>
+                                    <label for="shippingRegion" class="form-label">Región <span class="text-red-500">*</span></label>
+                                    <select id="shippingRegion" name="shippingRegion" class="form-select" required>
+                                        <option value="">Seleccione Región</option>
+                                        <option value="RM">Metropolitana de Santiago</option>
+                                        <option value="OHiggins">Libertador General Bernardo O'Higgins</option>
+                                        <option value="Maule">Maule</option>
+                                        <option value="Nuble">Ñuble</option>
+                                        <option value="Biobio">Biobío</option>
+                                        <option value="Araucania">La Araucanía</option>
+                                        <option value="LosRios">Los Ríos</option>
+                                        <option value="LosLagos">Los Lagos</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="shippingComuna" class="form-label">Comuna <span class="text-red-500">*</span></label>
+                                    <input type="text" id="shippingComuna" name="shippingComuna" class="form-input" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="shippingInstructions" class="form-label">Instrucciones Adicionales (Opcional)</label>
+                            <textarea id="shippingInstructions" name="shippingInstructions" rows="3" class="form-input"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="form-section-title">5. Cupón de Descuento</h2>
+                    <div class="flex gap-3">
+                        <input type="text" id="couponCode" name="couponCode" class="form-input flex-grow" placeholder="Ingresa tu cupón">
+                        <button type="button" id="applyCouponBtn" class="btn-secondary whitespace-nowrap">Aplicar Cupón</button>
+                    </div>
+                    <p id="couponMessage" class="text-sm mt-2"></p>
+                </section>
+
+                <section>
+                    <h2 class="form-section-title">6. Método de Pago</h2>
+                    <div class="space-y-3">
+                        <div class="payment-option" id="paymentTransferDiv">
+                            <label class="flex items-center">
+                                <input type="radio" name="paymentMethod" value="transferencia" class="form-radio" required>
+                                <span class="ml-2 font-medium">Transferencia Bancaria Directa</span>
+                            </label>
+                            <div id="bankDetails" class="mt-2 pl-8 text-sm text-gray-700 hidden">
+                                <p><strong>Banco:</strong> Tu Banco S.A.</p>
+                                <p><strong>Tipo de Cuenta:</strong> Cuenta Corriente</p>
+                                <p><strong>Número de Cuenta:</strong> 123-456-7890</p>
+                                <p><strong>RUT:</strong> 76.000.000-K</p>
+                                <p><strong>Nombre Titular:</strong> Nombre Empresa Christophoros</p>
+                                <p><strong>Email para comprobante:</strong> pagos@christophoros.cl</p>
+                                <p class="mt-1 font-semibold">Por favor, incluye el número de pedido en el asunto de la transferencia.</p>
+                            </div>
+                        </div>
+                        <div class="payment-option" id="paymentMercadoPagoDiv">
+                             <label class="flex items-center">
+                                <input type="radio" name="paymentMethod" value="mercadopago" class="form-radio" required>
+                                <span class="ml-2 font-medium">Mercado Pago</span>
+                                <img src="https://img.icons8.com/color/48/000000/mercado-pago.png" alt="Mercado Pago" class="h-6 w-auto ml-2"/>
+                            </label>
+                            <p id="mercadoPagoInfo" class="mt-2 pl-8 text-sm text-gray-700 hidden">
+                                Serás redirigido a Mercado Pago para completar tu compra de forma segura.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mt-8">
+                    <div class="flex items-start">
+                        <input type="checkbox" id="termsConditions" name="termsConditions" class="form-checkbox h-5 w-5 text-blue-600 mt-0.5" required>
+                        <label for="termsConditions" class="ml-2 text-sm text-gray-700">He leído y acepto los <a href="/terminos" target="_blank" class="text-blue-600 hover:underline">Términos y Condiciones</a> y la <a href="/privacidad" target="_blank" class="text-blue-600 hover:underline">Política de Privacidad</a>. <span class="text-red-500">*</span></label>
+                    </div>
+                </section>
+
+                <div class="mt-10">
+                    <button type="submit" class="btn-primary">Finalizar Compra y Realizar Pedido</button>
+                </div>
+                 <div id="formMessage" class="mt-4 text-center"></div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="summary-card sticky top-8">
+                    <h2 class="summary-title">Resumen de Compra</h2>
+                    <div id="cartItems" class="space-y-1 mb-4">
+                        <div class="summary-item border-b border-gray-200">
+                            <span>[Nombre Producto 1] (x1)</span>
+                            <span>$10.000</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>[Nombre Producto 2] (x2)</span>
+                            <span>$5.000</span>
+                        </div>
+                    </div>
+                    <div class="space-y-1 border-t border-gray-200 pt-4">
+                        <div class="summary-item">
+                            <span>Subtotal:</span>
+                            <span id="summarySubtotal">$15.000</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Descuento Cupón:</span>
+                            <span id="summaryDiscount" class="text-green-600">-$0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span id="summaryShippingText">Envío:</span>
+                            <span id="summaryShippingCost" class="text-blue-600">Por Pagar en Destino</span>
+                        </div>
+                        <div class="summary-total">
+                            <span>TOTAL:</span>
+                            <span id="summaryTotal">$15.000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Configuración de Supabase (reemplazar con tus claves)
+        const SUPABASE_URL = 'TU_SUPABASE_URL'; 
+        const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY';
+        
+        let supabaseClient;
+        try {
+            if (SUPABASE_URL && SUPABASE_URL !== 'TU_SUPABASE_URL' && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'TU_SUPABASE_ANON_KEY') {
+                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                 console.log("Supabase client initialized.");
+            } else {
+                console.warn("Supabase URL/KEY no configuradas. La funcionalidad de envío a base de datos estará deshabilitada.");
+            }
+        } catch (error) {
+            console.error("Error initializing Supabase client:", error);
+        }
+
+        function validarRutChileno(rut) {
+            rut = String(rut).replace(/\./g, '').replace('-', '').toLowerCase();
+            if (!/^[0-9]+[0-9k]{1}$/.test(rut)) return false;
+            let cuerpo = rut.slice(0, -1);
+            let dv = rut.slice(-1);
+            if (cuerpo.length < 1) return false;
+            let suma = 0;
+            let multiplo = 2;
+            for (let i = 1; i <= cuerpo.length; i++) {
+                suma += multiplo * parseInt(cuerpo.charAt(cuerpo.length - i));
+                multiplo = multiplo < 7 ? multiplo + 1 : 2;
+            }
+            let dvEsperado = 11 - (suma % 11);
+            dvEsperado = (dvEsperado === 11) ? 0 : (dvEsperado === 10) ? 'k' : dvEsperado;
+            return dvEsperado == dv;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('checkoutForm');
+            const formMessage = document.getElementById('formMessage');
+
+            const deliveryMethodRadios = document.querySelectorAll('input[name="deliveryMethod"]');
+            const shippingSection = document.getElementById('shippingSection');
+            const shippingAddressFieldsDiv = document.getElementById('shippingAddressFields');
+            // Campos de dirección de envío que pueden ser requeridos/no requeridos
+            const shippingAddressInput = document.getElementById('shippingAddress');
+            const shippingRegionSelect = document.getElementById('shippingRegion');
+            const shippingComunaInput = document.getElementById('shippingComuna');
+            // Agrupar estos campos para facilitar su manejo
+            const shippingAddressFieldsGroup = [shippingAddressInput, shippingRegionSelect, shippingComunaInput];
+
+
+            const pickupAddressInfo = document.getElementById('pickupAddressInfo');
+            const deliveryShipDiv = document.getElementById('deliveryShipDiv');
+            const deliveryPickupDiv = document.getElementById('deliveryPickupDiv');
+            const summaryShippingText = document.getElementById('summaryShippingText');
+            const summaryShippingCost = document.getElementById('summaryShippingCost');
+
+            // Campos de quien recibe, siempre visibles pero su obligatoriedad puede cambiar si la sección entera se oculta.
+            // Sin embargo, para "retiro", estos campos (nombre, rut, telefono de quien recibe) SÍ son necesarios.
+            const shippingFullNameInput = document.getElementById('shippingFullName');
+            const shippingRutInput = document.getElementById('shippingRut');
+            const shippingPhoneInput = document.getElementById('shippingPhone');
+
+
+            function updateDeliveryMethod() {
+                const selectedDeliveryMethod = document.querySelector('input[name="deliveryMethod"]:checked').value;
+                deliveryShipDiv.classList.remove('selected');
+                deliveryPickupDiv.classList.remove('selected');
+
+                if (selectedDeliveryMethod === 'envio') {
+                    shippingSection.style.display = 'block'; // Mostrar toda la sección de envío
+                    shippingAddressFieldsDiv.style.display = 'block'; // Mostrar campos de dirección dentro de la sección de envío
+                    pickupAddressInfo.classList.add('hidden');
+                    deliveryShipDiv.classList.add('selected');
+                    
+                    // Hacer obligatorios los campos de dirección de envío
+                    shippingAddressFieldsGroup.forEach(field => field.required = true);
+                    
+                    // Hacer obligatorios los campos de quien recibe
+                    shippingFullNameInput.required = true;
+                    shippingRutInput.required = true;
+                    shippingPhoneInput.required = true;
+
+                    summaryShippingText.textContent = 'Envío:';
+                    summaryShippingCost.textContent = 'Por Pagar en Destino';
+                    summaryShippingCost.classList.add('text-blue-600');
+                    summaryShippingCost.classList.remove('text-gray-700');
+
+
+                } else if (selectedDeliveryMethod === 'retiro') {
+                    shippingSection.style.display = 'block'; // Mantener visible la sección de envío para "quien recibe"
+                    shippingAddressFieldsDiv.style.display = 'none'; // Ocultar solo los campos de dirección
+                    pickupAddressInfo.classList.remove('hidden');
+                    deliveryPickupDiv.classList.add('selected');
+
+                    // NO hacer obligatorios los campos de dirección de envío y limpiar errores
+                    shippingAddressFieldsGroup.forEach(field => {
+                        field.required = false;
+                        field.classList.remove('invalid'); 
+                        let errorSpan = field.parentNode.querySelector('.error-message:not(.rut-error)');
+                         if (errorSpan) errorSpan.textContent = '';
+                    });
+
+                    // Hacer obligatorios los campos de quien recibe
+                    shippingFullNameInput.required = true;
+                    shippingRutInput.required = true;
+                    shippingPhoneInput.required = true;
+
+                    summaryShippingText.textContent = 'Entrega:';
+                    summaryShippingCost.textContent = 'Retiro en Tienda';
+                    summaryShippingCost.classList.remove('text-blue-600');
+                    summaryShippingCost.classList.add('text-gray-700');
+                }
+                // Renumerar secciones
+                const sectionTitles = form.querySelectorAll('.form-section-title');
+                let currentSectionNumber = 1;
+                sectionTitles.forEach(title => {
+                    const sectionElement = title.closest('section');
+                    if (sectionElement && sectionElement.style.display !== 'none') {
+                        title.textContent = title.textContent.replace(/^\d+\.\s*/, `${currentSectionNumber}. `);
+                        currentSectionNumber++;
+                    }
+                });
+            }
+
+            deliveryMethodRadios.forEach(radio => {
+                radio.addEventListener('change', updateDeliveryMethod);
+            });
+            // Llamada inicial para establecer el estado correcto al cargar la página
+            updateDeliveryMethod();
+
+
+            const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+            const bankDetailsDiv = document.getElementById('bankDetails');
+            const mercadoPagoInfoDiv = document.getElementById('mercadoPagoInfo');
+            const paymentTransferDiv = document.getElementById('paymentTransferDiv');
+            const paymentMercadoPagoDiv = document.getElementById('paymentMercadoPagoDiv');
+
+            paymentMethodRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    bankDetailsDiv.classList.add('hidden');
+                    mercadoPagoInfoDiv.classList.add('hidden');
+                    paymentTransferDiv.classList.remove('selected');
+                    paymentMercadoPagoDiv.classList.remove('selected');
+
+                    if (this.value === 'transferencia' && this.checked) {
+                        bankDetailsDiv.classList.remove('hidden');
+                        paymentTransferDiv.classList.add('selected');
+                    } else if (this.value === 'mercadopago' && this.checked) {
+                        mercadoPagoInfoDiv.classList.remove('hidden');
+                        paymentMercadoPagoDiv.classList.add('selected');
+                    }
+                });
+            });
+            
+            const applyCouponBtn = document.getElementById('applyCouponBtn');
+            const couponCodeInput = document.getElementById('couponCode');
+            const couponMessage = document.getElementById('couponMessage');
+            const summaryDiscount = document.getElementById('summaryDiscount');
+            const summaryTotal = document.getElementById('summaryTotal');
+            let summarySubtotalVal = parseFloat(document.getElementById('summarySubtotal').textContent.replace('$', '').replace(/\./g, '').replace(',', '.')); 
+
+            applyCouponBtn.addEventListener('click', function() {
+                const code = couponCodeInput.value.trim().toUpperCase();
+                let discountAmount = 0;
+                if (code === 'DESC10') {
+                    discountAmount = summarySubtotalVal * 0.10;
+                    couponMessage.textContent = 'Cupón DESC10 aplicado: 10% de descuento.';
+                    couponMessage.className = 'text-sm mt-2 text-green-600';
+                } else if (code === '') {
+                    couponMessage.textContent = 'Por favor, ingrese un código de cupón.';
+                    couponMessage.className = 'text-sm mt-2 text-yellow-600';
+                } else {
+                    couponMessage.textContent = 'Cupón inválido.';
+                    couponMessage.className = 'text-sm mt-2 text-red-500';
+                }
+                summaryDiscount.textContent = `-$${discountAmount.toLocaleString('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                summaryTotal.textContent = `$${(summarySubtotalVal - discountAmount).toLocaleString('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+            });
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                formMessage.textContent = '';
+                formMessage.className = 'mt-4 text-center';
+                let isValid = true;
+
+                // Limpiar mensajes de error previos
+                form.querySelectorAll('.error-message.rut-error, .error-message:not(.rut-error)').forEach(span => span.textContent = '');
+
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    // Verificar si el campo está visible y es realmente requerido en el contexto actual
+                    let isEffectivelyRequired = field.required;
+                    let parent = field.parentElement;
+                    let isHiddenByParent = false;
+                    while(parent && parent !== form) {
+                        if (parent.style.display === 'none') {
+                            isHiddenByParent = true;
+                            break;
+                        }
+                        parent = parent.parentElement;
+                    }
+
+                    if (isHiddenByParent) { // Si el contenedor del campo está oculto, no lo validamos como requerido
+                        isEffectivelyRequired = false;
+                    }
+                    
+                    field.classList.remove('invalid');
+                    
+                    if (isEffectivelyRequired) {
+                        if ((field.type === 'radio' || field.type === 'checkbox')) {
+                            if (field.type === 'radio') {
+                                const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
+                                if (!Array.from(radioGroup).some(r => r.checked)) {
+                                    isValid = false;
+                                    // Podríamos añadir un mensaje de error visual cerca del grupo de radios
+                                    console.warn(`Grupo de radio no seleccionado: ${field.name}`);
+                                }
+                            } else if (field.type === 'checkbox' && !field.checked) {
+                                 isValid = false;
+                                 field.classList.add('invalid');
+                            }
+                        } else if (!field.value.trim()) {
+                            isValid = false;
+                            field.classList.add('invalid');
+                        }
+
+                        // Validación de RUT solo si el campo es visible y requerido
+                        if (field.name === 'boletaRut' || (field.name === 'shippingRut' && !isHiddenByParent)) {
+                            if (field.value.trim() && !validarRutChileno(field.value.trim())) {
+                                isValid = false;
+                                field.classList.add('invalid');
+                                let rutErrorSpan = field.parentNode.querySelector('.error-message.rut-error');
+                                if (!rutErrorSpan) {
+                                    rutErrorSpan = document.createElement('span');
+                                    rutErrorSpan.classList.add('error-message', 'rut-error');
+                                    // Asegurarse de que el span se añade correctamente
+                                    if(field.nextSibling) field.parentNode.insertBefore(rutErrorSpan, field.nextSibling);
+                                    else field.parentNode.appendChild(rutErrorSpan);
+                                }
+                                rutErrorSpan.textContent = 'RUT inválido.';
+                            }
+                        }
+                    }
+                });
+                
+                const termsCheckbox = document.getElementById('termsConditions');
+                if (!termsCheckbox.checked) {
+                    isValid = false;
+                    termsCheckbox.classList.add('invalid'); 
+                    let termsError = termsCheckbox.parentNode.querySelector('.error-message');
+                    if(!termsError){
+                        termsError = document.createElement('p');
+                        termsError.classList.add('error-message', 'text-red-500', 'text-xs', 'mt-1');
+                        termsCheckbox.parentNode.appendChild(termsError);
+                    }
+                    termsError.textContent = 'Debes aceptar los Términos y Condiciones.';
+                } else {
+                    let termsError = termsCheckbox.parentNode.querySelector('.error-message');
+                    if(termsError) termsError.textContent = '';
+                }
+                
+                const paymentMethodSelected = document.querySelector('input[name="paymentMethod"]:checked');
+                if (!paymentMethodSelected) {
+                    isValid = false;
+                     const paymentSection = document.querySelector('input[name="paymentMethod"]').closest('section');
+                     let paymentError = paymentSection.querySelector('.error-message.payment-error');
+                     if(!paymentError){
+                        paymentError = document.createElement('p');
+                        paymentError.classList.add('error-message', 'payment-error', 'text-red-500', 'text-xs', 'mt-2');
+                        const paymentOptionsContainer = paymentSection.querySelector('.space-y-3');
+                        if(paymentOptionsContainer) paymentOptionsContainer.parentNode.insertBefore(paymentError, paymentOptionsContainer.nextSibling);
+                    }
+                    paymentError.textContent = 'Debes seleccionar un método de pago.';
+                } else {
+                    const paymentSection = document.querySelector('input[name="paymentMethod"]').closest('section');
+                    let paymentError = paymentSection.querySelector('.error-message.payment-error');
+                    if(paymentError) paymentError.textContent = '';
+                }
+
+                if (!isValid) {
+                    formMessage.innerHTML = '<p class="text-red-500">Por favor, complete todos los campos obligatorios marcados con * y corrija los errores indicados.</p>';
+                    // Intentar enfocar el primer campo inválido visible
+                    const firstInvalidVisibleField = form.querySelector('.invalid:not([style*="display: none"]), [required]:invalid:not([style*="display: none"])');
+                    if (firstInvalidVisibleField && firstInvalidVisibleField.offsetParent !== null) {
+                        firstInvalidVisibleField.focus();
+                        firstInvalidVisibleField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const orderData = {};
+                formData.forEach((value, key) => {
+                    // Solo incluir campos que no estén dentro de un div con display: none,
+                    // a menos que sean radios o checkboxes (cuya visibilidad es más compleja de determinar solo por el input)
+                    const fieldElement = form.elements[key];
+                    let includeField = true;
+                    if (fieldElement && !(fieldElement.type === 'radio' || fieldElement.type === 'checkbox')) {
+                        let parent = fieldElement.parentElement;
+                        while(parent && parent !== form) {
+                            if (parent.style.display === 'none') {
+                                includeField = false;
+                                break;
+                            }
+                            parent = parent.parentElement;
+                        }
+                    }
+                    if (includeField) {
+                        orderData[key] = value;
+                    }
+                });
+                
+                orderData.subtotal = parseFloat(document.getElementById('summarySubtotal').textContent.replace('$', '').replace(/\./g, '').replace(',', '.'));
+                orderData.discount = parseFloat(document.getElementById('summaryDiscount').textContent.replace('-$', '').replace(/\./g, '').replace(',', '.'));
+                orderData.total = parseFloat(document.getElementById('summaryTotal').textContent.replace('$', '').replace(/\./g, '').replace(',', '.'));
+                orderData.shippingCostDetail = document.getElementById('summaryShippingCost').textContent;
+                orderData.orderDate = new Date().toISOString();
+                orderData.status = "Pendiente"; 
+
+                const selectedDeliveryMethod = document.querySelector('input[name="deliveryMethod"]:checked').value;
+                if (selectedDeliveryMethod === 'retiro') {
+                    // Asegurarse de que los campos de dirección de envío no se envíen si es retiro
+                    delete orderData.shippingAddress;
+                    delete orderData.shippingOffice;
+                    delete orderData.shippingRegion;
+                    delete orderData.shippingComuna;
+                    delete orderData.shippingInstructions; 
+                }
+                
+                console.log('Datos del pedido:', orderData);
+                formMessage.textContent = 'Procesando pedido...';
+                formMessage.className = 'mt-4 text-center text-blue-600';
+
+                if (supabaseClient) {
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from('pedidos_boleta') 
+                            .insert([orderData])
+                            .select();
+
+                        if (error) throw error;
+
+                        console.log('Pedido enviado a Supabase:', data);
+                        formMessage.textContent = '¡Pedido realizado con éxito! Nos pondremos en contacto contigo pronto.';
+                        formMessage.className = 'mt-4 text-center text-green-600';
+                        form.reset(); 
+                        updateDeliveryMethod(); 
+                        bankDetailsDiv.classList.add('hidden');
+                        mercadoPagoInfoDiv.classList.add('hidden');
+                        paymentTransferDiv.classList.remove('selected');
+                        paymentMercadoPagoDiv.classList.remove('selected');
+                        couponMessage.textContent = '';
+                        document.getElementById('summaryDiscount').textContent = '-$0';
+                        document.getElementById('summaryTotal').textContent = `$${summarySubtotalVal.toLocaleString('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+
+
+                        if (orderData.paymentMethod === 'mercadopago') {
+                            formMessage.textContent += ' Serás redirigido a Mercado Pago (simulación).';
+                        }
+
+                    } catch (error) {
+                        console.error('Error al enviar a Supabase:', error);
+                        formMessage.textContent = `Error al procesar el pedido: ${error.message}. Por favor, inténtalo de nuevo.`;
+                        formMessage.className = 'mt-4 text-center text-red-500';
+                    }
+                } else {
+                    setTimeout(() => {
+                        if (orderData.paymentMethod === 'mercadopago') {
+                             formMessage.textContent = 'Pedido simulado con éxito. Serías redirigido a Mercado Pago.';
+                        } else {
+                             formMessage.textContent = 'Pedido simulado con éxito. Revisa tu correo para la confirmación (simulación).';
+                        }
+                        formMessage.className = 'mt-4 text-center text-green-600';
+                        console.log("Simulación: Pedido enviado", orderData);
+                        form.reset();
+                        updateDeliveryMethod();
+                        bankDetailsDiv.classList.add('hidden');
+                        mercadoPagoInfoDiv.classList.add('hidden');
+                        paymentTransferDiv.classList.remove('selected');
+                        paymentMercadoPagoDiv.classList.remove('selected');
+                        couponMessage.textContent = '';
+                        document.getElementById('summaryDiscount').textContent = '-$0';
+                        document.getElementById('summaryTotal').textContent = `$${summarySubtotalVal.toLocaleString('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                    }, 1500);
+                }
+            });
+            // Llamada inicial para establecer el estado correcto al cargar la página, incluyendo la numeración de secciones
+            updateDeliveryMethod();
+        });
+    </script>
+</body>
+</html>
