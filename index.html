@@ -19,14 +19,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('CRITICAL ERROR: Supabase UMD CDN script failed to load. Check network connection and CDN URL.')"></script>
 
     <script>
+        // Script para inicializar Supabase (sin cambios)
         console.log('index.html (head script 2): Attempting to initialize Supabase client from UMD global.');
         const SUPABASE_URL = 'https://tyqrzixrkrlcklhjvtfu.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5cXJ6aXhya3JsY2tsaGp2dGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMzg2MDYsImV4cCI6MjA2MjgxNDYwNn0.TxhpbioYVXLKH5z4VQfIPzYH7it5c9Qaf-pyI-vWrLo';
-        
-        // 'supabase' (minúsculas) aquí es el objeto global que exporta el script UMD.
         if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
             try {
-                // Asignamos nuestra instancia de cliente a window.supabaseClient
                 window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 console.log('index.html (head script 2): window.supabaseClient initialized successfully from UMD.', window.supabaseClient);
             } catch (e) {
@@ -34,13 +32,13 @@
                 window.supabaseClient = null;
             }
         } else {
-            console.error('index.html (head script 2): CRITICAL - Global "supabase" (lowercase) object from UMD not found or not a valid Supabase entry point. Ensure the UMD script loaded and executed correctly before this script.');
+            console.error('index.html (head script 2): CRITICAL - Global "supabase" (lowercase) object from UMD not found or not a valid Supabase entry point.');
             window.supabaseClient = null;
         }
     </script>
 
     <script>
-        // Configuración de Tailwind
+        // Configuración de Tailwind (sin cambios)
         if (typeof tailwind !== 'undefined') {
             tailwind.config = {
                 theme: {
@@ -70,6 +68,7 @@
             font-family: 'Lato', sans-serif;
             color: #1B263B; /* brand-navy-text */
             background-color: #FDFBF9; /* brand-off-white */
+            overflow-x: hidden; /* Evita el desbordamiento horizontal en móviles */
         }
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Playfair Display', serif;
@@ -142,11 +141,10 @@
             min-height: 256px; 
         }
         #mobile-menu {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Added opacity transition */
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
-        /* Ensure menu is above other content when open, but below when closed */
         #mobile-menu.opacity-0 { 
-            pointer-events: none; /* Prevent interaction when hidden */
+            pointer-events: none; 
         }
         #mobile-menu.opacity-100 {
             pointer-events: auto;
@@ -168,10 +166,10 @@
             border-width: 0 !important;
         }
         .product-card-padding {
-            padding-top: 1rem; /* Consistent padding for product cards */
+            padding-top: 1rem; 
         }
         .sabores-grid-collapsed {
-            max-height: 440px; /* Adjust based on the height of one row of cards */
+            max-height: 440px; 
             overflow: hidden;
             transition: max-height 0.5s ease-out;
         }
@@ -203,7 +201,21 @@
                 <span>Christophoros</span>
             </a>
             
-            <div>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#inicio" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Inicio</a>
+                <a href="#sabores" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Sabores</a>
+                <a href="#formatos" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Formatos</a>
+                <a href="#nosotros" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Nuestra Travesía</a>
+                <a href="#contacto" class="text-brand-navy-text hover:text-brand-blue transition duration-300">Contacto</a>
+                <a href="carrito.html" class="relative" id="cart-icon-link-desktop">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-navy-text hover:text-brand-blue transition duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span id="cart-count-desktop" class="absolute -top-2 -right-2 bg-brand-blue text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+            </div>
+
+            <div class="md:hidden">
                 <button id="mobile-menu-button" class="text-brand-navy-text focus:outline-none" aria-expanded="false" aria-controls="mobile-menu">
                     <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
@@ -215,13 +227,13 @@
             </div>
         </nav>
 
-        <div id="mobile-menu" class="absolute top-full left-0 w-full bg-brand-off-white shadow-lg py-4 transform -translate-y-full opacity-0 -z-10">
+        <div id="mobile-menu" class="md:hidden absolute top-full left-0 w-full bg-brand-off-white shadow-lg py-4 transform -translate-y-full opacity-0 -z-10">
             <a href="#inicio" class="block px-6 py-3 text-brand-navy-text hover:bg-brand-navy-text/10 transition-colors duration-200">Inicio</a>
             <a href="#sabores" class="block px-6 py-3 text-brand-navy-text hover:bg-brand-navy-text/10 transition-colors duration-200">Sabores</a>
             <a href="#formatos" class="block px-6 py-3 text-brand-navy-text hover:bg-brand-navy-text/10 transition-colors duration-200">Formatos</a>
             <a href="#nosotros" class="block px-6 py-3 text-brand-navy-text hover:bg-brand-navy-text/10 transition-colors duration-200">Nuestra Travesía</a>
             <a href="#contacto" class="block px-6 py-3 text-brand-navy-text hover:bg-brand-navy-text/10 transition-colors duration-200">Contacto</a>
-            <a href="carrito.html" class="block px-6 py-3 text-brand-navy-text hover:bg-brand-navy-text/10 transition-colors duration-200" id="cart-icon-link-dropdown">
+            <a href="carrito.html" class="block px-6 py-3 text-brand-navy-text hover:bg-brand-navy-text/10 transition-colors duration-200" id="cart-icon-link-mobile">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -229,14 +241,13 @@
                         </svg>
                         <span>Carrito</span>
                     </div>
-                    <span id="cart-count" class="bg-brand-blue text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    <span id="cart-count-mobile" class="bg-brand-blue text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
                 </div>
             </a>
         </div>
     </header>
 
     <main>
-
         <section id="inicio" class="h-screen flex items-center justify-center bg-cover bg-center parallax-bg relative" style="background-image: url('images/imagen-hero-principal.jpg');">
             <div class="absolute inset-0 bg-black opacity-60"></div>
             <div class="relative z-10 p-10 rounded-lg text-center max-w-4xl mx-auto">
@@ -320,7 +331,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-center mt-12"> <button id="toggle-sabores-btn" class="btn-secondary text-md font-semibold py-2 px-6 rounded-full shadow">
+                <div class="text-center mt-12"> 
+                    <button id="toggle-sabores-btn" class="btn-secondary text-md font-semibold py-2 px-6 rounded-full shadow">
                         Mostrar más sabores
                     </button>
                 </div>
@@ -333,7 +345,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
                      <div class="bg-brand-off-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col text-center product-card-padding">
                         <img src="images/caja-4-bombones.jpg" alt="Caja de 4 bombones Christophoros para regalo" class="w-full h-64 object-cover">
-                        <div class="p-5 flex flex-col flex-grow"> <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 4 Bombones</h3>
+                        <div class="p-5 flex flex-col flex-grow"> 
+                            <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 4 Bombones</h3>
                             <p class="text-sm text-brand-navy-text/80 mb-4 flex-grow">Una selección perfecta para degustar o regalar un detalle especial.</p>
                             <p class="text-lg font-semibold text-brand-blue mb-4">$ 5.990</p>
                             <a href="caja4b.html" class="btn-action mt-auto py-2 px-5 rounded-md text-sm font-semibold inline-block">Comprar</a>
@@ -361,7 +374,8 @@
                         <img src="images/caja-25-bombones.jpg" alt="Caja de 25 bombones Christophoros para celebraciones" class="w-full h-64 object-cover">
                         <div class="p-5 flex flex-col flex-grow">
                             <h3 class="text-xl font-serif font-semibold text-brand-navy-text mb-3">Caja de 25 Bombones</h3>
-                            <p class="text-sm text-brand-navy-text/80 mb-4 flex-grow">El formato definitivo para celebraciones y regalos inolvidables.</p> <p class="text-lg font-semibold text-brand-blue mb-4">$ 33.990</p>
+                            <p class="text-sm text-brand-navy-text/80 mb-4 flex-grow">El formato definitivo para celebraciones y regalos inolvidables.</p> 
+                            <p class="text-lg font-semibold text-brand-blue mb-4">$ 33.990</p>
                             <a href="caja25b.html" class="btn-action mt-auto py-2 px-5 rounded-md text-sm font-semibold inline-block">Comprar</a>
                         </div>
                     </div>
@@ -412,7 +426,6 @@
                 <div id="form-response-message" class="mt-4"></div>
             </div>
         </section>
-
     </main>
 
     <footer class="py-12">
@@ -438,7 +451,7 @@
                     <div class="flex justify-center md:justify-start space-x-5 mb-5">
                         <a href="https://www.instagram.com/christophoros.cioccolato/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="text-brand-gold-accent hover:text-brand-off-white"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919.058-1.265.069-1.645.069-4.849zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.359 2.618 6.78 6.98 6.98 1.28.059 1.688.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
                         <a href="https://www.facebook.com/TU_PAGINA_AQUI" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="text-brand-gold-accent hover:text-brand-off-white"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg></a>
-                        </div>
+                    </div>
                     <a href="mailto:christophoroschile@gmail.com" class="text-sm footer-text-secondary hover:text-brand-off-white transition duration-300">christophoroschile@gmail.com</a>
                     <p class="text-sm footer-text-secondary mt-1">Temuco, Araucanía, Chile</p>
                 </div>
@@ -456,11 +469,10 @@
             function inicializarLogicaDeLaPagina() {
                 console.log('index.html (inicializarLogicaDeLaPagina): Initializing page logic.');
 
+                // Lógica del formulario de contacto (sin cambios)
                 if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient && typeof window.supabaseClient.from === 'function') {
-                    console.log('index.html (inicializarLogicaDeLaPagina): "window.supabaseClient" IS defined and valid. Setting up form.');
                     const contactForm = document.getElementById('contact-form');
                     const formResponseMessage = document.getElementById('form-response-message');
-
                     if (contactForm) {
                         contactForm.addEventListener('submit', async (event) => {
                             event.preventDefault(); 
@@ -492,9 +504,9 @@
                                 }
                                 contactForm.reset(); 
                             } catch (error) {
-                                console.error('Error al enviar mensaje (dentro del catch del submit):', error.message ? error.message : error);
+                                console.error('Error al enviar mensaje:', error.message ? error.message : error);
                                 if(formResponseMessage) {
-                                    formResponseMessage.textContent = 'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo o contáctanos directamente por correo.';
+                                    formResponseMessage.textContent = 'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo.';
                                     formResponseMessage.classList.add('error');
                                 }
                             } finally {
@@ -509,18 +521,18 @@
                             }
                         });
                     } else {
-                        console.warn('index.html (inicializarLogicaDeLaPagina): Contact form (contact-form) not found.');
+                        console.warn('index.html: Contact form (contact-form) not found.');
                     }
                 } else {
-                    console.error('index.html (inicializarLogicaDeLaPagina): Critical Error - "window.supabaseClient" is UNDEFINED or INVALID when initializing page logic. Supabase client object:', window.supabaseClient);
+                    console.error('index.html: Critical Error - Supabase client is not available for contact form.');
                     const formResponseMessage = document.getElementById('form-response-message');
                     if(formResponseMessage) { 
-                        formResponseMessage.textContent = 'Error de configuración del servicio de mensajes. Por favor, contacta al administrador.';
+                        formResponseMessage.textContent = 'Error de configuración del servicio de mensajes.';
                         formResponseMessage.className = 'form-message error';
                     }
                 }
 
-                // --- Menú Móvil/Desplegable Universal ---
+                // --- Menú Móvil ---
                 const mobileMenuButton = document.getElementById('mobile-menu-button');
                 const mobileMenu = document.getElementById('mobile-menu');
                 const menuIconOpen = document.getElementById('menu-icon-open');
@@ -531,12 +543,11 @@
                         const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
                         mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
                         
-                        // Toggle visibility classes
                         mobileMenu.classList.toggle('-translate-y-full');
                         mobileMenu.classList.toggle('opacity-0');
                         mobileMenu.classList.toggle('opacity-100');
-                        mobileMenu.classList.toggle('-z-10'); // Was -z-10
-                        mobileMenu.classList.toggle('z-40'); // Ensure it's above content but below sticky header if needed. z-50 is header.
+                        mobileMenu.classList.toggle('-z-10'); 
+                        mobileMenu.classList.toggle('z-40'); // El header es z-50, el menú debe estar debajo si es sticky.
 
                         menuIconOpen.classList.toggle('hidden');
                         menuIconClose.classList.toggle('hidden');
@@ -555,21 +566,19 @@
                     console.warn('index.html: Mobile menu elements not found.');
                 }
                 
-                // --- Sabores Retráctiles ---
+                // --- Sabores Retráctiles (sin cambios) ---
                 const toggleSaboresBtn = document.getElementById('toggle-sabores-btn');
                 const saboresGrid = document.getElementById('sabores-grid'); 
                 if (saboresGrid) { 
                     const allFlavorCards = Array.from(saboresGrid.querySelectorAll('.flavor-card, .coming-soon-card'));
-                    const hiddenFlavors = allFlavorCards.slice(4); // Elementos a ocultar inicialmente
+                    const hiddenFlavors = allFlavorCards.slice(4); 
 
-                    // Ocultar inicialmente si hay más de 4
                     if (hiddenFlavors.length > 0) {
-                        saboresGrid.classList.add('sabores-grid-collapsed'); // Aplica la altura colapsada inicial
+                        saboresGrid.classList.add('sabores-grid-collapsed'); 
                         hiddenFlavors.forEach(flavor => {
                             flavor.classList.add('flavor-hidden');
                         });
                     } else if (toggleSaboresBtn) {
-                        // Si hay 4 o menos sabores, ocultar el botón "Mostrar más"
                         toggleSaboresBtn.style.display = 'none';
                     }
 
@@ -577,9 +586,7 @@
                     if (toggleSaboresBtn && hiddenFlavors.length > 0) { 
                         toggleSaboresBtn.addEventListener('click', () => {
                             flavorsVisible = !flavorsVisible; 
-                            // Alternar la clase que controla la altura máxima del grid
                             saboresGrid.classList.toggle('sabores-grid-collapsed'); 
-                            
                             hiddenFlavors.forEach(flavor => {
                                 flavor.classList.toggle('flavor-hidden'); 
                             });
@@ -588,37 +595,36 @@
                     }
                 }
 
-
-                // --- Lógica del Carrito ---
-                const cartCountElement = document.getElementById('cart-count'); // El span para el número en el menú desplegable
+                // --- Lógica del Carrito (actualizada para dos contadores) ---
+                const cartCountDesktopElement = document.getElementById('cart-count-desktop');
+                const cartCountMobileElement = document.getElementById('cart-count-mobile');
+                
                 function updateCartCount() {
                     try {
                         let cart = JSON.parse(localStorage.getItem('christophorosCart')) || [];
                         let totalItems = 0;
                         cart.forEach(item => { totalItems += item.quantity; });
-                        if (cartCountElement) { 
-                            cartCountElement.textContent = totalItems; 
-                        } else {
-                            // console.warn("Elemento cart-count no encontrado en el DOM para actualizar.");
+                        
+                        if (cartCountDesktopElement) { 
+                            cartCountDesktopElement.textContent = totalItems; 
+                        }
+                        if (cartCountMobileElement) { 
+                            cartCountMobileElement.textContent = totalItems; 
                         }
                     } catch (e) {
                         console.error("Error al actualizar el contador del carrito:", e);
-                        if (cartCountElement) {
-                            cartCountElement.textContent = "E"; // Error state
-                        }
+                        if (cartCountDesktopElement) cartCountDesktopElement.textContent = "E";
+                        if (cartCountMobileElement) cartCountMobileElement.textContent = "E";
                     }
                 }
                 updateCartCount(); 
-                // Escuchar por cambios en el carrito desde otras páginas/componentes
+                
                 window.addEventListener('storage', (event) => {
                     if (event.key === 'christophorosCart') {
                         updateCartCount();
                     }
                 });
-                // También puedes emitir un evento personalizado si actualizas el carrito en la misma página
-                // y necesitas que el header reaccione.
-                // document.addEventListener('cartUpdated', updateCartCount);
-
+                // document.addEventListener('cartUpdated', updateCartCount); // Si emites este evento en otras partes
 
                 console.log('index.html (inicializarLogicaDeLaPagina): Page logic initialization finished.');
             } 
